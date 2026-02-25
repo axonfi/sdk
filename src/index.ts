@@ -3,7 +3,7 @@
 // ============================================================================
 
 // Main client
-export { AxonClient } from './client.js'
+export { AxonClient } from './client.js';
 
 // Types
 export type {
@@ -16,7 +16,7 @@ export type {
   PaymentResult,
   PaymentStatus,
   AxonClientConfig,
-} from './types.js'
+} from './types.js';
 
 // Constants
 export {
@@ -29,11 +29,11 @@ export {
   SUPPORTED_CHAIN_IDS,
   DEFAULT_DEADLINE_SECONDS,
   PaymentErrorCode,
-} from './constants.js'
-export type { SupportedChainId } from './constants.js'
+} from './constants.js';
+export type { SupportedChainId } from './constants.js';
 
 // Signing utilities
-export { signPayment, encodeRef } from './signer.js'
+export { signPayment, encodeRef } from './signer.js';
 
 // Vault read helpers
 export {
@@ -48,9 +48,9 @@ export {
   createAxonPublicClient,
   createAxonWalletClient,
   getChain,
-} from './vault.js'
+} from './vault.js';
 
 // ABIs (useful for wagmi/viem integrations in frontends/dashboards)
-export { AxonVaultAbi } from './abis/AxonVault.js'
-export { AxonVaultFactoryAbi } from './abis/AxonVaultFactory.js'
-export { AxonRegistryAbi } from './abis/AxonRegistry.js'
+export { AxonVaultAbi } from './abis/AxonVault.js';
+export { AxonVaultFactoryAbi } from './abis/AxonVaultFactory.js';
+export { AxonRegistryAbi } from './abis/AxonRegistry.js';

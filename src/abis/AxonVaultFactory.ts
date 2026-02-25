@@ -140,4 +140,4 @@ export const AxonVaultFactoryAbi = [
     inputs: [{ name: 'account', type: 'address', internalType: 'address' }],
   },
   { type: 'error', name: 'ZeroAddress', inputs: [] },
-] as const
+] as const;

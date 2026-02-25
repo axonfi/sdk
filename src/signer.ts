@@ -1,7 +1,7 @@
-import { keccak256, stringToBytes } from 'viem'
-import type { WalletClient, Hex, Address } from 'viem'
-import type { PaymentIntent } from './types.js'
-import { EIP712_DOMAIN_NAME, EIP712_DOMAIN_VERSION } from './constants.js'
+import { keccak256, stringToBytes } from 'viem';
+import type { WalletClient, Hex, Address } from 'viem';
+import type { PaymentIntent } from './types.js';
+import { EIP712_DOMAIN_NAME, EIP712_DOMAIN_VERSION } from './constants.js';
 
 // EIP-712 types for PaymentIntent — field order matches the Solidity struct exactly.
 const PAYMENT_INTENT_TYPES = {
@@ -13,7 +13,7 @@ const PAYMENT_INTENT_TYPES = {
     { name: 'deadline', type: 'uint256' },
     { name: 'ref', type: 'bytes32' },
   ],
-} as const
+} as const;
 
 /**
  * Sign a PaymentIntent using EIP-712 typed structured data.
@@ -34,7 +34,7 @@ export async function signPayment(
   intent: PaymentIntent,
 ): Promise<Hex> {
   if (!walletClient.account) {
-    throw new Error('walletClient has no account attached')
+    throw new Error('walletClient has no account attached');
   }
 
   return walletClient.signTypedData({
@@ -55,7 +55,7 @@ export async function signPayment(
       deadline: intent.deadline,
       ref: intent.ref,
     },
-  })
+  });
 }
 
 /**
@@ -69,5 +69,5 @@ export async function signPayment(
  * @returns     keccak256 hash of the UTF-8 encoded memo, as a bytes32 hex.
  */
 export function encodeRef(memo: string): Hex {
-  return keccak256(stringToBytes(memo))
+  return keccak256(stringToBytes(memo));
 }

@@ -1,5 +1,5 @@
-import { keccak256, stringToBytes } from 'viem'
-import type { Address } from 'viem'
+import { keccak256, stringToBytes } from 'viem';
+import type { Address } from 'viem';
 
 // ============================================================================
 // EIP-712 type hashes
@@ -11,21 +11,19 @@ import type { Address } from 'viem'
  * need this value for signing, only for low-level verification.
  */
 export const PAYMENT_INTENT_TYPEHASH: `0x${string}` = keccak256(
-  stringToBytes(
-    'PaymentIntent(address bot,address to,address token,uint256 amount,uint256 deadline,bytes32 ref)',
-  ),
-)
+  stringToBytes('PaymentIntent(address bot,address to,address token,uint256 amount,uint256 deadline,bytes32 ref)'),
+);
 
 /** EIP-712 domain name and version for AxonVault. Matches the constructor. */
-export const EIP712_DOMAIN_NAME = 'AxonVault' as const
-export const EIP712_DOMAIN_VERSION = '1' as const
+export const EIP712_DOMAIN_NAME = 'AxonVault' as const;
+export const EIP712_DOMAIN_VERSION = '1' as const;
 
 // ============================================================================
 // Native ETH sentinel
 // ============================================================================
 
 /** Sentinel address representing native ETH in PaymentIntents and deposits. */
-export const NATIVE_ETH: Address = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+export const NATIVE_ETH: Address = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 // ============================================================================
 // USDC addresses per chain
@@ -40,21 +38,21 @@ export const USDC: Record<number, Address> = {
   42161: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
   // Arbitrum Sepolia
   421614: '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
-}
+};
 
 // ============================================================================
 // Supported chain IDs
 // ============================================================================
 
-export const SUPPORTED_CHAIN_IDS = [8453, 84532, 42161, 421614] as const
-export type SupportedChainId = (typeof SUPPORTED_CHAIN_IDS)[number]
+export const SUPPORTED_CHAIN_IDS = [8453, 84532, 42161, 421614] as const;
+export type SupportedChainId = (typeof SUPPORTED_CHAIN_IDS)[number];
 
 // ============================================================================
 // Time constants (seconds)
 // ============================================================================
 
 /** Default intent validity window when no deadline is specified. */
-export const DEFAULT_DEADLINE_SECONDS = 300 // 5 minutes
+export const DEFAULT_DEADLINE_SECONDS = 300; // 5 minutes
 
 /** Window presets for SpendingLimit.windowSeconds. */
 export const WINDOW = {
@@ -62,7 +60,7 @@ export const WINDOW = {
   ONE_DAY: 86400n,
   ONE_WEEK: 604800n,
   THIRTY_DAYS: 2592000n,
-} as const
+} as const;
 
 // ============================================================================
 // Payment rejection error codes
@@ -113,9 +111,9 @@ export const PaymentErrorCode = {
   INVALID_VAULT: 'INVALID_VAULT',
   /** Unknown or internal error */
   INTERNAL_ERROR: 'INTERNAL_ERROR',
-} as const
+} as const;
 
-export type PaymentErrorCode = (typeof PaymentErrorCode)[keyof typeof PaymentErrorCode]
+export type PaymentErrorCode = (typeof PaymentErrorCode)[keyof typeof PaymentErrorCode];
 
 // ============================================================================
 // Relayer API paths
@@ -124,4 +122,4 @@ export type PaymentErrorCode = (typeof PaymentErrorCode)[keyof typeof PaymentErr
 export const RELAYER_API = {
   PAYMENTS: '/v1/payments',
   payment: (requestId: string) => `/v1/payments/${requestId}`,
-} as const
+} as const;

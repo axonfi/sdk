@@ -1,14 +1,8 @@
-import type { PublicClient, WalletClient, Address, Hex } from 'viem'
-import type {
-  AxonClientConfig,
-  BotConfig,
-  PayInput,
-  PaymentIntent,
-  PaymentResult,
-} from './types.js'
-import { signPayment, encodeRef } from './signer.js'
-import { getBotConfig, createAxonPublicClient, createAxonWalletClient } from './vault.js'
-import { DEFAULT_DEADLINE_SECONDS, RELAYER_API } from './constants.js'
+import type { PublicClient, WalletClient, Address, Hex } from 'viem';
+import type { AxonClientConfig, BotConfig, PayInput, PaymentIntent, PaymentResult } from './types.js';
+import { signPayment, encodeRef } from './signer.js';
+import { getBotConfig, createAxonPublicClient, createAxonWalletClient } from './vault.js';
+import { DEFAULT_DEADLINE_SECONDS, RELAYER_API } from './constants.js';
 
 // ============================================================================
 // AxonClient
@@ -44,27 +38,23 @@ import { DEFAULT_DEADLINE_SECONDS, RELAYER_API } from './constants.js'
  * ```
  */
 export class AxonClient {
-  private readonly vaultAddress: Address
-  private readonly chainId: number
-  private readonly relayerUrl: string
-  private readonly publicClient: PublicClient
-  private readonly walletClient: WalletClient
+  private readonly vaultAddress: Address;
+  private readonly chainId: number;
+  private readonly relayerUrl: string;
+  private readonly publicClient: PublicClient;
+  private readonly walletClient: WalletClient;
 
   constructor(config: AxonClientConfig) {
-    this.vaultAddress = config.vaultAddress
-    this.chainId = config.chainId
-    this.relayerUrl = config.relayerUrl.replace(/\/$/, '') // strip trailing slash
+    this.vaultAddress = config.vaultAddress;
+    this.chainId = config.chainId;
+    this.relayerUrl = config.relayerUrl.replace(/\/$/, ''); // strip trailing slash
 
-    this.publicClient = createAxonPublicClient(config.chainId, config.rpcUrl)
+    this.publicClient = createAxonPublicClient(config.chainId, config.rpcUrl);
 
     if (!config.botPrivateKey) {
-      throw new Error('botPrivateKey is required in AxonClientConfig')
+      throw new Error('botPrivateKey is required in AxonClientConfig');
     }
-    this.walletClient = createAxonWalletClient(
-      config.botPrivateKey,
-      config.chainId,
-      config.rpcUrl,
-    )
+    this.walletClient = createAxonWalletClient(config.botPrivateKey, config.chainId, config.rpcUrl);
   }
 
   // ============================================================================
@@ -73,9 +63,9 @@ export class AxonClient {
 
   /** Returns the bot's address derived from the configured private key. */
   get botAddress(): Address {
-    const account = this.walletClient.account
-    if (!account) throw new Error('No account on walletClient')
-    return account.address
+    const account = this.walletClient.account;
+    if (!account) throw new Error('No account on walletClient');
+    return account.address;
   }
 
   // ============================================================================
@@ -97,14 +87,9 @@ export class AxonClient {
    * - `"rejected"`: payment was rejected — reason field explains why
    */
   async pay(input: PayInput): Promise<PaymentResult> {
-    const intent = this._buildIntent(input)
-    const signature = await signPayment(
-      this.walletClient,
-      this.vaultAddress,
-      this.chainId,
-      intent,
-    )
-    return this._submitToRelayer(intent, signature, input)
+    const intent = this._buildIntent(input);
+    const signature = await signPayment(this.walletClient, this.vaultAddress, this.chainId, intent);
+    return this._submitToRelayer(intent, signature, input);
   }
 
   // ============================================================================
@@ -116,7 +101,7 @@ export class AxonClient {
    * Returns the full BotConfig including spending limits and AI thresholds.
    */
   async getBotConfig(): Promise<BotConfig> {
-    return getBotConfig(this.publicClient, this.vaultAddress, this.botAddress)
+    return getBotConfig(this.publicClient, this.vaultAddress, this.botAddress);
   }
 
   // ============================================================================
@@ -133,18 +118,18 @@ export class AxonClient {
    * Recommended polling interval: 5–10 seconds.
    */
   async poll(requestId: string): Promise<PaymentResult> {
-    const url = `${this.relayerUrl}${RELAYER_API.payment(requestId)}`
+    const url = `${this.relayerUrl}${RELAYER_API.payment(requestId)}`;
     const response = await fetch(url, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-    })
+    });
 
     if (!response.ok) {
-      const body = await response.text()
-      throw new Error(`Relayer poll failed [${response.status}]: ${body}`)
+      const body = await response.text();
+      throw new Error(`Relayer poll failed [${response.status}]: ${body}`);
     }
 
-    return response.json() as Promise<PaymentResult>
+    return response.json() as Promise<PaymentResult>;
   }
 
   // ============================================================================
@@ -158,7 +143,7 @@ export class AxonClient {
    * to another system (e.g. a custom relayer integration).
    */
   async signPayment(intent: PaymentIntent): Promise<Hex> {
-    return signPayment(this.walletClient, this.vaultAddress, this.chainId, intent)
+    return signPayment(this.walletClient, this.vaultAddress, this.chainId, intent);
   }
 
   // ============================================================================
@@ -166,16 +151,15 @@ export class AxonClient {
   // ============================================================================
 
   private _buildIntent(input: PayInput): PaymentIntent {
-    const deadline =
-      input.deadline ?? BigInt(Math.floor(Date.now() / 1000) + DEFAULT_DEADLINE_SECONDS)
+    const deadline = input.deadline ?? BigInt(Math.floor(Date.now() / 1000) + DEFAULT_DEADLINE_SECONDS);
 
-    let ref: Hex
+    let ref: Hex;
     if (input.ref) {
-      ref = input.ref
+      ref = input.ref;
     } else if (input.memo) {
-      ref = encodeRef(input.memo)
+      ref = encodeRef(input.memo);
     } else {
-      ref = '0x0000000000000000000000000000000000000000000000000000000000000000'
+      ref = '0x0000000000000000000000000000000000000000000000000000000000000000';
     }
 
     return {
@@ -185,17 +169,13 @@ export class AxonClient {
       amount: input.amount,
       deadline,
       ref,
-    }
+    };
   }
 
-  private async _submitToRelayer(
-    intent: PaymentIntent,
-    signature: Hex,
-    input: PayInput,
-  ): Promise<PaymentResult> {
-    const url = `${this.relayerUrl}${RELAYER_API.PAYMENTS}`
+  private async _submitToRelayer(intent: PaymentIntent, signature: Hex, input: PayInput): Promise<PaymentResult> {
+    const url = `${this.relayerUrl}${RELAYER_API.PAYMENTS}`;
 
-    const idempotencyKey = input.idempotencyKey ?? generateUuid()
+    const idempotencyKey = input.idempotencyKey ?? generateUuid();
 
     const body = {
       // Routing — tells relayer which chain and vault to use
@@ -220,7 +200,7 @@ export class AxonClient {
       ...(input.invoiceId !== undefined && { invoiceId: input.invoiceId }),
       ...(input.orderId !== undefined && { orderId: input.orderId }),
       ...(input.metadata !== undefined && { metadata: input.metadata }),
-    }
+    };
 
     const response = await fetch(url, {
       method: 'POST',
@@ -229,14 +209,14 @@ export class AxonClient {
         'Idempotency-Key': idempotencyKey,
       },
       body: JSON.stringify(body),
-    })
+    });
 
     if (!response.ok) {
-      const responseBody = await response.text()
-      throw new Error(`Relayer request failed [${response.status}]: ${responseBody}`)
+      const responseBody = await response.text();
+      throw new Error(`Relayer request failed [${response.status}]: ${responseBody}`);
     }
 
-    return response.json() as Promise<PaymentResult>
+    return response.json() as Promise<PaymentResult>;
   }
 }
 
@@ -245,19 +225,19 @@ export class AxonClient {
 // ============================================================================
 
 function generateUuid(): string {
-  const bytes = new Uint8Array(16)
+  const bytes = new Uint8Array(16);
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-    crypto.getRandomValues(bytes)
+    crypto.getRandomValues(bytes);
   } else {
     // Node.js fallback
-    const { randomBytes } = require('crypto') as typeof import('crypto')
-    const buf = randomBytes(16)
-    for (let i = 0; i < 16; i++) bytes[i] = buf[i] ?? 0
+    const { randomBytes } = require('crypto') as typeof import('crypto');
+    const buf = randomBytes(16);
+    for (let i = 0; i < 16; i++) bytes[i] = buf[i] ?? 0;
   }
-  bytes[6] = (bytes[6]! & 0x0f) | 0x40 // version 4
-  bytes[8] = (bytes[8]! & 0x3f) | 0x80 // variant bits
+  bytes[6] = (bytes[6]! & 0x0f) | 0x40; // version 4
+  bytes[8] = (bytes[8]! & 0x3f) | 0x80; // variant bits
   const hex = Array.from(bytes)
     .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
+    .join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
