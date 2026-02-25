@@ -186,6 +186,51 @@ export const AxonVaultAbi = [
   },
   {
     type: 'function',
+    name: 'addProtocol',
+    inputs: [
+      {
+        name: 'protocol',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'approvedProtocolCount',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'approvedProtocols',
+    inputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'axonRegistry',
     inputs: [],
     outputs: [
@@ -371,18 +416,38 @@ export const AxonVaultAbi = [
         type: 'bytes',
         internalType: 'bytes',
       },
+      {
+        name: 'fromToken',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'maxFromAmount',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'swapRouter',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'swapCalldata',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
     ],
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    name: 'executeSwapAndPay',
+    name: 'executeProtocol',
     inputs: [
       {
         name: 'intent',
         type: 'tuple',
-        internalType: 'struct AxonVault.PaymentIntent',
+        internalType: 'struct AxonVault.ExecuteIntent',
         components: [
           {
             name: 'bot',
@@ -390,9 +455,14 @@ export const AxonVaultAbi = [
             internalType: 'address',
           },
           {
-            name: 'to',
+            name: 'protocol',
             type: 'address',
             internalType: 'address',
+          },
+          {
+            name: 'calldataHash',
+            type: 'bytes32',
+            internalType: 'bytes32',
           },
           {
             name: 'token',
@@ -401,6 +471,82 @@ export const AxonVaultAbi = [
           },
           {
             name: 'amount',
+            type: 'uint256',
+            internalType: 'uint256',
+          },
+          {
+            name: 'deadline',
+            type: 'uint256',
+            internalType: 'uint256',
+          },
+          {
+            name: 'ref',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+        ],
+      },
+      {
+        name: 'signature',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
+      {
+        name: 'callData',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
+      {
+        name: 'fromToken',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'maxFromAmount',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'swapRouter',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'swapCalldata',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'executeSwap',
+    inputs: [
+      {
+        name: 'intent',
+        type: 'tuple',
+        internalType: 'struct AxonVault.SwapIntent',
+        components: [
+          {
+            name: 'bot',
+            type: 'address',
+            internalType: 'address',
+          },
+          {
+            name: 'toToken',
+            type: 'address',
+            internalType: 'address',
+          },
+          {
+            name: 'minToAmount',
             type: 'uint256',
             internalType: 'uint256',
           },
@@ -444,19 +590,6 @@ export const AxonVaultAbi = [
     ],
     outputs: [],
     stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'feeMonthStart',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -611,13 +744,19 @@ export const AxonVaultAbi = [
   },
   {
     type: 'function',
-    name: 'monthlyRelayerCap',
-    inputs: [],
+    name: 'isProtocolApproved',
+    inputs: [
+      {
+        name: 'protocol',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
     outputs: [
       {
         name: '',
-        type: 'uint256',
-        internalType: 'uint256',
+        type: 'bool',
+        internalType: 'bool',
       },
     ],
     stateMutability: 'view',
@@ -742,19 +881,6 @@ export const AxonVaultAbi = [
   },
   {
     type: 'function',
-    name: 'relayerFeeDrawnThisMonth',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     name: 'removeBot',
     inputs: [
       {
@@ -812,21 +938,21 @@ export const AxonVaultAbi = [
   },
   {
     type: 'function',
-    name: 'renounceOwnership',
-    inputs: [],
+    name: 'removeProtocol',
+    inputs: [
+      {
+        name: 'protocol',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    name: 'setMonthlyRelayerCap',
-    inputs: [
-      {
-        name: 'cap',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
+    name: 'renounceOwnership',
+    inputs: [],
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -1010,24 +1136,6 @@ export const AxonVaultAbi = [
         name: 'to',
         type: 'address',
         internalType: 'address',
-      },
-    ],
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    name: 'withdrawRelayerFees',
-    inputs: [
-      {
-        name: 'token',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'amount',
-        type: 'uint256',
-        internalType: 'uint256',
       },
     ],
     outputs: [],
@@ -1219,19 +1327,6 @@ export const AxonVaultAbi = [
   },
   {
     type: 'event',
-    name: 'MonthlyRelayerCapSet',
-    inputs: [
-      {
-        name: 'newCap',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
     name: 'OperatorCeilingsUpdated',
     inputs: [
       {
@@ -1379,8 +1474,39 @@ export const AxonVaultAbi = [
   },
   {
     type: 'event',
-    name: 'RelayerFeesWithdrawn',
+    name: 'ProtocolAdded',
     inputs: [
+      {
+        name: 'protocol',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'ProtocolExecuted',
+    inputs: [
+      {
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'protocol',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'token',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
       {
         name: 'amount',
         type: 'uint256',
@@ -1388,16 +1514,66 @@ export const AxonVaultAbi = [
         internalType: 'uint256',
       },
       {
-        name: 'drawnThisMonth',
+        name: 'ref',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'ProtocolRemoved',
+    inputs: [
+      {
+        name: 'protocol',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'SwapExecuted',
+    inputs: [
+      {
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'fromToken',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+      {
+        name: 'toToken',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+      {
+        name: 'fromAmount',
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
       },
       {
-        name: 'cap',
+        name: 'toAmount',
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
+      },
+      {
+        name: 'ref',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
       },
     ],
     anonymous: false,
@@ -1491,6 +1667,11 @@ export const AxonVaultAbi = [
   },
   {
     type: 'error',
+    name: 'AlreadyApprovedProtocol',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'AmountMismatch',
     inputs: [],
   },
@@ -1507,6 +1688,11 @@ export const AxonVaultAbi = [
   {
     type: 'error',
     name: 'BotNotActive',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'CalldataHashMismatch',
     inputs: [],
   },
   {
@@ -1568,6 +1754,11 @@ export const AxonVaultAbi = [
   },
   {
     type: 'error',
+    name: 'InsufficientBalance',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'IntentAlreadyUsed',
     inputs: [],
   },
@@ -1584,11 +1775,6 @@ export const AxonVaultAbi = [
   {
     type: 'error',
     name: 'MaxPerTxExceeded',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'MonthlyCapExceeded',
     inputs: [],
   },
   {
@@ -1640,6 +1826,26 @@ export const AxonVaultAbi = [
   },
   {
     type: 'error',
+    name: 'PaymentToZeroAddress',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ProtocolCallFailed',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ProtocolNotApproved',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ProtocolNotInList',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'ReentrancyGuardReentrantCall',
     inputs: [],
   },
@@ -1658,6 +1864,11 @@ export const AxonVaultAbi = [
         internalType: 'address',
       },
     ],
+  },
+  {
+    type: 'error',
+    name: 'SelfPayment',
+    inputs: [],
   },
   {
     type: 'error',
@@ -1693,6 +1904,11 @@ export const AxonVaultAbi = [
   {
     type: 'error',
     name: 'ZeroAddress',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ZeroAmount',
     inputs: [],
   },
 ] as const;

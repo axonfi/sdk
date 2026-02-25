@@ -12,7 +12,11 @@ export type {
   BotConfigParams,
   OperatorCeilings,
   PaymentIntent,
+  ExecuteIntent,
+  SwapIntent,
   PayInput,
+  ExecuteInput,
+  SwapInput,
   PaymentResult,
   PaymentStatus,
   AxonClientConfig,
@@ -24,16 +28,19 @@ export {
   USDC,
   WINDOW,
   PAYMENT_INTENT_TYPEHASH,
+  EXECUTE_INTENT_TYPEHASH,
+  SWAP_INTENT_TYPEHASH,
   EIP712_DOMAIN_NAME,
   EIP712_DOMAIN_VERSION,
   SUPPORTED_CHAIN_IDS,
   DEFAULT_DEADLINE_SECONDS,
   PaymentErrorCode,
+  RELAYER_API,
 } from './constants.js';
 export type { SupportedChainId } from './constants.js';
 
 // Signing utilities
-export { signPayment, encodeRef } from './signer.js';
+export { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
 
 // Vault read helpers
 export {

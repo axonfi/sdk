@@ -14,6 +14,18 @@ export const PAYMENT_INTENT_TYPEHASH: `0x${string}` = keccak256(
   stringToBytes('PaymentIntent(address bot,address to,address token,uint256 amount,uint256 deadline,bytes32 ref)'),
 );
 
+/** keccak256 of the ExecuteIntent type string for DeFi protocol interactions. */
+export const EXECUTE_INTENT_TYPEHASH: `0x${string}` = keccak256(
+  stringToBytes(
+    'ExecuteIntent(address bot,address protocol,bytes32 calldataHash,address token,uint256 amount,uint256 deadline,bytes32 ref)',
+  ),
+);
+
+/** keccak256 of the SwapIntent type string for in-vault token rebalancing. */
+export const SWAP_INTENT_TYPEHASH: `0x${string}` = keccak256(
+  stringToBytes('SwapIntent(address bot,address toToken,uint256 minToAmount,uint256 deadline,bytes32 ref)'),
+);
+
 /** EIP-712 domain name and version for AxonVault. Matches the constructor. */
 export const EIP712_DOMAIN_NAME = 'AxonVault' as const;
 export const EIP712_DOMAIN_VERSION = '1' as const;
@@ -122,4 +134,8 @@ export type PaymentErrorCode = (typeof PaymentErrorCode)[keyof typeof PaymentErr
 export const RELAYER_API = {
   PAYMENTS: '/v1/payments',
   payment: (requestId: string) => `/v1/payments/${requestId}`,
+  EXECUTE: '/v1/execute',
+  execute: (requestId: string) => `/v1/execute/${requestId}`,
+  SWAP: '/v1/swap',
+  swap: (requestId: string) => `/v1/swap/${requestId}`,
 } as const;

@@ -54,8 +54,7 @@ export interface OperatorCeilings {
  * Signed payment intent. This is the core signed data unit.
  *
  * The bot signs this struct using EIP-712. The relayer submits it to
- * executePayment() or executeSwapAndPay() on-chain. The bot never interacts
- * with the chain directly.
+ * executePayment() on-chain. The bot never interacts with the chain directly.
  *
  * Domain: { name: "AxonVault", version: "1", chainId, verifyingContract: vaultAddress }
  * TypeHash: keccak256("PaymentIntent(address bot,address to,address token,uint256 amount,uint256 deadline,bytes32 ref)")
@@ -134,6 +133,111 @@ export interface PayInput {
    * If set, `memo` is ignored for ref generation but still stored off-chain.
    */
   ref?: Hex;
+}
+
+/**
+ * Signed execute intent for DeFi protocol interactions.
+ *
+ * The bot signs this struct using EIP-712. The relayer submits it to
+ * executeProtocol() on-chain. The contract approves `token` to `protocol`,
+ * calls it with `callData`, then revokes the approval.
+ *
+ * TypeHash: keccak256("ExecuteIntent(address bot,address protocol,bytes32 calldataHash,address token,uint256 amount,uint256 deadline,bytes32 ref)")
+ */
+export interface ExecuteIntent {
+  /** Bot's own address. Must be registered in the vault. */
+  bot: Address;
+  /** Target DeFi protocol contract address. Must be in vault's approvedProtocols. */
+  protocol: Address;
+  /** keccak256 of the callData bytes. Verified by relayer before submission. */
+  calldataHash: Hex;
+  /** Token to approve to the protocol before calling. */
+  token: Address;
+  /** Amount to approve (in token base units). */
+  amount: bigint;
+  /** Unix timestamp after which this intent is invalid. */
+  deadline: bigint;
+  /** keccak256 of the off-chain memo. Full memo text stored by relayer. */
+  ref: Hex;
+}
+
+/**
+ * Signed swap intent for in-vault token rebalancing.
+ *
+ * The bot signs this struct using EIP-712. The relayer submits it to
+ * executeSwap() on-chain. Tokens stay in the vault (no recipient).
+ *
+ * TypeHash: keccak256("SwapIntent(address bot,address toToken,uint256 minToAmount,uint256 deadline,bytes32 ref)")
+ */
+export interface SwapIntent {
+  /** Bot's own address. Must be registered in the vault. */
+  bot: Address;
+  /** Desired output token. */
+  toToken: Address;
+  /** Minimum output amount (slippage floor). */
+  minToAmount: bigint;
+  /** Unix timestamp after which this intent is invalid. */
+  deadline: bigint;
+  /** keccak256 of the off-chain memo. Full memo text stored by relayer. */
+  ref: Hex;
+}
+
+/**
+ * Input for AxonClient.execute(). Signs an ExecuteIntent and submits to
+ * the relayer's POST /v1/execute endpoint.
+ */
+export interface ExecuteInput {
+  /** Target protocol contract address. */
+  protocol: Address;
+  /** The actual calldata bytes to send to the protocol. */
+  callData: Hex;
+  /** Token to approve to the protocol. */
+  token: Address;
+  /** Amount to approve (in token base units). */
+  amount: bigint;
+
+  /** Human-readable description. Gets keccak256-hashed to ref. */
+  memo?: string;
+  /** Override ref bytes32 directly. */
+  ref?: Hex;
+  /** Idempotency key (auto-generated if omitted). */
+  idempotencyKey?: string;
+  /** Intent expiry (defaults to 5 min). */
+  deadline?: bigint;
+  /** Arbitrary metadata stored off-chain. */
+  metadata?: Record<string, string>;
+
+  // Pre-swap fields (if vault doesn't hold the required token)
+  /** Source token for pre-swap (relayer resolves automatically if omitted). */
+  fromToken?: Address;
+  /** Max input for pre-swap. */
+  maxFromAmount?: bigint;
+}
+
+/**
+ * Input for AxonClient.swap(). Signs a SwapIntent and submits to
+ * the relayer's POST /v1/swap endpoint.
+ */
+export interface SwapInput {
+  /** Desired output token. */
+  toToken: Address;
+  /** Minimum output amount (slippage floor). */
+  minToAmount: bigint;
+
+  /** Human-readable description. Gets keccak256-hashed to ref. */
+  memo?: string;
+  /** Override ref bytes32 directly. */
+  ref?: Hex;
+  /** Idempotency key (auto-generated if omitted). */
+  idempotencyKey?: string;
+  /** Intent expiry (defaults to 5 min). */
+  deadline?: bigint;
+
+  // Swap source (relayer resolves if omitted)
+  /** Source token to swap from. */
+  fromToken?: Address;
+  /** Max input amount for swap. */
+  maxFromAmount?: bigint;
 }
 
 /** Possible statuses returned by the relayer. */

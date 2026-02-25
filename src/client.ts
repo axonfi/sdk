@@ -1,8 +1,20 @@
+import { erc20Abi } from 'viem';
 import type { PublicClient, WalletClient, Address, Hex } from 'viem';
-import type { AxonClientConfig, BotConfig, PayInput, PaymentIntent, PaymentResult } from './types.js';
-import { signPayment, encodeRef } from './signer.js';
+import type {
+  AxonClientConfig,
+  BotConfig,
+  PayInput,
+  PaymentIntent,
+  PaymentResult,
+  ExecuteInput,
+  ExecuteIntent,
+  SwapInput,
+  SwapIntent,
+} from './types.js';
+import { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
 import { getBotConfig, createAxonPublicClient, createAxonWalletClient } from './vault.js';
 import { DEFAULT_DEADLINE_SECONDS, RELAYER_API } from './constants.js';
+import { keccak256 } from 'viem';
 
 // ============================================================================
 // AxonClient
@@ -75,21 +87,62 @@ export class AxonClient {
   /**
    * Create, sign, and submit a payment intent to the Axon relayer.
    *
-   * The SDK:
-   * 1. Builds the PaymentIntent struct (filling in bot address, deadline, ref)
-   * 2. Signs it with EIP-712 (bot private key)
-   * 3. POSTs to POST /v1/payments on the relayer
-   * 4. Returns the relayer's response
-   *
    * Three possible outcomes (all included in PaymentResult.status):
    * - `"approved"`: fast path — txHash available immediately
    * - `"pending_review"`: AI scan or human review in progress — poll or await webhook
    * - `"rejected"`: payment was rejected — reason field explains why
    */
   async pay(input: PayInput): Promise<PaymentResult> {
-    const intent = this._buildIntent(input);
+    const intent = this._buildPaymentIntent(input);
     const signature = await signPayment(this.walletClient, this.vaultAddress, this.chainId, intent);
-    return this._submitToRelayer(intent, signature, input);
+    return this._submitPayment(intent, signature, input);
+  }
+
+  // ============================================================================
+  // execute()
+  // ============================================================================
+
+  /**
+   * Sign and submit a DeFi protocol execution to the Axon relayer.
+   *
+   * The vault approves `token` to `protocol`, calls it with `callData`,
+   * then revokes the approval. Tokens stay in the vault or go to the protocol
+   * as specified by the calldata.
+   */
+  async execute(input: ExecuteInput): Promise<PaymentResult> {
+    const intent = this._buildExecuteIntent(input);
+    const signature = await signExecuteIntent(this.walletClient, this.vaultAddress, this.chainId, intent);
+    return this._submitExecute(intent, signature, input);
+  }
+
+  // ============================================================================
+  // swap()
+  // ============================================================================
+
+  /**
+   * Sign and submit an in-vault token swap to the Axon relayer.
+   *
+   * Swaps tokens within the vault (no external recipient). Useful for
+   * rebalancing vault holdings.
+   */
+  async swap(input: SwapInput): Promise<PaymentResult> {
+    const intent = this._buildSwapIntent(input);
+    const signature = await signSwapIntent(this.walletClient, this.vaultAddress, this.chainId, intent);
+    return this._submitSwap(intent, signature, input);
+  }
+
+  // ============================================================================
+  // getBalance()
+  // ============================================================================
+
+  /** Read the vault's ERC-20 balance for a given token (on-chain read). */
+  async getBalance(token: Address): Promise<bigint> {
+    return this.publicClient.readContract({
+      address: token,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
+      args: [this.vaultAddress],
+    });
   }
 
   // ============================================================================
@@ -150,50 +203,67 @@ export class AxonClient {
   // Internal helpers
   // ============================================================================
 
-  private _buildIntent(input: PayInput): PaymentIntent {
-    const deadline = input.deadline ?? BigInt(Math.floor(Date.now() / 1000) + DEFAULT_DEADLINE_SECONDS);
+  private _defaultDeadline(): bigint {
+    return BigInt(Math.floor(Date.now() / 1000) + DEFAULT_DEADLINE_SECONDS);
+  }
 
-    let ref: Hex;
-    if (input.ref) {
-      ref = input.ref;
-    } else if (input.memo) {
-      ref = encodeRef(input.memo);
-    } else {
-      ref = '0x0000000000000000000000000000000000000000000000000000000000000000';
-    }
+  private _resolveRef(memo?: string, ref?: Hex): Hex {
+    if (ref) return ref;
+    if (memo) return encodeRef(memo);
+    return '0x0000000000000000000000000000000000000000000000000000000000000000';
+  }
 
+  private _buildPaymentIntent(input: PayInput): PaymentIntent {
     return {
       bot: this.botAddress,
       to: input.to,
       token: input.token,
       amount: input.amount,
-      deadline,
-      ref,
+      deadline: input.deadline ?? this._defaultDeadline(),
+      ref: this._resolveRef(input.memo, input.ref),
     };
   }
 
-  private async _submitToRelayer(intent: PaymentIntent, signature: Hex, input: PayInput): Promise<PaymentResult> {
-    const url = `${this.relayerUrl}${RELAYER_API.PAYMENTS}`;
+  private _buildExecuteIntent(input: ExecuteInput): ExecuteIntent {
+    return {
+      bot: this.botAddress,
+      protocol: input.protocol,
+      calldataHash: keccak256(input.callData),
+      token: input.token,
+      amount: input.amount,
+      deadline: input.deadline ?? this._defaultDeadline(),
+      ref: this._resolveRef(input.memo, input.ref),
+    };
+  }
 
+  private _buildSwapIntent(input: SwapInput): SwapIntent {
+    return {
+      bot: this.botAddress,
+      toToken: input.toToken,
+      minToAmount: input.minToAmount,
+      deadline: input.deadline ?? this._defaultDeadline(),
+      ref: this._resolveRef(input.memo, input.ref),
+    };
+  }
+
+  private async _submitPayment(intent: PaymentIntent, signature: Hex, input: PayInput): Promise<PaymentResult> {
     const idempotencyKey = input.idempotencyKey ?? generateUuid();
 
     const body = {
-      // Routing — tells relayer which chain and vault to use
+      // Routing
       chainId: this.chainId,
       vaultAddress: this.vaultAddress,
 
-      // Signed intent
-      intent: {
-        bot: intent.bot,
-        to: intent.to,
-        token: intent.token,
-        amount: intent.amount.toString(), // JSON can't handle bigint
-        deadline: intent.deadline.toString(),
-        ref: intent.ref,
-      },
+      // Flat intent fields (matches relayer DTO)
+      bot: intent.bot,
+      to: intent.to,
+      token: intent.token,
+      amount: intent.amount.toString(),
+      deadline: intent.deadline.toString(),
+      ref: intent.ref,
       signature,
 
-      // Off-chain metadata (not signed, stored in relayer PostgreSQL)
+      // Off-chain metadata
       idempotencyKey,
       ...(input.memo !== undefined && { memo: input.memo }),
       ...(input.resourceUrl !== undefined && { resourceUrl: input.resourceUrl }),
@@ -201,6 +271,72 @@ export class AxonClient {
       ...(input.orderId !== undefined && { orderId: input.orderId }),
       ...(input.metadata !== undefined && { metadata: input.metadata }),
     };
+
+    return this._post(RELAYER_API.PAYMENTS, idempotencyKey, body);
+  }
+
+  private async _submitExecute(intent: ExecuteIntent, signature: Hex, input: ExecuteInput): Promise<PaymentResult> {
+    const idempotencyKey = input.idempotencyKey ?? generateUuid();
+
+    const body = {
+      chainId: this.chainId,
+      vaultAddress: this.vaultAddress,
+
+      // Flat intent fields
+      bot: intent.bot,
+      protocol: intent.protocol,
+      calldataHash: intent.calldataHash,
+      token: intent.token,
+      amount: intent.amount.toString(),
+      deadline: intent.deadline.toString(),
+      ref: intent.ref,
+      signature,
+
+      // Protocol calldata
+      callData: input.callData,
+
+      // Optional pre-swap
+      ...(input.fromToken !== undefined && { fromToken: input.fromToken }),
+      ...(input.maxFromAmount !== undefined && { maxFromAmount: input.maxFromAmount.toString() }),
+
+      // Off-chain metadata
+      idempotencyKey,
+      ...(input.memo !== undefined && { memo: input.memo }),
+      ...(input.metadata !== undefined && { metadata: input.metadata }),
+    };
+
+    return this._post(RELAYER_API.EXECUTE, idempotencyKey, body);
+  }
+
+  private async _submitSwap(intent: SwapIntent, signature: Hex, input: SwapInput): Promise<PaymentResult> {
+    const idempotencyKey = input.idempotencyKey ?? generateUuid();
+
+    const body = {
+      chainId: this.chainId,
+      vaultAddress: this.vaultAddress,
+
+      // Flat intent fields
+      bot: intent.bot,
+      toToken: intent.toToken,
+      minToAmount: intent.minToAmount.toString(),
+      deadline: intent.deadline.toString(),
+      ref: intent.ref,
+      signature,
+
+      // Optional source token
+      ...(input.fromToken !== undefined && { fromToken: input.fromToken }),
+      ...(input.maxFromAmount !== undefined && { maxFromAmount: input.maxFromAmount.toString() }),
+
+      // Off-chain metadata
+      idempotencyKey,
+      ...(input.memo !== undefined && { memo: input.memo }),
+    };
+
+    return this._post(RELAYER_API.SWAP, idempotencyKey, body);
+  }
+
+  private async _post(path: string, idempotencyKey: string, body: Record<string, unknown>): Promise<PaymentResult> {
+    const url = `${this.relayerUrl}${path}`;
 
     const response = await fetch(url, {
       method: 'POST',
