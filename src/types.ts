@@ -118,6 +118,12 @@ export interface PayInput {
   /** Your external order ID. Stored off-chain for reconciliation. */
   orderId?: string;
 
+  /**
+   * Human-readable name for the recipient. Displayed on dashboards instead of
+   * the raw address. Example: "Weather Bot", "Alice", "OpenAI API".
+   */
+  recipientLabel?: string;
+
   /** Arbitrary key-value metadata. Stored off-chain. Values must be strings. */
   metadata?: Record<string, string>;
 
@@ -198,6 +204,11 @@ export interface ExecuteInput {
 
   /** Human-readable description. Gets keccak256-hashed to ref. */
   memo?: string;
+  /**
+   * Human-readable name for the protocol interaction. Displayed on dashboards
+   * instead of the raw contract address. Example: "Uniswap Swap", "Aave Borrow".
+   */
+  protocolName?: string;
   /** Override ref bytes32 directly. */
   ref?: Hex;
   /** Idempotency key (auto-generated if omitted). */

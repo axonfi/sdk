@@ -269,6 +269,7 @@ export class AxonClient {
       ...(input.resourceUrl !== undefined && { resourceUrl: input.resourceUrl }),
       ...(input.invoiceId !== undefined && { invoiceId: input.invoiceId }),
       ...(input.orderId !== undefined && { orderId: input.orderId }),
+      ...(input.recipientLabel !== undefined && { recipientLabel: input.recipientLabel }),
       ...(input.metadata !== undefined && { metadata: input.metadata }),
     };
 
@@ -302,6 +303,7 @@ export class AxonClient {
       // Off-chain metadata
       idempotencyKey,
       ...(input.memo !== undefined && { memo: input.memo }),
+      ...(input.protocolName !== undefined && { protocolName: input.protocolName }),
       ...(input.metadata !== undefined && { metadata: input.metadata }),
     };
 
