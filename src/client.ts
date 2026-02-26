@@ -2,7 +2,6 @@ import { erc20Abi } from 'viem';
 import type { PublicClient, WalletClient, Address, Hex } from 'viem';
 import type {
   AxonClientConfig,
-  BotConfig,
   PayInput,
   PaymentIntent,
   PaymentResult,
@@ -15,7 +14,6 @@ import type {
 } from './types.js';
 import { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
 import {
-  getBotConfig,
   isBotActive,
   isVaultPaused,
   getVaultOwner,
@@ -157,18 +155,6 @@ export class AxonClient {
       functionName: 'balanceOf',
       args: [this.vaultAddress],
     });
-  }
-
-  // ============================================================================
-  // getBotConfig()
-  // ============================================================================
-
-  /**
-   * Read this bot's current configuration from the vault on-chain.
-   * Returns the full BotConfig including spending limits and AI thresholds.
-   */
-  async getBotConfig(): Promise<BotConfig> {
-    return getBotConfig(this.publicClient, this.vaultAddress, this.botAddress);
   }
 
   // ============================================================================
