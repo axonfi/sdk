@@ -4,7 +4,7 @@ import { base, baseSepolia, arbitrum, arbitrumSepolia } from 'viem/chains';
 import type { PublicClient, WalletClient, Address, Hex, Chain } from 'viem';
 import { AxonVaultAbi } from './abis/AxonVault.js';
 import { AxonVaultFactoryAbi } from './abis/AxonVaultFactory.js';
-import type { BotConfig, OperatorCeilings } from './types.js';
+import type { BotConfig, OperatorCeilings, VaultInfo, DestinationCheckResult } from './types.js';
 
 // ============================================================================
 // Chain helpers
@@ -163,6 +163,99 @@ export async function getVaultVersion(publicClient: PublicClient, vaultAddress: 
     functionName: 'VERSION',
   });
   return Number(version);
+}
+
+/** Returns the vault owner address. */
+export async function getVaultOwner(publicClient: PublicClient, vaultAddress: Address): Promise<Address> {
+  return publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'owner',
+  });
+}
+
+/** Returns the vault operator address (address(0) if no operator set). */
+export async function getVaultOperator(publicClient: PublicClient, vaultAddress: Address): Promise<Address> {
+  return publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'operator',
+  });
+}
+
+/** Returns whether the vault tracks used intent hashes on-chain. */
+export async function getTrackUsedIntents(publicClient: PublicClient, vaultAddress: Address): Promise<boolean> {
+  return publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'trackUsedIntents',
+  });
+}
+
+/**
+ * Check whether a destination address is allowed for a given bot.
+ *
+ * Logic mirrors the on-chain enforcement order:
+ * 1. If destination is on the global blacklist → blocked
+ * 2. If global whitelist is non-empty → destination must be on it
+ * 3. If bot-specific whitelist is non-empty → destination must be on it
+ * 4. Otherwise → allowed
+ */
+export async function isDestinationAllowed(
+  publicClient: PublicClient,
+  vaultAddress: Address,
+  botAddress: Address,
+  destination: Address,
+): Promise<DestinationCheckResult> {
+  // Step 1: Check global blacklist
+  const isBlacklisted = await publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'globalDestinationBlacklist',
+    args: [destination],
+  });
+  if (isBlacklisted) {
+    return { allowed: false, reason: 'Destination is on the global blacklist' };
+  }
+
+  // Step 2: Check global whitelist (if non-empty, destination must be on it)
+  const globalCount = await publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'globalDestinationCount',
+  });
+  if (globalCount > 0n) {
+    const isGlobalWhitelisted = await publicClient.readContract({
+      address: vaultAddress,
+      abi: AxonVaultAbi,
+      functionName: 'globalDestinationWhitelist',
+      args: [destination],
+    });
+    if (!isGlobalWhitelisted) {
+      return { allowed: false, reason: 'Destination is not on the global whitelist' };
+    }
+  }
+
+  // Step 3: Check bot-specific whitelist (if non-empty, destination must be on it)
+  const botCount = await publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'botDestinationCount',
+    args: [botAddress],
+  });
+  if (botCount > 0n) {
+    const isBotWhitelisted = await publicClient.readContract({
+      address: vaultAddress,
+      abi: AxonVaultAbi,
+      functionName: 'botDestinationWhitelist',
+      args: [botAddress, destination],
+    });
+    if (!isBotWhitelisted) {
+      return { allowed: false, reason: 'Destination is not on the bot whitelist' };
+    }
+  }
+
+  return { allowed: true };
 }
 
 // ============================================================================

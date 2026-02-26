@@ -271,6 +271,21 @@ export interface PaymentResult {
   reason?: string;
 }
 
+/** High-level vault info returned by AxonClient.getVaultInfo(). */
+export interface VaultInfo {
+  owner: Address;
+  operator: Address;
+  paused: boolean;
+  version: number;
+  trackUsedIntents: boolean;
+}
+
+/** Result of a destination check (canPayTo / isDestinationAllowed). */
+export interface DestinationCheckResult {
+  allowed: boolean;
+  reason?: string;
+}
+
 /** Configuration for AxonClient. */
 export interface AxonClientConfig {
   /** Vault contract address to sign against. */

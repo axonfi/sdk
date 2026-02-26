@@ -10,9 +10,23 @@ import type {
   ExecuteIntent,
   SwapInput,
   SwapIntent,
+  VaultInfo,
+  DestinationCheckResult,
 } from './types.js';
 import { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
-import { getBotConfig, createAxonPublicClient, createAxonWalletClient } from './vault.js';
+import {
+  getBotConfig,
+  isBotActive,
+  isVaultPaused,
+  getVaultOwner,
+  getVaultOperator,
+  getVaultVersion,
+  getTrackUsedIntents,
+  isDestinationAllowed,
+  createAxonPublicClient,
+  createAxonWalletClient,
+} from './vault.js';
+import { AxonVaultAbi } from './abis/AxonVault.js';
 import { DEFAULT_DEADLINE_SECONDS, RELAYER_API } from './constants.js';
 import { keccak256 } from 'viem';
 
@@ -158,7 +172,93 @@ export class AxonClient {
   }
 
   // ============================================================================
-  // poll()
+  // isActive()
+  // ============================================================================
+
+  /** Returns whether this bot is registered and active in the vault. */
+  async isActive(): Promise<boolean> {
+    return isBotActive(this.publicClient, this.vaultAddress, this.botAddress);
+  }
+
+  // ============================================================================
+  // isPaused()
+  // ============================================================================
+
+  /** Returns whether the vault is currently paused. */
+  async isPaused(): Promise<boolean> {
+    return isVaultPaused(this.publicClient, this.vaultAddress);
+  }
+
+  // ============================================================================
+  // getVaultInfo()
+  // ============================================================================
+
+  /** Returns high-level vault info (owner, operator, paused, version, trackUsedIntents). */
+  async getVaultInfo(): Promise<VaultInfo> {
+    const [owner, operator, paused, version, trackUsedIntents] = await Promise.all([
+      getVaultOwner(this.publicClient, this.vaultAddress),
+      getVaultOperator(this.publicClient, this.vaultAddress),
+      isVaultPaused(this.publicClient, this.vaultAddress),
+      getVaultVersion(this.publicClient, this.vaultAddress),
+      getTrackUsedIntents(this.publicClient, this.vaultAddress),
+    ]);
+    return { owner, operator, paused, version, trackUsedIntents };
+  }
+
+  // ============================================================================
+  // canPayTo()
+  // ============================================================================
+
+  /**
+   * Check whether this bot can pay to a given destination address.
+   * Checks blacklist → global whitelist → bot whitelist, matching on-chain logic.
+   */
+  async canPayTo(destination: Address): Promise<DestinationCheckResult> {
+    return isDestinationAllowed(this.publicClient, this.vaultAddress, this.botAddress, destination);
+  }
+
+  // ============================================================================
+  // isProtocolApproved()
+  // ============================================================================
+
+  /** Returns whether a protocol address is approved for executeProtocol() calls. */
+  async isProtocolApproved(protocol: Address): Promise<boolean> {
+    return this.publicClient.readContract({
+      address: this.vaultAddress,
+      abi: AxonVaultAbi,
+      functionName: 'isProtocolApproved',
+      args: [protocol],
+    });
+  }
+
+  // ============================================================================
+  // getBalances()
+  // ============================================================================
+
+  /**
+   * Read the vault's ERC-20 balances for multiple tokens in a single multicall.
+   * Returns a record mapping token address → balance.
+   */
+  async getBalances(tokens: Address[]): Promise<Record<Address, bigint>> {
+    const results = await this.publicClient.multicall({
+      contracts: tokens.map((token) => ({
+        address: token,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [this.vaultAddress],
+      })),
+    });
+
+    const balances: Record<Address, bigint> = {};
+    for (let i = 0; i < tokens.length; i++) {
+      const result = results[i];
+      balances[tokens[i]!] = result?.status === 'success' ? (result.result as bigint) : 0n;
+    }
+    return balances;
+  }
+
+  // ============================================================================
+  // poll() / pollExecute() / pollSwap()
   // ============================================================================
 
   /**
@@ -171,18 +271,17 @@ export class AxonClient {
    * Recommended polling interval: 5–10 seconds.
    */
   async poll(requestId: string): Promise<PaymentResult> {
-    const url = `${this.relayerUrl}${RELAYER_API.payment(requestId)}`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return this._poll(RELAYER_API.payment(requestId));
+  }
 
-    if (!response.ok) {
-      const body = await response.text();
-      throw new Error(`Relayer poll failed [${response.status}]: ${body}`);
-    }
+  /** Poll the relayer for the status of an async protocol execution. */
+  async pollExecute(requestId: string): Promise<PaymentResult> {
+    return this._poll(RELAYER_API.execute(requestId));
+  }
 
-    return response.json() as Promise<PaymentResult>;
+  /** Poll the relayer for the status of an async swap. */
+  async pollSwap(requestId: string): Promise<PaymentResult> {
+    return this._poll(RELAYER_API.swap(requestId));
   }
 
   // ============================================================================
@@ -202,6 +301,21 @@ export class AxonClient {
   // ============================================================================
   // Internal helpers
   // ============================================================================
+
+  private async _poll(path: string): Promise<PaymentResult> {
+    const url = `${this.relayerUrl}${path}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Relayer poll failed [${response.status}]: ${body}`);
+    }
+
+    return response.json() as Promise<PaymentResult>;
+  }
 
   private _defaultDeadline(): bigint {
     return BigInt(Math.floor(Date.now() / 1000) + DEFAULT_DEADLINE_SECONDS);

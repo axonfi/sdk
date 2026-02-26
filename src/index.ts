@@ -20,6 +20,8 @@ export type {
   PaymentResult,
   PaymentStatus,
   AxonClientConfig,
+  VaultInfo,
+  DestinationCheckResult,
 } from './types.js';
 
 // Constants
@@ -51,6 +53,10 @@ export {
   isVaultPaused,
   getDomainSeparator,
   getVaultVersion,
+  getVaultOwner,
+  getVaultOperator,
+  getTrackUsedIntents,
+  isDestinationAllowed,
   deployVault,
   createAxonPublicClient,
   createAxonWalletClient,
