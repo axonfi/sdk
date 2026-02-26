@@ -18,7 +18,7 @@ jest.unstable_mockModule('./vault.js', () => ({
     account: { address: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266' },
     signTypedData: mockSignTypedData,
   })),
-  getBotConfig: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
+  getBotConfig: jest.fn<(...args: unknown[]) => Promise<unknown>>(), // kept in mock for vault.ts internal use
   isBotActive: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
   isVaultPaused: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
   getVaultOwner: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
@@ -93,10 +93,7 @@ describe('AxonClient constructor', () => {
     // Verify by calling poll and checking the URL
     mockFetchOk({ requestId: 'r1', status: 'approved' });
     client.poll('r1');
-    expect(fetchMock).toHaveBeenCalledWith(
-      expect.not.stringContaining('//v1'),
-      expect.anything(),
-    );
+    expect(fetchMock).toHaveBeenCalledWith(expect.not.stringContaining('//v1'), expect.anything());
   });
 
   it('throws if botPrivateKey is missing', () => {
@@ -239,33 +236,6 @@ describe('getBalance()', () => {
         functionName: 'balanceOf',
         args: [VAULT_ADDR],
       }),
-    );
-  });
-});
-
-// ---------------------------------------------------------------------------
-// getBotConfig()
-// ---------------------------------------------------------------------------
-
-describe('getBotConfig()', () => {
-  it('delegates to the vault helper with correct args', async () => {
-    const client = makeClient();
-    const mockConfig = {
-      isActive: true,
-      registeredAt: 0n,
-      maxPerTxAmount: 0n,
-      spendingLimits: [],
-      aiTriggerThreshold: 0n,
-      requireAiVerification: false,
-    };
-    (vaultMod.getBotConfig as jest.Mock<any>).mockResolvedValueOnce(mockConfig);
-
-    const config = await client.getBotConfig();
-    expect(config.isActive).toBe(true);
-    expect(vaultMod.getBotConfig).toHaveBeenCalledWith(
-      expect.anything(),
-      VAULT_ADDR,
-      '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
     );
   });
 });
