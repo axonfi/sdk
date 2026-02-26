@@ -1,293 +1,293 @@
 export const AxonRegistryAbi = [
   {
-    type: 'constructor',
-    inputs: [
+    "type": "constructor",
+    "inputs": [
       {
-        name: 'initialOwner',
-        type: 'address',
-        internalType: 'address',
-      },
+        "name": "initialOwner",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    stateMutability: 'nonpayable',
+    "stateMutability": "nonpayable"
   },
   {
-    type: 'function',
-    name: 'acceptOwnership',
-    inputs: [],
-    outputs: [],
-    stateMutability: 'nonpayable',
+    "type": "function",
+    "name": "acceptOwnership",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
-    type: 'function',
-    name: 'addRelayer',
-    inputs: [
+    "type": "function",
+    "name": "addRelayer",
+    "inputs": [
       {
-        name: 'relayer',
-        type: 'address',
-        internalType: 'address',
-      },
+        "name": "relayer",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    outputs: [],
-    stateMutability: 'nonpayable',
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
-    type: 'function',
-    name: 'addSwapRouter',
-    inputs: [
+    "type": "function",
+    "name": "addSwapRouter",
+    "inputs": [
       {
-        name: 'router',
-        type: 'address',
-        internalType: 'address',
-      },
+        "name": "router",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    outputs: [],
-    stateMutability: 'nonpayable',
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
-    type: 'function',
-    name: 'isApprovedSwapRouter',
-    inputs: [
+    "type": "function",
+    "name": "isApprovedSwapRouter",
+    "inputs": [
       {
-        name: 'router',
-        type: 'address',
-        internalType: 'address',
-      },
+        "name": "router",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    outputs: [
+    "outputs": [
       {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
     ],
-    stateMutability: 'view',
+    "stateMutability": "view"
   },
   {
-    type: 'function',
-    name: 'isAuthorized',
-    inputs: [
+    "type": "function",
+    "name": "isAuthorized",
+    "inputs": [
       {
-        name: 'relayer',
-        type: 'address',
-        internalType: 'address',
-      },
+        "name": "relayer",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    outputs: [
+    "outputs": [
       {
-        name: '',
-        type: 'bool',
-        internalType: 'bool',
-      },
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
     ],
-    stateMutability: 'view',
+    "stateMutability": "view"
   },
   {
-    type: 'function',
-    name: 'owner',
-    inputs: [],
-    outputs: [
+    "type": "function",
+    "name": "owner",
+    "inputs": [],
+    "outputs": [
       {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    stateMutability: 'view',
+    "stateMutability": "view"
   },
   {
-    type: 'function',
-    name: 'pendingOwner',
-    inputs: [],
-    outputs: [
+    "type": "function",
+    "name": "pendingOwner",
+    "inputs": [],
+    "outputs": [
       {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    stateMutability: 'view',
+    "stateMutability": "view"
   },
   {
-    type: 'function',
-    name: 'removeRelayer',
-    inputs: [
+    "type": "function",
+    "name": "removeRelayer",
+    "inputs": [
       {
-        name: 'relayer',
-        type: 'address',
-        internalType: 'address',
-      },
+        "name": "relayer",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    outputs: [],
-    stateMutability: 'nonpayable',
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
-    type: 'function',
-    name: 'removeSwapRouter',
-    inputs: [
+    "type": "function",
+    "name": "removeSwapRouter",
+    "inputs": [
       {
-        name: 'router',
-        type: 'address',
-        internalType: 'address',
-      },
+        "name": "router",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    outputs: [],
-    stateMutability: 'nonpayable',
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
-    type: 'function',
-    name: 'renounceOwnership',
-    inputs: [],
-    outputs: [],
-    stateMutability: 'nonpayable',
+    "type": "function",
+    "name": "renounceOwnership",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
-    type: 'function',
-    name: 'transferOwnership',
-    inputs: [
+    "type": "function",
+    "name": "transferOwnership",
+    "inputs": [
       {
-        name: 'newOwner',
-        type: 'address',
-        internalType: 'address',
-      },
+        "name": "newOwner",
+        "type": "address",
+        "internalType": "address"
+      }
     ],
-    outputs: [],
-    stateMutability: 'nonpayable',
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
-    type: 'event',
-    name: 'OwnershipTransferStarted',
-    inputs: [
+    "type": "event",
+    "name": "OwnershipTransferStarted",
+    "inputs": [
       {
-        name: 'previousOwner',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
+        "name": "previousOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       },
       {
-        name: 'newOwner',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
+        "name": "newOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
     ],
-    anonymous: false,
+    "anonymous": false
   },
   {
-    type: 'event',
-    name: 'OwnershipTransferred',
-    inputs: [
+    "type": "event",
+    "name": "OwnershipTransferred",
+    "inputs": [
       {
-        name: 'previousOwner',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
+        "name": "previousOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
       },
       {
-        name: 'newOwner',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
+        "name": "newOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
     ],
-    anonymous: false,
+    "anonymous": false
   },
   {
-    type: 'event',
-    name: 'RelayerAdded',
-    inputs: [
+    "type": "event",
+    "name": "RelayerAdded",
+    "inputs": [
       {
-        name: 'relayer',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
+        "name": "relayer",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
     ],
-    anonymous: false,
+    "anonymous": false
   },
   {
-    type: 'event',
-    name: 'RelayerRemoved',
-    inputs: [
+    "type": "event",
+    "name": "RelayerRemoved",
+    "inputs": [
       {
-        name: 'relayer',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
+        "name": "relayer",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
     ],
-    anonymous: false,
+    "anonymous": false
   },
   {
-    type: 'event',
-    name: 'SwapRouterAdded',
-    inputs: [
+    "type": "event",
+    "name": "SwapRouterAdded",
+    "inputs": [
       {
-        name: 'router',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
+        "name": "router",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
     ],
-    anonymous: false,
+    "anonymous": false
   },
   {
-    type: 'event',
-    name: 'SwapRouterRemoved',
-    inputs: [
+    "type": "event",
+    "name": "SwapRouterRemoved",
+    "inputs": [
       {
-        name: 'router',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
+        "name": "router",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
     ],
-    anonymous: false,
+    "anonymous": false
   },
   {
-    type: 'error',
-    name: 'AlreadyApproved',
-    inputs: [],
+    "type": "error",
+    "name": "AlreadyApproved",
+    "inputs": []
   },
   {
-    type: 'error',
-    name: 'AlreadyAuthorized',
-    inputs: [],
+    "type": "error",
+    "name": "AlreadyAuthorized",
+    "inputs": []
   },
   {
-    type: 'error',
-    name: 'NotApproved',
-    inputs: [],
+    "type": "error",
+    "name": "NotApproved",
+    "inputs": []
   },
   {
-    type: 'error',
-    name: 'NotAuthorized',
-    inputs: [],
+    "type": "error",
+    "name": "NotAuthorized",
+    "inputs": []
   },
   {
-    type: 'error',
-    name: 'OwnableInvalidOwner',
-    inputs: [
+    "type": "error",
+    "name": "OwnableInvalidOwner",
+    "inputs": [
       {
-        name: 'owner',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
+        "name": "owner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
   },
   {
-    type: 'error',
-    name: 'OwnableUnauthorizedAccount',
-    inputs: [
+    "type": "error",
+    "name": "OwnableUnauthorizedAccount",
+    "inputs": [
       {
-        name: 'account',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
   },
   {
-    type: 'error',
-    name: 'ZeroAddress',
-    inputs: [],
-  },
+    "type": "error",
+    "name": "ZeroAddress",
+    "inputs": []
+  }
 ] as const;
