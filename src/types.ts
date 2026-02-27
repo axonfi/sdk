@@ -303,7 +303,7 @@ export interface AxonClientConfig {
 
   /**
    * Relayer base URL. Required for pay() and poll().
-   * Example: "https://relay.axon.xyz"
+   * Example: "https://relay.axonfi.xyz"
    */
   relayerUrl: string;
 
