@@ -101,7 +101,7 @@ export class AxonClient {
    *
    * Three possible outcomes (all included in PaymentResult.status):
    * - `"approved"`: fast path — txHash available immediately
-   * - `"pending_review"`: AI scan or human review in progress — poll or await webhook
+   * - `"pending_review"`: AI scan or human review in progress — poll for status
    * - `"rejected"`: payment was rejected — reason field explains why
    */
   async pay(input: PayInput): Promise<PaymentResult> {
@@ -251,8 +251,7 @@ export class AxonClient {
    * Poll the relayer for the status of an async payment.
    *
    * Use this when pay() returns `status: "pending_review"`. Poll until
-   * status is `"approved"` or `"rejected"`. Alternatively, register a
-   * `webhookUrl` in pay() to receive push notification instead.
+   * status is `"approved"` or `"rejected"`.
    *
    * Recommended polling interval: 5–10 seconds.
    */

@@ -254,7 +254,7 @@ export interface SwapInput {
 /** Possible statuses returned by the relayer. */
 export type PaymentStatus =
   | 'approved' // Submitted on-chain. txHash available.
-  | 'pending_review' // Held for human or AI review. Poll or await webhook.
+  | 'pending_review' // Held for human or AI review. Poll for status.
   | 'rejected'; // Rejected. reason field explains why.
 
 /** Result of AxonClient.pay() or AxonClient.poll(). */
