@@ -66,6 +66,10 @@ export {
   getChain,
 } from './vault.js';
 
+// Keystore utilities
+export { encryptKeystore, decryptKeystore } from './keystore.js';
+export type { KeystoreV3 } from './keystore.js';
+
 // ABIs (useful for wagmi/viem integrations in frontends/dashboards)
 export { AxonVaultAbi } from './abis/AxonVault.js';
 export { AxonVaultFactoryAbi } from './abis/AxonVaultFactory.js';
