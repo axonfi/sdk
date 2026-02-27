@@ -47,7 +47,7 @@ import { keccak256 } from 'viem';
  *   vaultAddress: '0x...',
  *   chainId: 84532,           // Base Sepolia
  *   botPrivateKey: '0x...',
- *   relayerUrl: 'https://relay.axon.xyz',
+ *   relayerUrl: 'https://relay.axonfi.xyz',
  *   rpcUrl: 'https://sepolia.base.org',
  * })
  *
