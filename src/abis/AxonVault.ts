@@ -1804,6 +1804,11 @@ export const AxonVaultAbi = [
   },
   {
     "type": "error",
+    "name": "OwnerCannotBeBot",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "OwnableInvalidOwner",
     "inputs": [
       {
