@@ -5,32 +5,20 @@ import type { Address, Hex } from 'viem';
 // Mock modules — must be before imports that use them
 // ---------------------------------------------------------------------------
 
-const mockReadContract = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-const mockMulticall = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 const mockSignTypedData = jest.fn<(...args: unknown[]) => Promise<unknown>>();
 
 jest.unstable_mockModule('./vault.js', () => ({
-  createAxonPublicClient: jest.fn(() => ({
-    readContract: mockReadContract,
-    multicall: mockMulticall,
-  })),
   createAxonWalletClient: jest.fn(() => ({
     account: { address: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266' },
     signTypedData: mockSignTypedData,
   })),
-  getBotConfig: jest.fn<(...args: unknown[]) => Promise<unknown>>(), // kept in mock for vault.ts internal use
-  isBotActive: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-  isVaultPaused: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-  getVaultOwner: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-  getVaultOperator: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-  getVaultVersion: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-  getTrackUsedIntents: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-  isDestinationAllowed: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
+  // These are still exported from vault.ts for dashboards, but not used by AxonClient
+  createAxonPublicClient: jest.fn(),
+  getChain: jest.fn(),
 }));
 
 // Dynamic imports — must come after jest.unstable_mockModule
 const { AxonClient } = await import('./client.js');
-const vaultMod = await import('./vault.js');
 const { RELAYER_API } = await import('./constants.js');
 
 // ---------------------------------------------------------------------------
@@ -41,7 +29,6 @@ const VAULT_ADDR = '0x1111111111111111111111111111111111111111' as Address;
 const BOT_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as Hex;
 const CHAIN_ID = 84532;
 const RELAYER_URL = 'https://relay.example.com';
-const RPC_URL = 'https://rpc.example.com';
 
 function makeClient() {
   return new AxonClient({
@@ -49,7 +36,6 @@ function makeClient() {
     chainId: CHAIN_ID,
     botPrivateKey: BOT_KEY,
     relayerUrl: RELAYER_URL,
-    rpcUrl: RPC_URL,
   });
 }
 
@@ -88,7 +74,6 @@ describe('AxonClient constructor', () => {
       chainId: CHAIN_ID,
       botPrivateKey: BOT_KEY,
       relayerUrl: 'https://relay.example.com/',
-      rpcUrl: RPC_URL,
     });
     // Verify by calling poll and checking the URL
     mockFetchOk({ requestId: 'r1', status: 'approved' });
@@ -103,9 +88,12 @@ describe('AxonClient constructor', () => {
           vaultAddress: VAULT_ADDR,
           chainId: CHAIN_ID,
           relayerUrl: RELAYER_URL,
-          rpcUrl: RPC_URL,
         }),
     ).toThrow('botPrivateKey is required');
+  });
+
+  it('does not require rpcUrl', () => {
+    expect(() => makeClient()).not.toThrow();
   });
 });
 
@@ -220,152 +208,144 @@ describe('swap()', () => {
 });
 
 // ---------------------------------------------------------------------------
-// getBalance()
+// getBalance() — via relayer
 // ---------------------------------------------------------------------------
 
 describe('getBalance()', () => {
-  it('reads ERC-20 balanceOf from the vault', async () => {
+  it('fetches balance from relayer endpoint', async () => {
     const client = makeClient();
     const token = '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address;
-    mockReadContract.mockResolvedValueOnce(5_000_000n);
+    mockFetchOk({ balance: '5000000' });
 
     const balance = await client.getBalance(token);
     expect(balance).toBe(5_000_000n);
-    expect(mockReadContract).toHaveBeenCalledWith(
-      expect.objectContaining({
-        functionName: 'balanceOf',
-        args: [VAULT_ADDR],
-      }),
+
+    const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe(`${RELAYER_URL}/v1/vault/${VAULT_ADDR}/balance/${token}?chainId=${CHAIN_ID}`);
+  });
+
+  it('throws on relayer error', async () => {
+    const client = makeClient();
+    mockFetchFail(500, 'Internal Server Error');
+    await expect(client.getBalance('0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address)).rejects.toThrow(
+      'Relayer request failed [500]',
     );
   });
 });
 
 // ---------------------------------------------------------------------------
-// isActive()
-// ---------------------------------------------------------------------------
-
-describe('isActive()', () => {
-  it('delegates to isBotActive', async () => {
-    const client = makeClient();
-    (vaultMod.isBotActive as jest.Mock<any>).mockResolvedValueOnce(true);
-
-    expect(await client.isActive()).toBe(true);
-    expect(vaultMod.isBotActive).toHaveBeenCalledWith(
-      expect.anything(),
-      VAULT_ADDR,
-      '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
-    );
-  });
-});
-
-// ---------------------------------------------------------------------------
-// isPaused()
-// ---------------------------------------------------------------------------
-
-describe('isPaused()', () => {
-  it('delegates to isVaultPaused', async () => {
-    const client = makeClient();
-    (vaultMod.isVaultPaused as jest.Mock<any>).mockResolvedValueOnce(false);
-
-    expect(await client.isPaused()).toBe(false);
-    expect(vaultMod.isVaultPaused).toHaveBeenCalledWith(expect.anything(), VAULT_ADDR);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// getVaultInfo()
-// ---------------------------------------------------------------------------
-
-describe('getVaultInfo()', () => {
-  it('returns combined vault info from parallel reads', async () => {
-    const client = makeClient();
-    (vaultMod.getVaultOwner as jest.Mock<any>).mockResolvedValueOnce('0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
-    (vaultMod.getVaultOperator as jest.Mock<any>).mockResolvedValueOnce('0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB');
-    (vaultMod.isVaultPaused as jest.Mock<any>).mockResolvedValueOnce(false);
-    (vaultMod.getVaultVersion as jest.Mock<any>).mockResolvedValueOnce(1);
-    (vaultMod.getTrackUsedIntents as jest.Mock<any>).mockResolvedValueOnce(true);
-
-    const info = await client.getVaultInfo();
-
-    expect(info.owner).toBe('0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
-    expect(info.operator).toBe('0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB');
-    expect(info.paused).toBe(false);
-    expect(info.version).toBe(1);
-    expect(info.trackUsedIntents).toBe(true);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// canPayTo()
-// ---------------------------------------------------------------------------
-
-describe('canPayTo()', () => {
-  it('delegates to isDestinationAllowed', async () => {
-    const client = makeClient();
-    const dest = '0x000000000000000000000000000000000000dead' as Address;
-    (vaultMod.isDestinationAllowed as jest.Mock<any>).mockResolvedValueOnce({ allowed: true });
-
-    const result = await client.canPayTo(dest);
-    expect(result.allowed).toBe(true);
-    expect(vaultMod.isDestinationAllowed).toHaveBeenCalledWith(
-      expect.anything(),
-      VAULT_ADDR,
-      '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
-      dest,
-    );
-  });
-});
-
-// ---------------------------------------------------------------------------
-// isProtocolApproved()
-// ---------------------------------------------------------------------------
-
-describe('isProtocolApproved()', () => {
-  it('reads isProtocolApproved from the vault contract', async () => {
-    const client = makeClient();
-    const protocol = '0x000000000000000000000000000000000000beef' as Address;
-    mockReadContract.mockResolvedValueOnce(true);
-
-    expect(await client.isProtocolApproved(protocol)).toBe(true);
-    expect(mockReadContract).toHaveBeenCalledWith(
-      expect.objectContaining({
-        functionName: 'isProtocolApproved',
-        args: [protocol],
-      }),
-    );
-  });
-});
-
-// ---------------------------------------------------------------------------
-// getBalances()
+// getBalances() — via relayer
 // ---------------------------------------------------------------------------
 
 describe('getBalances()', () => {
-  it('uses multicall to read multiple token balances', async () => {
+  it('fetches multiple balances from relayer', async () => {
     const client = makeClient();
     const tokens = [
       '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address,
       '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' as Address,
     ];
-    mockMulticall.mockResolvedValueOnce([
-      { status: 'success', result: 5_000_000n },
-      { status: 'success', result: 10_000_000n },
-    ]);
+    mockFetchOk({ balances: { [tokens[0]!]: '5000000', [tokens[1]!]: '10000000' } });
 
     const balances = await client.getBalances(tokens);
-
     expect(balances[tokens[0]!]).toBe(5_000_000n);
     expect(balances[tokens[1]!]).toBe(10_000_000n);
-    expect(mockMulticall).toHaveBeenCalledTimes(1);
+
+    const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toContain(`/v1/vault/${VAULT_ADDR}/balances?chainId=${CHAIN_ID}&tokens=`);
   });
+});
 
-  it('returns 0n for failed multicall results', async () => {
+// ---------------------------------------------------------------------------
+// isActive() — via relayer
+// ---------------------------------------------------------------------------
+
+describe('isActive()', () => {
+  it('fetches bot status from relayer', async () => {
     const client = makeClient();
-    const tokens = ['0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address];
-    mockMulticall.mockResolvedValueOnce([{ status: 'failure', error: new Error('revert') }]);
+    mockFetchOk({ isActive: true });
 
-    const balances = await client.getBalances(tokens);
-    expect(balances[tokens[0]!]).toBe(0n);
+    expect(await client.isActive()).toBe(true);
+
+    const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe(
+      `${RELAYER_URL}/v1/vault/${VAULT_ADDR}/bot/0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266/status?chainId=${CHAIN_ID}`,
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isPaused() — via relayer
+// ---------------------------------------------------------------------------
+
+describe('isPaused()', () => {
+  it('fetches vault info from relayer and returns paused state', async () => {
+    const client = makeClient();
+    mockFetchOk({ owner: '0xAAA', operator: '0xBBB', paused: false, version: 1, trackUsedIntents: true });
+
+    expect(await client.isPaused()).toBe(false);
+
+    const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe(`${RELAYER_URL}/v1/vault/${VAULT_ADDR}/info?chainId=${CHAIN_ID}`);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getVaultInfo() — via relayer
+// ---------------------------------------------------------------------------
+
+describe('getVaultInfo()', () => {
+  it('returns combined vault info from relayer', async () => {
+    const client = makeClient();
+    const expected = {
+      owner: '0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      operator: '0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+      paused: false,
+      version: 1,
+      trackUsedIntents: true,
+    };
+    mockFetchOk(expected);
+
+    const info = await client.getVaultInfo();
+    expect(info.owner).toBe(expected.owner);
+    expect(info.paused).toBe(false);
+    expect(info.version).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// canPayTo() — via relayer
+// ---------------------------------------------------------------------------
+
+describe('canPayTo()', () => {
+  it('checks destination via relayer', async () => {
+    const client = makeClient();
+    const dest = '0x000000000000000000000000000000000000dead' as Address;
+    mockFetchOk({ allowed: true });
+
+    const result = await client.canPayTo(dest);
+    expect(result.allowed).toBe(true);
+
+    const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe(
+      `${RELAYER_URL}/v1/vault/${VAULT_ADDR}/bot/0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266/destination/${dest}?chainId=${CHAIN_ID}`,
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isProtocolApproved() — via relayer
+// ---------------------------------------------------------------------------
+
+describe('isProtocolApproved()', () => {
+  it('checks protocol via relayer', async () => {
+    const client = makeClient();
+    const protocol = '0x000000000000000000000000000000000000beef' as Address;
+    mockFetchOk({ approved: true });
+
+    expect(await client.isProtocolApproved(protocol)).toBe(true);
+
+    const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe(`${RELAYER_URL}/v1/vault/${VAULT_ADDR}/protocol/${protocol}?chainId=${CHAIN_ID}`);
   });
 });
 
@@ -388,7 +368,7 @@ describe('poll()', () => {
   it('throws on non-ok response', async () => {
     const client = makeClient();
     mockFetchFail(404, 'Not Found');
-    await expect(client.poll('bad-id')).rejects.toThrow('Relayer poll failed [404]');
+    await expect(client.poll('bad-id')).rejects.toThrow('Relayer request failed [404]');
   });
 });
 

@@ -36,13 +36,13 @@ export function createAxonPublicClient(chainId: number, rpcUrl: string): PublicC
   });
 }
 
-/** Create a viem WalletClient from a raw private key. */
-export function createAxonWalletClient(privateKey: Hex, chainId: number, rpcUrl: string): WalletClient {
+/** Create a viem WalletClient from a raw private key (signing-only, no RPC needed). */
+export function createAxonWalletClient(privateKey: Hex, chainId: number): WalletClient {
   const account = privateKeyToAccount(privateKey);
   return createWalletClient({
     account,
     chain: getChain(chainId),
-    transport: http(rpcUrl),
+    transport: http(), // signing is local — transport is unused but required by viem
   });
 }
 

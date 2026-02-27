@@ -1,5 +1,4 @@
-import { erc20Abi } from 'viem';
-import type { PublicClient, WalletClient, Address, Hex } from 'viem';
+import type { WalletClient, Address, Hex } from 'viem';
 import type {
   AxonClientConfig,
   PayInput,
@@ -13,18 +12,7 @@ import type {
   DestinationCheckResult,
 } from './types.js';
 import { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
-import {
-  isBotActive,
-  isVaultPaused,
-  getVaultOwner,
-  getVaultOperator,
-  getVaultVersion,
-  getTrackUsedIntents,
-  isDestinationAllowed,
-  createAxonPublicClient,
-  createAxonWalletClient,
-} from './vault.js';
-import { AxonVaultAbi } from './abis/AxonVault.js';
+import { createAxonWalletClient } from './vault.js';
 import { DEFAULT_DEADLINE_SECONDS, RELAYER_API } from './constants.js';
 import { generateUuid } from './utils.js';
 import { keccak256 } from 'viem';
@@ -36,9 +24,12 @@ import { keccak256 } from 'viem';
 /**
  * Main entry point for bots interacting with Axon.
  *
- * Handles EIP-712 signing, on-chain reads, and relayer API communication.
+ * Handles EIP-712 signing, relayer communication, and status polling.
  * Bots never submit transactions directly — they sign intents and the relayer
  * handles all on-chain execution.
+ *
+ * All chain reads (balances, bot status, vault info) go through the relayer
+ * API — bots never need an RPC endpoint.
  *
  * @example
  * ```ts
@@ -49,7 +40,6 @@ import { keccak256 } from 'viem';
  *   chainId: 84532,           // Base Sepolia
  *   botPrivateKey: '0x...',
  *   relayerUrl: 'https://relay.axonfi.xyz',
- *   rpcUrl: 'https://sepolia.base.org',
  * })
  *
  * const result = await client.pay({
@@ -66,7 +56,6 @@ export class AxonClient {
   private readonly vaultAddress: Address;
   private readonly chainId: number;
   private readonly relayerUrl: string;
-  private readonly publicClient: PublicClient;
   private readonly walletClient: WalletClient;
 
   constructor(config: AxonClientConfig) {
@@ -74,12 +63,10 @@ export class AxonClient {
     this.chainId = config.chainId;
     this.relayerUrl = config.relayerUrl.replace(/\/$/, ''); // strip trailing slash
 
-    this.publicClient = createAxonPublicClient(config.chainId, config.rpcUrl);
-
     if (!config.botPrivateKey) {
       throw new Error('botPrivateKey is required in AxonClientConfig');
     }
-    this.walletClient = createAxonWalletClient(config.botPrivateKey, config.chainId, config.rpcUrl);
+    this.walletClient = createAxonWalletClient(config.botPrivateKey, config.chainId);
   }
 
   // ============================================================================
@@ -145,103 +132,100 @@ export class AxonClient {
   }
 
   // ============================================================================
-  // getBalance()
+  // getBalance() — via relayer
   // ============================================================================
 
-  /** Read the vault's ERC-20 balance for a given token (on-chain read). */
+  /** Read the vault's ERC-20 balance for a given token (via relayer). */
   async getBalance(token: Address): Promise<bigint> {
-    return this.publicClient.readContract({
-      address: token,
-      abi: erc20Abi,
-      functionName: 'balanceOf',
-      args: [this.vaultAddress],
-    });
+    const path = RELAYER_API.vaultBalance(this.vaultAddress, token, this.chainId);
+    const data = await this._get(path);
+    return BigInt(data.balance);
   }
 
   // ============================================================================
-  // isActive()
-  // ============================================================================
-
-  /** Returns whether this bot is registered and active in the vault. */
-  async isActive(): Promise<boolean> {
-    return isBotActive(this.publicClient, this.vaultAddress, this.botAddress);
-  }
-
-  // ============================================================================
-  // isPaused()
-  // ============================================================================
-
-  /** Returns whether the vault is currently paused. */
-  async isPaused(): Promise<boolean> {
-    return isVaultPaused(this.publicClient, this.vaultAddress);
-  }
-
-  // ============================================================================
-  // getVaultInfo()
-  // ============================================================================
-
-  /** Returns high-level vault info (owner, operator, paused, version, trackUsedIntents). */
-  async getVaultInfo(): Promise<VaultInfo> {
-    const [owner, operator, paused, version, trackUsedIntents] = await Promise.all([
-      getVaultOwner(this.publicClient, this.vaultAddress),
-      getVaultOperator(this.publicClient, this.vaultAddress),
-      isVaultPaused(this.publicClient, this.vaultAddress),
-      getVaultVersion(this.publicClient, this.vaultAddress),
-      getTrackUsedIntents(this.publicClient, this.vaultAddress),
-    ]);
-    return { owner, operator, paused, version, trackUsedIntents };
-  }
-
-  // ============================================================================
-  // canPayTo()
+  // getBalances() — via relayer
   // ============================================================================
 
   /**
-   * Check whether this bot can pay to a given destination address.
-   * Checks blacklist → global whitelist → bot whitelist, matching on-chain logic.
-   */
-  async canPayTo(destination: Address): Promise<DestinationCheckResult> {
-    return isDestinationAllowed(this.publicClient, this.vaultAddress, this.botAddress, destination);
-  }
-
-  // ============================================================================
-  // isProtocolApproved()
-  // ============================================================================
-
-  /** Returns whether a protocol address is approved for executeProtocol() calls. */
-  async isProtocolApproved(protocol: Address): Promise<boolean> {
-    return this.publicClient.readContract({
-      address: this.vaultAddress,
-      abi: AxonVaultAbi,
-      functionName: 'isProtocolApproved',
-      args: [protocol],
-    });
-  }
-
-  // ============================================================================
-  // getBalances()
-  // ============================================================================
-
-  /**
-   * Read the vault's ERC-20 balances for multiple tokens in a single multicall.
+   * Read the vault's ERC-20 balances for multiple tokens in a single call (via relayer).
    * Returns a record mapping token address → balance.
    */
   async getBalances(tokens: Address[]): Promise<Record<Address, bigint>> {
-    const results = await this.publicClient.multicall({
-      contracts: tokens.map((token) => ({
-        address: token,
-        abi: erc20Abi,
-        functionName: 'balanceOf',
-        args: [this.vaultAddress],
-      })),
+    const path = RELAYER_API.vaultBalances(this.vaultAddress, this.chainId);
+    const url = `${this.relayerUrl}${path}?chainId=${this.chainId}&tokens=${tokens.join(',')}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
     });
 
-    const balances: Record<Address, bigint> = {};
-    for (let i = 0; i < tokens.length; i++) {
-      const result = results[i];
-      balances[tokens[i]!] = result?.status === 'success' ? (result.result as bigint) : 0n;
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Relayer request failed [${response.status}]: ${body}`);
     }
-    return balances;
+
+    const data = (await response.json()) as { balances: Record<string, string> };
+    const result: Record<Address, bigint> = {};
+    for (const [addr, val] of Object.entries(data.balances)) {
+      result[addr as Address] = BigInt(val);
+    }
+    return result;
+  }
+
+  // ============================================================================
+  // isActive() — via relayer
+  // ============================================================================
+
+  /** Returns whether this bot is registered and active in the vault (via relayer). */
+  async isActive(): Promise<boolean> {
+    const path = RELAYER_API.botStatus(this.vaultAddress, this.botAddress, this.chainId);
+    const data = await this._get(path);
+    return data.isActive;
+  }
+
+  // ============================================================================
+  // isPaused() — via relayer
+  // ============================================================================
+
+  /** Returns whether the vault is currently paused (via relayer). */
+  async isPaused(): Promise<boolean> {
+    const path = RELAYER_API.vaultInfo(this.vaultAddress, this.chainId);
+    const data = await this._get(path);
+    return data.paused;
+  }
+
+  // ============================================================================
+  // getVaultInfo() — via relayer
+  // ============================================================================
+
+  /** Returns high-level vault info (owner, operator, paused, version, trackUsedIntents) via relayer. */
+  async getVaultInfo(): Promise<VaultInfo> {
+    const path = RELAYER_API.vaultInfo(this.vaultAddress, this.chainId);
+    return this._get(path) as Promise<VaultInfo>;
+  }
+
+  // ============================================================================
+  // canPayTo() — via relayer
+  // ============================================================================
+
+  /**
+   * Check whether this bot can pay to a given destination address (via relayer).
+   * Checks blacklist → global whitelist → bot whitelist, matching on-chain logic.
+   */
+  async canPayTo(destination: Address): Promise<DestinationCheckResult> {
+    const path = RELAYER_API.destinationCheck(this.vaultAddress, this.botAddress, destination, this.chainId);
+    return this._get(path) as Promise<DestinationCheckResult>;
+  }
+
+  // ============================================================================
+  // isProtocolApproved() — via relayer
+  // ============================================================================
+
+  /** Returns whether a protocol address is approved for executeProtocol() calls (via relayer). */
+  async isProtocolApproved(protocol: Address): Promise<boolean> {
+    const path = RELAYER_API.protocolCheck(this.vaultAddress, protocol, this.chainId);
+    const data = await this._get(path);
+    return data.approved;
   }
 
   // ============================================================================
@@ -257,17 +241,17 @@ export class AxonClient {
    * Recommended polling interval: 5–10 seconds.
    */
   async poll(requestId: string): Promise<PaymentResult> {
-    return this._poll(RELAYER_API.payment(requestId));
+    return this._get(RELAYER_API.payment(requestId)) as Promise<PaymentResult>;
   }
 
   /** Poll the relayer for the status of an async protocol execution. */
   async pollExecute(requestId: string): Promise<PaymentResult> {
-    return this._poll(RELAYER_API.execute(requestId));
+    return this._get(RELAYER_API.execute(requestId)) as Promise<PaymentResult>;
   }
 
   /** Poll the relayer for the status of an async swap. */
   async pollSwap(requestId: string): Promise<PaymentResult> {
-    return this._poll(RELAYER_API.swap(requestId));
+    return this._get(RELAYER_API.swap(requestId)) as Promise<PaymentResult>;
   }
 
   // ============================================================================
@@ -288,7 +272,7 @@ export class AxonClient {
   // Internal helpers
   // ============================================================================
 
-  private async _poll(path: string): Promise<PaymentResult> {
+  private async _get(path: string): Promise<any> {
     const url = `${this.relayerUrl}${path}`;
     const response = await fetch(url, {
       method: 'GET',
@@ -297,10 +281,10 @@ export class AxonClient {
 
     if (!response.ok) {
       const body = await response.text();
-      throw new Error(`Relayer poll failed [${response.status}]: ${body}`);
+      throw new Error(`Relayer request failed [${response.status}]: ${body}`);
     }
 
-    return response.json() as Promise<PaymentResult>;
+    return response.json();
   }
 
   private _defaultDeadline(): bigint {
@@ -457,4 +441,3 @@ export class AxonClient {
     return response.json() as Promise<PaymentResult>;
   }
 }
-

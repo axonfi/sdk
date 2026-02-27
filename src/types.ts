@@ -296,20 +296,14 @@ export interface AxonClientConfig {
 
   /**
    * Bot's private key (hex, 0x-prefixed). Used to sign payment intents.
-   * The SDK constructs a wallet client internally.
+   * The SDK constructs a local signer internally — no RPC connection needed.
    * Provide either this or `account`.
    */
   botPrivateKey?: Hex;
 
   /**
-   * Relayer base URL. Required for pay() and poll().
+   * Relayer base URL. Required for all SDK methods (pay, poll, getBalance, etc.).
    * Example: "https://relay.axonfi.xyz"
    */
   relayerUrl: string;
-
-  /**
-   * JSON-RPC endpoint. Used for on-chain reads (getBotConfig, etc.).
-   * Example: "https://mainnet.base.org"
-   */
-  rpcUrl: string;
 }

@@ -44,13 +44,10 @@ export type { SupportedChainId } from './constants.js';
 // Signing utilities
 export { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
 
-// Vault read helpers
-// NOTE: getBotConfig is intentionally NOT exported. Bots must not learn their
-// own spending limits or AI thresholds, as a compromised bot could use this
-// information to craft attacks that stay just below detection thresholds.
-// Dashboard/relayer read bot config directly from the chain via their own clients.
+// Vault helpers (for dashboards and tooling that need direct chain access)
 export {
   isBotActive,
+  getBotConfig,
   getOperatorCeilings,
   operatorMaxDrainPerDay,
   isVaultPaused,

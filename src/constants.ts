@@ -138,4 +138,15 @@ export const RELAYER_API = {
   execute: (requestId: string) => `/v1/execute/${requestId}`,
   SWAP: '/v1/swap',
   swap: (requestId: string) => `/v1/swap/${requestId}`,
+
+  // Vault read endpoints (relayer reads chain on behalf of bots)
+  vaultBalance: (vault: string, token: string, chainId: number) =>
+    `/v1/vault/${vault}/balance/${token}?chainId=${chainId}`,
+  vaultBalances: (vault: string, chainId: number) => `/v1/vault/${vault}/balances`,
+  vaultInfo: (vault: string, chainId: number) => `/v1/vault/${vault}/info?chainId=${chainId}`,
+  botStatus: (vault: string, bot: string, chainId: number) => `/v1/vault/${vault}/bot/${bot}/status?chainId=${chainId}`,
+  destinationCheck: (vault: string, bot: string, destination: string, chainId: number) =>
+    `/v1/vault/${vault}/bot/${bot}/destination/${destination}?chainId=${chainId}`,
+  protocolCheck: (vault: string, protocol: string, chainId: number) =>
+    `/v1/vault/${vault}/protocol/${protocol}?chainId=${chainId}`,
 } as const;
