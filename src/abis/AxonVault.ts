@@ -103,6 +103,11 @@ export const AxonVaultAbi = [
             "internalType": "uint256"
           },
           {
+            "name": "maxRebalanceAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
             "name": "spendingLimits",
             "type": "tuple[]",
             "internalType": "struct AxonVault.SpendingLimit[]",
@@ -192,6 +197,19 @@ export const AxonVaultAbi = [
         "name": "protocol",
         "type": "address",
         "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "addRebalanceTokens",
+    "inputs": [
+      {
+        "name": "tokens",
+        "type": "address[]",
+        "internalType": "address[]"
       }
     ],
     "outputs": [],
@@ -623,6 +641,11 @@ export const AxonVaultAbi = [
             "internalType": "uint256"
           },
           {
+            "name": "maxRebalanceAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
             "name": "spendingLimits",
             "type": "tuple[]",
             "internalType": "struct AxonVault.SpendingLimit[]",
@@ -881,6 +904,38 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
+    "name": "rebalanceTokenCount",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "rebalanceTokenWhitelist",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "removeBot",
     "inputs": [
       {
@@ -944,6 +999,19 @@ export const AxonVaultAbi = [
         "name": "protocol",
         "type": "address",
         "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "removeRebalanceTokens",
+    "inputs": [
+      {
+        "name": "tokens",
+        "type": "address[]",
+        "internalType": "address[]"
       }
     ],
     "outputs": [],
@@ -1058,6 +1126,11 @@ export const AxonVaultAbi = [
         "components": [
           {
             "name": "maxPerTxAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "maxRebalanceAmount",
             "type": "uint256",
             "internalType": "uint256"
           },
@@ -1537,6 +1610,32 @@ export const AxonVaultAbi = [
   },
   {
     "type": "event",
+    "name": "RebalanceTokenAdded",
+    "inputs": [
+      {
+        "name": "token",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RebalanceTokenRemoved",
+    "inputs": [
+      {
+        "name": "token",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "SwapExecuted",
     "inputs": [
       {
@@ -1779,6 +1878,11 @@ export const AxonVaultAbi = [
   },
   {
     "type": "error",
+    "name": "MaxRebalanceAmountExceeded",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NativeTransferFailed",
     "inputs": []
   },
@@ -1857,6 +1961,11 @@ export const AxonVaultAbi = [
   {
     "type": "error",
     "name": "ProtocolNotInList",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "RebalanceTokenNotAllowed",
     "inputs": []
   },
   {

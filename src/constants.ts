@@ -121,6 +121,10 @@ export const PaymentErrorCode = {
   DESTINATION_NOT_WHITELISTED: 'DESTINATION_NOT_WHITELISTED',
   /** Vault address is not a valid AxonVault or was not deployed by a known factory */
   INVALID_VAULT: 'INVALID_VAULT',
+  /** Rebalance output token is not in the whitelist (on-chain or relayer default) */
+  REBALANCE_TOKEN_NOT_ALLOWED: 'REBALANCE_TOKEN_NOT_ALLOWED',
+  /** Rebalance input amount exceeds the bot's maxRebalanceAmount cap */
+  MAX_REBALANCE_AMOUNT_EXCEEDED: 'MAX_REBALANCE_AMOUNT_EXCEEDED',
   /** Unknown or internal error */
   INTERNAL_ERROR: 'INTERNAL_ERROR',
 } as const;
@@ -149,4 +153,8 @@ export const RELAYER_API = {
     `/v1/vault/${vault}/bot/${bot}/destination/${destination}?chainId=${chainId}`,
   protocolCheck: (vault: string, protocol: string, chainId: number) =>
     `/v1/vault/${vault}/protocol/${protocol}?chainId=${chainId}`,
+  rebalanceTokens: (vault: string, chainId: number) =>
+    `/v1/vault/${vault}/rebalance-tokens?chainId=${chainId}`,
+  rebalanceTokenCheck: (vault: string, token: string, chainId: number) =>
+    `/v1/vault/${vault}/rebalance-token/${token}?chainId=${chainId}`,
 } as const;

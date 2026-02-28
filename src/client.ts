@@ -10,6 +10,7 @@ import type {
   SwapIntent,
   VaultInfo,
   DestinationCheckResult,
+  RebalanceTokensResult,
 } from './types.js';
 import { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
 import { createAxonWalletClient } from './vault.js';
@@ -226,6 +227,32 @@ export class AxonClient {
     const path = RELAYER_API.protocolCheck(this.vaultAddress, protocol, this.chainId);
     const data = await this._get(path);
     return data.approved;
+  }
+
+  // ============================================================================
+  // getRebalanceTokens() — via relayer
+  // ============================================================================
+
+  /**
+   * Returns the effective rebalance token whitelist for this vault.
+   *
+   * If the owner set tokens on-chain, those override entirely.
+   * If no on-chain whitelist, returns relayer defaults (USDC, WETH, USDT).
+   * Use this before calling swap() to check which output tokens are allowed.
+   */
+  async getRebalanceTokens(): Promise<RebalanceTokensResult> {
+    const path = RELAYER_API.rebalanceTokens(this.vaultAddress, this.chainId);
+    return this._get(path) as Promise<RebalanceTokensResult>;
+  }
+
+  // ============================================================================
+  // isRebalanceTokenAllowed() — via relayer
+  // ============================================================================
+
+  /** Check if a specific token is allowed for rebalancing (executeSwap output) on this vault. */
+  async isRebalanceTokenAllowed(token: Address): Promise<{ allowed: boolean; source: 'default' | 'on_chain' }> {
+    const path = RELAYER_API.rebalanceTokenCheck(this.vaultAddress, token, this.chainId);
+    return this._get(path) as Promise<{ allowed: boolean; source: 'default' | 'on_chain' }>;
   }
 
   // ============================================================================

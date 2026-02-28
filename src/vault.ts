@@ -71,6 +71,7 @@ export async function getBotConfig(
     isActive: result.isActive,
     registeredAt: result.registeredAt,
     maxPerTxAmount: result.maxPerTxAmount,
+    maxRebalanceAmount: result.maxRebalanceAmount,
     spendingLimits: result.spendingLimits.map((sl) => ({
       amount: sl.amount,
       maxCount: sl.maxCount,
@@ -256,6 +257,34 @@ export async function isDestinationAllowed(
   }
 
   return { allowed: true };
+}
+
+// ============================================================================
+// Rebalance token whitelist (on-chain reads)
+// ============================================================================
+
+/** Returns the number of tokens in the vault's on-chain rebalance whitelist. 0 = no on-chain whitelist. */
+export async function getRebalanceTokenCount(publicClient: PublicClient, vaultAddress: Address): Promise<number> {
+  const count = await publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'rebalanceTokenCount',
+  });
+  return Number(count);
+}
+
+/** Returns whether a token is in the vault's on-chain rebalance whitelist. */
+export async function isRebalanceTokenWhitelisted(
+  publicClient: PublicClient,
+  vaultAddress: Address,
+  token: Address,
+): Promise<boolean> {
+  return publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'rebalanceTokenWhitelist',
+    args: [token],
+  });
 }
 
 // ============================================================================

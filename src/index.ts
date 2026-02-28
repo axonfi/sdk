@@ -22,6 +22,7 @@ export type {
   AxonClientConfig,
   VaultInfo,
   DestinationCheckResult,
+  RebalanceTokensResult,
 } from './types.js';
 
 // Constants
@@ -57,6 +58,8 @@ export {
   getVaultOperator,
   getTrackUsedIntents,
   isDestinationAllowed,
+  getRebalanceTokenCount,
+  isRebalanceTokenWhitelisted,
   deployVault,
   createAxonPublicClient,
   createAxonWalletClient,
@@ -66,6 +69,10 @@ export {
 // Keystore utilities
 export { encryptKeystore, decryptKeystore } from './keystore.js';
 export type { KeystoreV3 } from './keystore.js';
+
+// Token registry (shared by dashboard, relayer, and SDK consumers)
+export { KNOWN_TOKENS, getKnownTokensForChain, getTokenSymbolByAddress } from './tokens.js';
+export type { KnownToken, KnownTokenSymbol } from './tokens.js';
 
 // ABIs (useful for wagmi/viem integrations in frontends/dashboards)
 export { AxonVaultAbi } from './abis/AxonVault.js';

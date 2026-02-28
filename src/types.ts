@@ -18,8 +18,10 @@ export interface SpendingLimit {
 export interface BotConfig {
   isActive: boolean;
   registeredAt: bigint;
-  /** Hard per-tx cap enforced on-chain. 0 = no cap. */
+  /** Hard per-tx cap for payments, enforced on-chain. 0 = no cap. */
   maxPerTxAmount: bigint;
+  /** Hard cap for rebalancing (executeSwap) input amount in USD. 0 = no cap. */
+  maxRebalanceAmount: bigint;
   /** Rolling window limits — stored on-chain, enforced by relayer. */
   spendingLimits: SpendingLimit[];
   /** Relayer triggers AI scan above this amount. 0 = never by amount alone. */
@@ -31,6 +33,8 @@ export interface BotConfig {
 /** Parameters for addBot / updateBotConfig. */
 export interface BotConfigParams {
   maxPerTxAmount: bigint;
+  /** Hard cap for rebalancing (executeSwap) input amount in USD. 0 = no cap (default). */
+  maxRebalanceAmount: bigint;
   spendingLimits: SpendingLimit[];
   aiTriggerThreshold: bigint;
   requireAiVerification: boolean;
@@ -284,6 +288,16 @@ export interface VaultInfo {
 export interface DestinationCheckResult {
   allowed: boolean;
   reason?: string;
+}
+
+/** Result of getRebalanceTokens() — the effective rebalance token whitelist. */
+export interface RebalanceTokensResult {
+  /** "default" = relayer defaults (no on-chain whitelist), "on_chain" = owner-set override. */
+  source: 'default' | 'on_chain';
+  /** Lowercase token addresses allowed for rebalancing (executeSwap output). */
+  tokens: Address[];
+  /** Number of tokens set on-chain. 0 = using relayer defaults. */
+  rebalanceTokenCount: number;
 }
 
 /** Configuration for AxonClient. */
