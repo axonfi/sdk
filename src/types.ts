@@ -300,6 +300,12 @@ export interface RebalanceTokensResult {
   rebalanceTokenCount: number;
 }
 
+/** TOS acceptance status for a wallet. */
+export interface TosStatus {
+  accepted: boolean;
+  tosVersion: string;
+}
+
 /** Configuration for AxonClient. */
 export interface AxonClientConfig {
   /** Vault contract address to sign against. */

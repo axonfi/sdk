@@ -399,6 +399,88 @@ describe('pollSwap()', () => {
 });
 
 // ---------------------------------------------------------------------------
+// getTosStatus()
+// ---------------------------------------------------------------------------
+
+describe('getTosStatus()', () => {
+  it('GETs /v1/tos/status with wallet param', async () => {
+    const client = makeClient();
+    mockFetchOk({ accepted: false, tosVersion: 'v1' });
+
+    const result = await client.getTosStatus('0xSomeWallet');
+    expect(result.accepted).toBe(false);
+    expect(result.tosVersion).toBe('v1');
+
+    const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe(`${RELAYER_URL}/v1/tos/status?wallet=0xSomeWallet`);
+  });
+
+  it('returns accepted: true for wallets that have accepted', async () => {
+    const client = makeClient();
+    mockFetchOk({ accepted: true, tosVersion: 'v1' });
+
+    const result = await client.getTosStatus('0xAcceptedWallet');
+    expect(result.accepted).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// acceptTos()
+// ---------------------------------------------------------------------------
+
+describe('acceptTos()', () => {
+  it('fetches TOS version, signs message, and POSTs to /v1/tos/accept', async () => {
+    const client = makeClient();
+    const mockSignMessage = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+    mockSignMessage.mockResolvedValue('0xsignature');
+
+    // First call: getTosStatus
+    mockFetchOk({ accepted: false, tosVersion: 'v1' });
+    // Second call: POST accept
+    mockFetchOk({ accepted: true, tosVersion: 'v1' });
+
+    const result = await client.acceptTos(
+      { signMessage: mockSignMessage as any },
+      '0xOwnerWallet',
+    );
+
+    expect(result.accepted).toBe(true);
+    expect(mockSignMessage).toHaveBeenCalledTimes(1);
+
+    // Verify the message format
+    const signArgs = mockSignMessage.mock.calls[0]![0] as { message: string };
+    expect(signArgs.message).toContain('I accept the Axon Terms of Service (v1)');
+    expect(signArgs.message).toContain('Wallet: 0xOwnerWallet');
+    expect(signArgs.message).toContain('Timestamp:');
+
+    // Verify POST call
+    const [url, opts] = fetchMock.mock.calls[1] as [string, RequestInit];
+    expect(url).toBe(`${RELAYER_URL}/v1/tos/accept`);
+    expect(opts.method).toBe('POST');
+
+    const body = JSON.parse(opts.body as string);
+    expect(body.wallet).toBe('0xOwnerWallet');
+    expect(body.signature).toBe('0xsignature');
+    expect(body.tosVersion).toBe('v1');
+  });
+
+  it('throws on non-ok response from accept endpoint', async () => {
+    const client = makeClient();
+    const mockSignMessage = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+    mockSignMessage.mockResolvedValue('0xsignature');
+
+    // getTosStatus succeeds
+    mockFetchOk({ accepted: false, tosVersion: 'v1' });
+    // accept fails
+    mockFetchFail(400, 'Invalid signature');
+
+    await expect(
+      client.acceptTos({ signMessage: mockSignMessage as any }, '0xOwnerWallet'),
+    ).rejects.toThrow('TOS acceptance failed [400]');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // signPayment() (low-level)
 // ---------------------------------------------------------------------------
 

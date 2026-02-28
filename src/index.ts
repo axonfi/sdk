@@ -23,6 +23,7 @@ export type {
   VaultInfo,
   DestinationCheckResult,
   RebalanceTokensResult,
+  TosStatus,
 } from './types.js';
 
 // Constants

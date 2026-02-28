@@ -11,6 +11,7 @@ import type {
   VaultInfo,
   DestinationCheckResult,
   RebalanceTokensResult,
+  TosStatus,
 } from './types.js';
 import { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
 import { createAxonWalletClient } from './vault.js';
@@ -253,6 +254,50 @@ export class AxonClient {
   async isRebalanceTokenAllowed(token: Address): Promise<{ allowed: boolean; source: 'default' | 'on_chain' }> {
     const path = RELAYER_API.rebalanceTokenCheck(this.vaultAddress, token, this.chainId);
     return this._get(path) as Promise<{ allowed: boolean; source: 'default' | 'on_chain' }>;
+  }
+
+  // ============================================================================
+  // TOS (Terms of Service)
+  // ============================================================================
+
+  /** Check if a wallet has accepted the current TOS version. */
+  async getTosStatus(wallet: string): Promise<TosStatus> {
+    return this._get(RELAYER_API.tosStatus(wallet)) as Promise<TosStatus>;
+  }
+
+  /**
+   * Sign and submit TOS acceptance. Uses the owner's wallet (not the bot key).
+   *
+   * @param signer - Object with a `signMessage` method (e.g. a viem WalletClient
+   *   or ethers Signer). This should be the vault owner's wallet, not the bot key.
+   * @param wallet - The owner's wallet address (must match the signer).
+   */
+  async acceptTos(
+    signer: { signMessage: (args: { message: string }) => Promise<Hex> },
+    wallet: string,
+  ): Promise<TosStatus> {
+    // 1. Get current TOS version from relayer
+    const { tosVersion } = await this.getTosStatus(wallet);
+
+    // 2. Construct and sign the acceptance message
+    const timestamp = Math.floor(Date.now() / 1000);
+    const message = `I accept the Axon Terms of Service (${tosVersion}).\nWallet: ${wallet}\nTimestamp: ${timestamp}`;
+    const signature = await signer.signMessage({ message });
+
+    // 3. Submit to relayer
+    const url = `${this.relayerUrl}${RELAYER_API.TOS_ACCEPT}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wallet, signature, tosVersion, timestamp }),
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`TOS acceptance failed [${response.status}]: ${body}`);
+    }
+
+    return response.json() as Promise<TosStatus>;
   }
 
   // ============================================================================
