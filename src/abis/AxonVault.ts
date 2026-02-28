@@ -1804,6 +1804,16 @@ export const AxonVaultAbi = [
   },
   {
     "type": "error",
+    "name": "OracleNotConfigured",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OracleUnavailable",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "OwnableInvalidOwner",
     "inputs": [
       {
