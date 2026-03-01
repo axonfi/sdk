@@ -53,11 +53,59 @@ export const USDC: Record<number, Address> = {
 };
 
 // ============================================================================
-// Supported chain IDs
+// Chain enum & supported chain IDs
 // ============================================================================
+
+export enum Chain {
+  Base = 8453,
+  BaseSepolia = 84532,
+  Arbitrum = 42161,
+  ArbitrumSepolia = 421614,
+}
 
 export const SUPPORTED_CHAIN_IDS = [8453, 84532, 42161, 421614] as const;
 export type SupportedChainId = (typeof SUPPORTED_CHAIN_IDS)[number];
+
+// ============================================================================
+// Chain metadata (names & block explorers)
+// ============================================================================
+
+/** Human-readable chain names. */
+export const CHAIN_NAMES: Record<number, string> = {
+  [Chain.Base]: 'Base',
+  [Chain.BaseSepolia]: 'Base Sepolia',
+  [Chain.Arbitrum]: 'Arbitrum One',
+  [Chain.ArbitrumSepolia]: 'Arbitrum Sepolia',
+  // Future v1 chains (metadata only — not in SUPPORTED_CHAIN_IDS yet)
+  10: 'Optimism',
+  11155420: 'OP Sepolia',
+  137: 'Polygon',
+  80002: 'Polygon Amoy',
+};
+
+/** Block explorer TX URL prefix per chain. */
+export const EXPLORER_TX: Record<number, string> = {
+  [Chain.Base]: 'https://basescan.org/tx/',
+  [Chain.BaseSepolia]: 'https://sepolia.basescan.org/tx/',
+  [Chain.Arbitrum]: 'https://arbiscan.io/tx/',
+  [Chain.ArbitrumSepolia]: 'https://sepolia.arbiscan.io/tx/',
+  10: 'https://optimistic.etherscan.io/tx/',
+  11155420: 'https://sepolia-optimism.etherscan.io/tx/',
+  137: 'https://polygonscan.com/tx/',
+  80002: 'https://amoy.polygonscan.com/tx/',
+};
+
+/** Block explorer address URL prefix per chain. */
+export const EXPLORER_ADDR: Record<number, string> = {
+  [Chain.Base]: 'https://basescan.org/address/',
+  [Chain.BaseSepolia]: 'https://sepolia.basescan.org/address/',
+  [Chain.Arbitrum]: 'https://arbiscan.io/address/',
+  [Chain.ArbitrumSepolia]: 'https://sepolia.arbiscan.io/address/',
+  10: 'https://optimistic.etherscan.io/address/',
+  11155420: 'https://sepolia-optimism.etherscan.io/address/',
+  137: 'https://polygonscan.com/address/',
+  80002: 'https://amoy.polygonscan.com/address/',
+};
 
 // ============================================================================
 // Time constants (seconds)
@@ -153,8 +201,7 @@ export const RELAYER_API = {
     `/v1/vault/${vault}/bot/${bot}/destination/${destination}?chainId=${chainId}`,
   protocolCheck: (vault: string, protocol: string, chainId: number) =>
     `/v1/vault/${vault}/protocol/${protocol}?chainId=${chainId}`,
-  rebalanceTokens: (vault: string, chainId: number) =>
-    `/v1/vault/${vault}/rebalance-tokens?chainId=${chainId}`,
+  rebalanceTokens: (vault: string, chainId: number) => `/v1/vault/${vault}/rebalance-tokens?chainId=${chainId}`,
   rebalanceTokenCheck: (vault: string, token: string, chainId: number) =>
     `/v1/vault/${vault}/rebalance-token/${token}?chainId=${chainId}`,
 

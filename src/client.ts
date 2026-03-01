@@ -16,6 +16,7 @@ import type {
 import { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
 import { createAxonWalletClient } from './vault.js';
 import { DEFAULT_DEADLINE_SECONDS, RELAYER_API } from './constants.js';
+import { resolveToken } from './tokens.js';
 import { generateUuid } from './utils.js';
 import { keccak256 } from 'viem';
 
@@ -373,7 +374,7 @@ export class AxonClient {
     return {
       bot: this.botAddress,
       to: input.to,
-      token: input.token,
+      token: resolveToken(input.token, this.chainId),
       amount: input.amount,
       deadline: input.deadline ?? this._defaultDeadline(),
       ref: this._resolveRef(input.memo, input.ref),
@@ -385,7 +386,7 @@ export class AxonClient {
       bot: this.botAddress,
       protocol: input.protocol,
       calldataHash: keccak256(input.callData),
-      token: input.token,
+      token: resolveToken(input.token, this.chainId),
       amount: input.amount,
       deadline: input.deadline ?? this._defaultDeadline(),
       ref: this._resolveRef(input.memo, input.ref),
@@ -395,7 +396,7 @@ export class AxonClient {
   private _buildSwapIntent(input: SwapInput): SwapIntent {
     return {
       bot: this.botAddress,
-      toToken: input.toToken,
+      toToken: resolveToken(input.toToken, this.chainId),
       minToAmount: input.minToAmount,
       deadline: input.deadline ?? this._defaultDeadline(),
       ref: this._resolveRef(input.memo, input.ref),

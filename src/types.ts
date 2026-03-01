@@ -1,4 +1,6 @@
 import type { Address, Hex } from 'viem';
+import type { Token } from './tokens.js';
+import type { Chain } from './constants.js';
 
 // ============================================================================
 // On-chain structs (mirror Solidity exactly)
@@ -90,8 +92,8 @@ export interface PaymentIntent {
 export interface PayInput {
   /** Payment recipient. */
   to: Address;
-  /** Desired output token (e.g. USDC[chainId]). */
-  token: Address;
+  /** Desired output token — an address or a Token enum symbol (e.g. Token.USDC). */
+  token: Address | Token;
   /** Amount in token base units. For USDC: 1 USDC = 1_000_000n. */
   amount: bigint;
 
@@ -201,8 +203,8 @@ export interface ExecuteInput {
   protocol: Address;
   /** The actual calldata bytes to send to the protocol. */
   callData: Hex;
-  /** Token to approve to the protocol. */
-  token: Address;
+  /** Token to approve to the protocol — an address or a Token enum symbol. */
+  token: Address | Token;
   /** Amount to approve (in token base units). */
   amount: bigint;
 
@@ -234,8 +236,8 @@ export interface ExecuteInput {
  * the relayer's POST /v1/swap endpoint.
  */
 export interface SwapInput {
-  /** Desired output token. */
-  toToken: Address;
+  /** Desired output token — an address or a Token enum symbol. */
+  toToken: Address | Token;
   /** Minimum output amount (slippage floor). */
   minToAmount: bigint;
 
@@ -311,8 +313,8 @@ export interface AxonClientConfig {
   /** Vault contract address to sign against. */
   vaultAddress: Address;
 
-  /** Chain ID of the network the vault is deployed on. */
-  chainId: number;
+  /** Chain ID — a number or a Chain enum value (e.g. Chain.Base). */
+  chainId: Chain | number;
 
   /**
    * Bot's private key (hex, 0x-prefixed). Used to sign payment intents.

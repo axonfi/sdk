@@ -1,6 +1,31 @@
 import type { Address } from 'viem';
 
 // ============================================================================
+// Token enum — type-safe token symbols for SDK consumers
+// ============================================================================
+
+export enum Token {
+  USDC = 'USDC',
+  USDT = 'USDT',
+  DAI = 'DAI',
+  WETH = 'WETH',
+  WBTC = 'WBTC',
+  cbBTC = 'cbBTC',
+  cbETH = 'cbETH',
+  wstETH = 'wstETH',
+  rETH = 'rETH',
+  LINK = 'LINK',
+  UNI = 'UNI',
+  AAVE = 'AAVE',
+  COMP = 'COMP',
+  CRV = 'CRV',
+  SNX = 'SNX',
+  ARB = 'ARB',
+  AERO = 'AERO',
+  GMX = 'GMX',
+}
+
+// ============================================================================
 // Known token registry — single source of truth for all packages
 // ============================================================================
 
@@ -215,4 +240,29 @@ export function getKnownTokensForChain(chainId: number): (KnownToken & { address
 /** Reverse-lookup: address → symbol (case-insensitive). Returns null if unknown. */
 export function getTokenSymbolByAddress(address: string): string | null {
   return addressToSymbol.get(address.toLowerCase()) ?? null;
+}
+
+/**
+ * Resolve a Token enum symbol to its on-chain address for a given chain.
+ * If an Address (0x...) is passed, it is returned as-is.
+ *
+ * @throws if the symbol has no address on the given chain.
+ */
+export function resolveToken(token: Address | Token, chainId: number): Address {
+  // Already an address — pass through
+  if (typeof token === 'string' && token.startsWith('0x')) {
+    return token as Address;
+  }
+
+  const entry = KNOWN_TOKENS[token as keyof typeof KNOWN_TOKENS];
+  if (!entry) {
+    throw new Error(`Unknown token symbol: ${token}`);
+  }
+
+  const addr = (entry.addresses as Record<number, Address | undefined>)[chainId];
+  if (!addr) {
+    throw new Error(`Token ${token} is not available on chain ${chainId}`);
+  }
+
+  return addr;
 }

@@ -28,9 +28,13 @@ export type {
 
 // Constants
 export {
+  Chain,
   NATIVE_ETH,
   USDC,
   WINDOW,
+  CHAIN_NAMES,
+  EXPLORER_TX,
+  EXPLORER_ADDR,
   PAYMENT_INTENT_TYPEHASH,
   EXECUTE_INTENT_TYPEHASH,
   SWAP_INTENT_TYPEHASH,
@@ -72,7 +76,7 @@ export { encryptKeystore, decryptKeystore } from './keystore.js';
 export type { KeystoreV3 } from './keystore.js';
 
 // Token registry (shared by dashboard, relayer, and SDK consumers)
-export { KNOWN_TOKENS, getKnownTokensForChain, getTokenSymbolByAddress } from './tokens.js';
+export { Token, KNOWN_TOKENS, getKnownTokensForChain, getTokenSymbolByAddress, resolveToken } from './tokens.js';
 export type { KnownToken, KnownTokenSymbol } from './tokens.js';
 
 // ABIs (useful for wagmi/viem integrations in frontends/dashboards)
