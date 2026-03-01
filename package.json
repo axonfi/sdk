@@ -1,13 +1,13 @@
 {
-  "name": "@axon/sdk",
+  "name": "@axonfi/sdk",
   "version": "0.1.0",
   "description": "TypeScript SDK for Axon — treasury and payment infrastructure for autonomous AI agents",
   "license": "MIT",
   "author": "Axon",
-  "homepage": "https://github.com/axon-xyz/axon",
+  "homepage": "https://axonfi.xyz",
   "repository": {
     "type": "git",
-    "url": "https://github.com/axon-xyz/axon.git",
+    "url": "https://github.com/axonfi/axon.git",
     "directory": "packages/sdk-ts"
   },
   "keywords": [

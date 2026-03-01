@@ -35,7 +35,7 @@ import { keccak256 } from 'viem';
  *
  * @example
  * ```ts
- * import { AxonClient, USDC } from '@axon/sdk'
+ * import { AxonClient, USDC } from '@axonfi/sdk'
  *
  * const client = new AxonClient({
  *   vaultAddress: '0x...',

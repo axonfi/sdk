@@ -1,5 +1,5 @@
 // ============================================================================
-// @axon/sdk — Treasury and payment infrastructure for autonomous AI agents
+// @axonfi/sdk — Treasury and payment infrastructure for autonomous AI agents
 // ============================================================================
 
 // Main client
