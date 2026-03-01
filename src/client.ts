@@ -17,6 +17,7 @@ import { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './sig
 import { createAxonWalletClient } from './vault.js';
 import { DEFAULT_DEADLINE_SECONDS, RELAYER_API } from './constants.js';
 import { resolveToken } from './tokens.js';
+import { parseAmount } from './amounts.js';
 import { generateUuid } from './utils.js';
 import { keccak256 } from 'viem';
 
@@ -47,8 +48,8 @@ import { keccak256 } from 'viem';
  *
  * const result = await client.pay({
  *   to: '0x...recipient...',
- *   token: USDC[84532],
- *   amount: 5_000_000n,       // 5 USDC
+ *   token: 'USDC',
+ *   amount: 5,                // 5 USDC — SDK handles decimals
  *   memo: 'API call #1234 — weather data',
  * })
  *
@@ -375,7 +376,7 @@ export class AxonClient {
       bot: this.botAddress,
       to: input.to,
       token: resolveToken(input.token, this.chainId),
-      amount: input.amount,
+      amount: parseAmount(input.amount, input.token, this.chainId),
       deadline: input.deadline ?? this._defaultDeadline(),
       ref: this._resolveRef(input.memo, input.ref),
     };
@@ -387,7 +388,7 @@ export class AxonClient {
       protocol: input.protocol,
       calldataHash: keccak256(input.callData),
       token: resolveToken(input.token, this.chainId),
-      amount: input.amount,
+      amount: parseAmount(input.amount, input.token, this.chainId),
       deadline: input.deadline ?? this._defaultDeadline(),
       ref: this._resolveRef(input.memo, input.ref),
     };
@@ -397,7 +398,7 @@ export class AxonClient {
     return {
       bot: this.botAddress,
       toToken: resolveToken(input.toToken, this.chainId),
-      minToAmount: input.minToAmount,
+      minToAmount: parseAmount(input.minToAmount, input.toToken, this.chainId),
       deadline: input.deadline ?? this._defaultDeadline(),
       ref: this._resolveRef(input.memo, input.ref),
     };
@@ -436,6 +437,13 @@ export class AxonClient {
   private async _submitExecute(intent: ExecuteIntent, signature: Hex, input: ExecuteInput): Promise<PaymentResult> {
     const idempotencyKey = input.idempotencyKey ?? generateUuid();
 
+    // Resolve optional pre-swap fields
+    const fromToken = input.fromToken !== undefined ? resolveToken(input.fromToken, this.chainId) : undefined;
+    const maxFromAmount =
+      input.maxFromAmount !== undefined
+        ? parseAmount(input.maxFromAmount, input.fromToken ?? input.token, this.chainId)
+        : undefined;
+
     const body = {
       chainId: this.chainId,
       vaultAddress: this.vaultAddress,
@@ -454,8 +462,8 @@ export class AxonClient {
       callData: input.callData,
 
       // Optional pre-swap
-      ...(input.fromToken !== undefined && { fromToken: input.fromToken }),
-      ...(input.maxFromAmount !== undefined && { maxFromAmount: input.maxFromAmount.toString() }),
+      ...(fromToken !== undefined && { fromToken }),
+      ...(maxFromAmount !== undefined && { maxFromAmount: maxFromAmount.toString() }),
 
       // Off-chain metadata
       idempotencyKey,
@@ -470,6 +478,13 @@ export class AxonClient {
   private async _submitSwap(intent: SwapIntent, signature: Hex, input: SwapInput): Promise<PaymentResult> {
     const idempotencyKey = input.idempotencyKey ?? generateUuid();
 
+    // Resolve optional source token fields
+    const fromToken = input.fromToken !== undefined ? resolveToken(input.fromToken, this.chainId) : undefined;
+    const maxFromAmount =
+      input.maxFromAmount !== undefined
+        ? parseAmount(input.maxFromAmount, input.fromToken ?? input.toToken, this.chainId)
+        : undefined;
+
     const body = {
       chainId: this.chainId,
       vaultAddress: this.vaultAddress,
@@ -483,8 +498,8 @@ export class AxonClient {
       signature,
 
       // Optional source token
-      ...(input.fromToken !== undefined && { fromToken: input.fromToken }),
-      ...(input.maxFromAmount !== undefined && { maxFromAmount: input.maxFromAmount.toString() }),
+      ...(fromToken !== undefined && { fromToken }),
+      ...(maxFromAmount !== undefined && { maxFromAmount: maxFromAmount.toString() }),
 
       // Off-chain metadata
       idempotencyKey,

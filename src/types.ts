@@ -1,6 +1,26 @@
 import type { Address, Hex } from 'viem';
-import type { Token } from './tokens.js';
+import type { Token, KnownTokenSymbol } from './tokens.js';
 import type { Chain } from './constants.js';
+
+// ============================================================================
+// Flexible input types for human-friendly API
+// ============================================================================
+
+/**
+ * Accepts any way to identify a token:
+ * - `Address` ('0x...') — raw contract address
+ * - `Token` enum (Token.USDC) — type-safe symbol
+ * - `KnownTokenSymbol` string ('USDC') — bare string shorthand
+ */
+export type TokenInput = Address | Token | KnownTokenSymbol;
+
+/**
+ * Accepts amounts in any format:
+ * - `bigint` — raw base units (e.g. 5_000_000n for 5 USDC). Passed through as-is.
+ * - `number` — human-readable (e.g. 5.2 for 5.2 USDC). SDK converts using token decimals.
+ * - `string` — human-readable string (e.g. '5.2'). Recommended for computed values to avoid float precision issues.
+ */
+export type AmountInput = bigint | number | string;
 
 // ============================================================================
 // On-chain structs (mirror Solidity exactly)
@@ -92,10 +112,10 @@ export interface PaymentIntent {
 export interface PayInput {
   /** Payment recipient. */
   to: Address;
-  /** Desired output token — an address or a Token enum symbol (e.g. Token.USDC). */
-  token: Address | Token;
-  /** Amount in token base units. For USDC: 1 USDC = 1_000_000n. */
-  amount: bigint;
+  /** Desired output token — an address, Token enum, or bare symbol string ('USDC'). */
+  token: TokenInput;
+  /** Amount: bigint (raw base units), number (human-readable), or string (human-readable). */
+  amount: AmountInput;
 
   /**
    * Human-readable payment description. Stored in relayer's PostgreSQL.
@@ -203,10 +223,10 @@ export interface ExecuteInput {
   protocol: Address;
   /** The actual calldata bytes to send to the protocol. */
   callData: Hex;
-  /** Token to approve to the protocol — an address or a Token enum symbol. */
-  token: Address | Token;
-  /** Amount to approve (in token base units). */
-  amount: bigint;
+  /** Token to approve to the protocol — an address, Token enum, or bare symbol string ('USDC'). */
+  token: TokenInput;
+  /** Amount to approve: bigint (raw base units), number (human-readable), or string (human-readable). */
+  amount: AmountInput;
 
   /** Human-readable description. Gets keccak256-hashed to ref. */
   memo?: string;
@@ -225,10 +245,10 @@ export interface ExecuteInput {
   metadata?: Record<string, string>;
 
   // Pre-swap fields (if vault doesn't hold the required token)
-  /** Source token for pre-swap (relayer resolves automatically if omitted). */
-  fromToken?: Address;
-  /** Max input for pre-swap. */
-  maxFromAmount?: bigint;
+  /** Source token for pre-swap — an address, Token enum, or bare symbol string. */
+  fromToken?: TokenInput;
+  /** Max input for pre-swap: bigint (raw), number (human), or string (human). */
+  maxFromAmount?: AmountInput;
 }
 
 /**
@@ -236,10 +256,10 @@ export interface ExecuteInput {
  * the relayer's POST /v1/swap endpoint.
  */
 export interface SwapInput {
-  /** Desired output token — an address or a Token enum symbol. */
-  toToken: Address | Token;
-  /** Minimum output amount (slippage floor). */
-  minToAmount: bigint;
+  /** Desired output token — an address, Token enum, or bare symbol string ('WETH'). */
+  toToken: TokenInput;
+  /** Minimum output amount (slippage floor): bigint (raw), number (human), or string (human). */
+  minToAmount: AmountInput;
 
   /** Human-readable description. Gets keccak256-hashed to ref. */
   memo?: string;
@@ -251,10 +271,10 @@ export interface SwapInput {
   deadline?: bigint;
 
   // Swap source (relayer resolves if omitted)
-  /** Source token to swap from. */
-  fromToken?: Address;
-  /** Max input amount for swap. */
-  maxFromAmount?: bigint;
+  /** Source token to swap from — an address, Token enum, or bare symbol string. */
+  fromToken?: TokenInput;
+  /** Max input amount for swap: bigint (raw), number (human), or string (human). */
+  maxFromAmount?: AmountInput;
 }
 
 /** Possible statuses returned by the relayer. */

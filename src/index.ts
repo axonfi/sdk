@@ -24,6 +24,8 @@ export type {
   DestinationCheckResult,
   RebalanceTokensResult,
   TosStatus,
+  TokenInput,
+  AmountInput,
 } from './types.js';
 
 // Constants
@@ -78,6 +80,9 @@ export type { KeystoreV3 } from './keystore.js';
 // Token registry (shared by dashboard, relayer, and SDK consumers)
 export { Token, KNOWN_TOKENS, getKnownTokensForChain, getTokenSymbolByAddress, resolveToken } from './tokens.js';
 export type { KnownToken, KnownTokenSymbol } from './tokens.js';
+
+// Amount conversion utilities
+export { parseAmount, resolveTokenDecimals } from './amounts.js';
 
 // ABIs (useful for wagmi/viem integrations in frontends/dashboards)
 export { AxonVaultAbi } from './abis/AxonVault.js';

@@ -168,6 +168,57 @@ describe('pay()', () => {
 });
 
 // ---------------------------------------------------------------------------
+// pay() — human-friendly amounts
+// ---------------------------------------------------------------------------
+
+describe('pay() with human-friendly inputs', () => {
+  it('accepts token as bare string symbol and amount as number', async () => {
+    const client = makeClient();
+    mockFetchOk({ requestId: 'pay-hf1', status: 'approved' });
+
+    await client.pay({
+      to: '0x000000000000000000000000000000000000dead' as Address,
+      token: 'USDC',
+      amount: 5.2,
+    });
+
+    const body = JSON.parse((fetchMock.mock.calls[0] as [string, RequestInit])[1].body as string);
+    // 5.2 USDC = 5_200_000 base units
+    expect(body.amount).toBe('5200000');
+    // Token should be resolved to Base Sepolia USDC address
+    expect(body.token).toBe('0x036CbD53842c5426634e7929541eC2318f3dCF7e');
+  });
+
+  it('accepts amount as string', async () => {
+    const client = makeClient();
+    mockFetchOk({ requestId: 'pay-hf2', status: 'approved' });
+
+    await client.pay({
+      to: '0x000000000000000000000000000000000000dead' as Address,
+      token: 'USDC',
+      amount: '10.5',
+    });
+
+    const body = JSON.parse((fetchMock.mock.calls[0] as [string, RequestInit])[1].body as string);
+    expect(body.amount).toBe('10500000');
+  });
+
+  it('still works with bigint (backward compat)', async () => {
+    const client = makeClient();
+    mockFetchOk({ requestId: 'pay-hf3', status: 'approved' });
+
+    await client.pay({
+      to: '0x000000000000000000000000000000000000dead' as Address,
+      token: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address,
+      amount: 1_000_000n,
+    });
+
+    const body = JSON.parse((fetchMock.mock.calls[0] as [string, RequestInit])[1].body as string);
+    expect(body.amount).toBe('1000000');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // execute()
 // ---------------------------------------------------------------------------
 
@@ -204,6 +255,28 @@ describe('swap()', () => {
 
     const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe(`${RELAYER_URL}${RELAYER_API.SWAP}`);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// swap() — human-friendly amounts
+// ---------------------------------------------------------------------------
+
+describe('swap() with human-friendly inputs', () => {
+  it('accepts toToken as symbol and minToAmount as number', async () => {
+    const client = makeClient();
+    mockFetchOk({ requestId: 'swap-hf1', status: 'approved' });
+
+    await client.swap({
+      toToken: 'WETH',
+      minToAmount: 0.001,
+    });
+
+    const body = JSON.parse((fetchMock.mock.calls[0] as [string, RequestInit])[1].body as string);
+    // 0.001 WETH = 1_000_000_000_000_000 base units
+    expect(body.minToAmount).toBe('1000000000000000');
+    // Token should be resolved to Base Sepolia WETH address
+    expect(body.toToken).toBe('0x4200000000000000000000000000000000000006');
   });
 });
 
