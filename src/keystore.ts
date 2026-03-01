@@ -110,11 +110,12 @@ export async function encryptKeystore(privateKey: Hex, passphrase: string): Prom
   const iv = getRandomBytes(16);
 
   // Derive key via scrypt
-  const derivedKey = await scryptAsync(
-    new TextEncoder().encode(passphrase),
-    salt,
-    { N: SCRYPT_N, r: SCRYPT_R, p: SCRYPT_P, dkLen: SCRYPT_DKLEN },
-  );
+  const derivedKey = await scryptAsync(new TextEncoder().encode(passphrase), salt, {
+    N: SCRYPT_N,
+    r: SCRYPT_R,
+    p: SCRYPT_P,
+    dkLen: SCRYPT_DKLEN,
+  });
 
   // Encrypt with AES-128-CTR (first 16 bytes of derived key)
   const encryptionKey = derivedKey.slice(0, 16);
@@ -192,11 +193,12 @@ export async function decryptKeystore(keystore: KeystoreV3 | string, passphrase:
 
   // Derive key via scrypt
   const salt = hexToBytes(kdfparams.salt);
-  const derivedKey = await scryptAsync(
-    new TextEncoder().encode(passphrase),
-    salt,
-    { N: kdfparams.n, r: kdfparams.r, p: kdfparams.p, dkLen: kdfparams.dklen },
-  );
+  const derivedKey = await scryptAsync(new TextEncoder().encode(passphrase), salt, {
+    N: kdfparams.n,
+    r: kdfparams.r,
+    p: kdfparams.p,
+    dkLen: kdfparams.dklen,
+  });
 
   // Verify MAC
   const ciphertextBytes = hexToBytes(ctHex);

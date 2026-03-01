@@ -1,280 +1,280 @@
 export const AxonVaultFactoryAbi = [
   {
-    "type": "constructor",
-    "inputs": [
+    type: 'constructor',
+    inputs: [
       {
-        "name": "_axonRegistry",
-        "type": "address",
-        "internalType": "address"
+        name: '_axonRegistry',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "factoryOwner",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'factoryOwner',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "nonpayable"
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "acceptOwnership",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    type: 'function',
+    name: 'acceptOwnership',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "allVaults",
-    "inputs": [
+    type: 'function',
+    name: 'allVaults',
+    inputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "axonRegistry",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'axonRegistry',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "deployVault",
-    "inputs": [
+    type: 'function',
+    name: 'deployVault',
+    inputs: [
       {
-        "name": "trackUsedIntents",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: 'trackUsedIntents',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "vault",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'vault',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "nonpayable"
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "owner",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'owner',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "ownerVaultCount",
-    "inputs": [
+    type: 'function',
+    name: 'ownerVaultCount',
+    inputs: [
       {
-        "name": "owner",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'owner',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "ownerVaults",
-    "inputs": [
+    type: 'function',
+    name: 'ownerVaults',
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
+        name: '',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "pendingOwner",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'pendingOwner',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "renounceOwnership",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    type: 'function',
+    name: 'renounceOwnership',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "transferOwnership",
-    "inputs": [
+    type: 'function',
+    name: 'transferOwnership',
+    inputs: [
       {
-        "name": "newOwner",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'newOwner',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "vaultCount",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'vaultCount',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "event",
-    "name": "OwnershipTransferStarted",
-    "inputs": [
+    type: 'event',
+    name: 'OwnershipTransferStarted',
+    inputs: [
       {
-        "name": "previousOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'previousOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "newOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'newOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "OwnershipTransferred",
-    "inputs": [
+    type: 'event',
+    name: 'OwnershipTransferred',
+    inputs: [
       {
-        "name": "previousOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'previousOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "newOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'newOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "VaultDeployed",
-    "inputs": [
+    type: 'event',
+    name: 'VaultDeployed',
+    inputs: [
       {
-        "name": "owner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'owner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "vault",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'vault',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "version",
-        "type": "uint16",
-        "indexed": false,
-        "internalType": "uint16"
+        name: 'version',
+        type: 'uint16',
+        indexed: false,
+        internalType: 'uint16',
       },
       {
-        "name": "axonRegistry",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
+        name: 'axonRegistry',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
       },
       {
-        "name": "trackUsedIntents",
-        "type": "bool",
-        "indexed": false,
-        "internalType": "bool"
-      }
+        name: 'trackUsedIntents',
+        type: 'bool',
+        indexed: false,
+        internalType: 'bool',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "error",
-    "name": "OwnableInvalidOwner",
-    "inputs": [
+    type: 'error',
+    name: 'OwnableInvalidOwner',
+    inputs: [
       {
-        "name": "owner",
-        "type": "address",
-        "internalType": "address"
-      }
-    ]
+        name: 'owner',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
   },
   {
-    "type": "error",
-    "name": "OwnableUnauthorizedAccount",
-    "inputs": [
+    type: 'error',
+    name: 'OwnableUnauthorizedAccount',
+    inputs: [
       {
-        "name": "account",
-        "type": "address",
-        "internalType": "address"
-      }
-    ]
+        name: 'account',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
   },
   {
-    "type": "error",
-    "name": "ZeroAddress",
-    "inputs": []
-  }
+    type: 'error',
+    name: 'ZeroAddress',
+    inputs: [],
+  },
 ] as const;

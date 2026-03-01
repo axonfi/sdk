@@ -1,2038 +1,2038 @@
 export const AxonVaultAbi = [
   {
-    "type": "constructor",
-    "inputs": [
+    type: 'constructor',
+    inputs: [
       {
-        "name": "_owner",
-        "type": "address",
-        "internalType": "address"
+        name: '_owner',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "_axonRegistry",
-        "type": "address",
-        "internalType": "address"
+        name: '_axonRegistry',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "_trackUsedIntents",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '_trackUsedIntents',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "nonpayable"
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "receive",
-    "stateMutability": "payable"
+    type: 'receive',
+    stateMutability: 'payable',
   },
   {
-    "type": "function",
-    "name": "DOMAIN_SEPARATOR",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'DOMAIN_SEPARATOR',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
+        name: '',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "MAX_SPENDING_LIMITS",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'MAX_SPENDING_LIMITS',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint8",
-        "internalType": "uint8"
-      }
+        name: '',
+        type: 'uint8',
+        internalType: 'uint8',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "NATIVE_ETH",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'NATIVE_ETH',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "VERSION",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'VERSION',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint16",
-        "internalType": "uint16"
-      }
+        name: '',
+        type: 'uint16',
+        internalType: 'uint16',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "acceptOwnership",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    type: 'function',
+    name: 'acceptOwnership',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "addBot",
-    "inputs": [
+    type: 'function',
+    name: 'addBot',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "params",
-        "type": "tuple",
-        "internalType": "struct AxonVault.BotConfigParams",
-        "components": [
+        name: 'params',
+        type: 'tuple',
+        internalType: 'struct AxonVault.BotConfigParams',
+        components: [
           {
-            "name": "maxPerTxAmount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxPerTxAmount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "maxRebalanceAmount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxRebalanceAmount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "spendingLimits",
-            "type": "tuple[]",
-            "internalType": "struct AxonVault.SpendingLimit[]",
-            "components": [
+            name: 'spendingLimits',
+            type: 'tuple[]',
+            internalType: 'struct AxonVault.SpendingLimit[]',
+            components: [
               {
-                "name": "amount",
-                "type": "uint256",
-                "internalType": "uint256"
+                name: 'amount',
+                type: 'uint256',
+                internalType: 'uint256',
               },
               {
-                "name": "maxCount",
-                "type": "uint256",
-                "internalType": "uint256"
+                name: 'maxCount',
+                type: 'uint256',
+                internalType: 'uint256',
               },
               {
-                "name": "windowSeconds",
-                "type": "uint256",
-                "internalType": "uint256"
-              }
-            ]
+                name: 'windowSeconds',
+                type: 'uint256',
+                internalType: 'uint256',
+              },
+            ],
           },
           {
-            "name": "aiTriggerThreshold",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'aiTriggerThreshold',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "requireAiVerification",
-            "type": "bool",
-            "internalType": "bool"
-          }
-        ]
-      }
+            name: 'requireAiVerification',
+            type: 'bool',
+            internalType: 'bool',
+          },
+        ],
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "addBotDestination",
-    "inputs": [
+    type: 'function',
+    name: 'addBotDestination',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "destination",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "addGlobalBlacklist",
-    "inputs": [
+    type: 'function',
+    name: 'addGlobalBlacklist',
+    inputs: [
       {
-        "name": "destination",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "addGlobalDestination",
-    "inputs": [
+    type: 'function',
+    name: 'addGlobalDestination',
+    inputs: [
       {
-        "name": "destination",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "addProtocol",
-    "inputs": [
+    type: 'function',
+    name: 'addProtocol',
+    inputs: [
       {
-        "name": "protocol",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'protocol',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "addRebalanceTokens",
-    "inputs": [
+    type: 'function',
+    name: 'addRebalanceTokens',
+    inputs: [
       {
-        "name": "tokens",
-        "type": "address[]",
-        "internalType": "address[]"
-      }
+        name: 'tokens',
+        type: 'address[]',
+        internalType: 'address[]',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "approvedProtocolCount",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'approvedProtocolCount',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "approvedProtocols",
-    "inputs": [
+    type: 'function',
+    name: 'approvedProtocols',
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "axonRegistry",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'axonRegistry',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "botAddedByOperator",
-    "inputs": [
+    type: 'function',
+    name: 'botAddedByOperator',
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "botDestinationCount",
-    "inputs": [
+    type: 'function',
+    name: 'botDestinationCount',
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "botDestinationWhitelist",
-    "inputs": [
+    type: 'function',
+    name: 'botDestinationWhitelist',
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
+        name: '',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "deposit",
-    "inputs": [
+    type: 'function',
+    name: 'deposit',
+    inputs: [
       {
-        "name": "token",
-        "type": "address",
-        "internalType": "address"
+        name: 'token',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "amount",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: 'amount',
+        type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        "name": "ref",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
+        name: 'ref',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "payable"
+    outputs: [],
+    stateMutability: 'payable',
   },
   {
-    "type": "function",
-    "name": "eip712Domain",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'eip712Domain',
+    inputs: [],
+    outputs: [
       {
-        "name": "fields",
-        "type": "bytes1",
-        "internalType": "bytes1"
+        name: 'fields',
+        type: 'bytes1',
+        internalType: 'bytes1',
       },
       {
-        "name": "name",
-        "type": "string",
-        "internalType": "string"
+        name: 'name',
+        type: 'string',
+        internalType: 'string',
       },
       {
-        "name": "version",
-        "type": "string",
-        "internalType": "string"
+        name: 'version',
+        type: 'string',
+        internalType: 'string',
       },
       {
-        "name": "chainId",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: 'chainId',
+        type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        "name": "verifyingContract",
-        "type": "address",
-        "internalType": "address"
+        name: 'verifyingContract',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "salt",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        name: 'salt',
+        type: 'bytes32',
+        internalType: 'bytes32',
       },
       {
-        "name": "extensions",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
-      }
+        name: 'extensions',
+        type: 'uint256[]',
+        internalType: 'uint256[]',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "executePayment",
-    "inputs": [
+    type: 'function',
+    name: 'executePayment',
+    inputs: [
       {
-        "name": "intent",
-        "type": "tuple",
-        "internalType": "struct AxonVault.PaymentIntent",
-        "components": [
+        name: 'intent',
+        type: 'tuple',
+        internalType: 'struct AxonVault.PaymentIntent',
+        components: [
           {
-            "name": "bot",
-            "type": "address",
-            "internalType": "address"
+            name: 'bot',
+            type: 'address',
+            internalType: 'address',
           },
           {
-            "name": "to",
-            "type": "address",
-            "internalType": "address"
+            name: 'to',
+            type: 'address',
+            internalType: 'address',
           },
           {
-            "name": "token",
-            "type": "address",
-            "internalType": "address"
+            name: 'token',
+            type: 'address',
+            internalType: 'address',
           },
           {
-            "name": "amount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'amount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "deadline",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'deadline',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "ref",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
+            name: 'ref',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+        ],
       },
       {
-        "name": "signature",
-        "type": "bytes",
-        "internalType": "bytes"
+        name: 'signature',
+        type: 'bytes',
+        internalType: 'bytes',
       },
       {
-        "name": "fromToken",
-        "type": "address",
-        "internalType": "address"
+        name: 'fromToken',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "maxFromAmount",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: 'maxFromAmount',
+        type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        "name": "swapRouter",
-        "type": "address",
-        "internalType": "address"
+        name: 'swapRouter',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "swapCalldata",
-        "type": "bytes",
-        "internalType": "bytes"
-      }
+        name: 'swapCalldata',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "executeProtocol",
-    "inputs": [
+    type: 'function',
+    name: 'executeProtocol',
+    inputs: [
       {
-        "name": "intent",
-        "type": "tuple",
-        "internalType": "struct AxonVault.ExecuteIntent",
-        "components": [
+        name: 'intent',
+        type: 'tuple',
+        internalType: 'struct AxonVault.ExecuteIntent',
+        components: [
           {
-            "name": "bot",
-            "type": "address",
-            "internalType": "address"
+            name: 'bot',
+            type: 'address',
+            internalType: 'address',
           },
           {
-            "name": "protocol",
-            "type": "address",
-            "internalType": "address"
+            name: 'protocol',
+            type: 'address',
+            internalType: 'address',
           },
           {
-            "name": "calldataHash",
-            "type": "bytes32",
-            "internalType": "bytes32"
+            name: 'calldataHash',
+            type: 'bytes32',
+            internalType: 'bytes32',
           },
           {
-            "name": "token",
-            "type": "address",
-            "internalType": "address"
+            name: 'token',
+            type: 'address',
+            internalType: 'address',
           },
           {
-            "name": "amount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'amount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "deadline",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'deadline',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "ref",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
+            name: 'ref',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+        ],
       },
       {
-        "name": "signature",
-        "type": "bytes",
-        "internalType": "bytes"
+        name: 'signature',
+        type: 'bytes',
+        internalType: 'bytes',
       },
       {
-        "name": "callData",
-        "type": "bytes",
-        "internalType": "bytes"
+        name: 'callData',
+        type: 'bytes',
+        internalType: 'bytes',
       },
       {
-        "name": "fromToken",
-        "type": "address",
-        "internalType": "address"
+        name: 'fromToken',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "maxFromAmount",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: 'maxFromAmount',
+        type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        "name": "swapRouter",
-        "type": "address",
-        "internalType": "address"
+        name: 'swapRouter',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "swapCalldata",
-        "type": "bytes",
-        "internalType": "bytes"
-      }
+        name: 'swapCalldata',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bytes",
-        "internalType": "bytes"
-      }
+        name: '',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
     ],
-    "stateMutability": "nonpayable"
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "executeSwap",
-    "inputs": [
+    type: 'function',
+    name: 'executeSwap',
+    inputs: [
       {
-        "name": "intent",
-        "type": "tuple",
-        "internalType": "struct AxonVault.SwapIntent",
-        "components": [
+        name: 'intent',
+        type: 'tuple',
+        internalType: 'struct AxonVault.SwapIntent',
+        components: [
           {
-            "name": "bot",
-            "type": "address",
-            "internalType": "address"
+            name: 'bot',
+            type: 'address',
+            internalType: 'address',
           },
           {
-            "name": "toToken",
-            "type": "address",
-            "internalType": "address"
+            name: 'toToken',
+            type: 'address',
+            internalType: 'address',
           },
           {
-            "name": "minToAmount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'minToAmount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "deadline",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'deadline',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "ref",
-            "type": "bytes32",
-            "internalType": "bytes32"
-          }
-        ]
+            name: 'ref',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+        ],
       },
       {
-        "name": "signature",
-        "type": "bytes",
-        "internalType": "bytes"
+        name: 'signature',
+        type: 'bytes',
+        internalType: 'bytes',
       },
       {
-        "name": "fromToken",
-        "type": "address",
-        "internalType": "address"
+        name: 'fromToken',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "maxFromAmount",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: 'maxFromAmount',
+        type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        "name": "swapRouter",
-        "type": "address",
-        "internalType": "address"
+        name: 'swapRouter',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "swapCalldata",
-        "type": "bytes",
-        "internalType": "bytes"
-      }
+        name: 'swapCalldata',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "getBotConfig",
-    "inputs": [
+    type: 'function',
+    name: 'getBotConfig',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'bot',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "tuple",
-        "internalType": "struct AxonVault.BotConfig",
-        "components": [
+        name: '',
+        type: 'tuple',
+        internalType: 'struct AxonVault.BotConfig',
+        components: [
           {
-            "name": "isActive",
-            "type": "bool",
-            "internalType": "bool"
+            name: 'isActive',
+            type: 'bool',
+            internalType: 'bool',
           },
           {
-            "name": "registeredAt",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'registeredAt',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "maxPerTxAmount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxPerTxAmount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "maxRebalanceAmount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxRebalanceAmount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "spendingLimits",
-            "type": "tuple[]",
-            "internalType": "struct AxonVault.SpendingLimit[]",
-            "components": [
+            name: 'spendingLimits',
+            type: 'tuple[]',
+            internalType: 'struct AxonVault.SpendingLimit[]',
+            components: [
               {
-                "name": "amount",
-                "type": "uint256",
-                "internalType": "uint256"
+                name: 'amount',
+                type: 'uint256',
+                internalType: 'uint256',
               },
               {
-                "name": "maxCount",
-                "type": "uint256",
-                "internalType": "uint256"
+                name: 'maxCount',
+                type: 'uint256',
+                internalType: 'uint256',
               },
               {
-                "name": "windowSeconds",
-                "type": "uint256",
-                "internalType": "uint256"
-              }
-            ]
+                name: 'windowSeconds',
+                type: 'uint256',
+                internalType: 'uint256',
+              },
+            ],
           },
           {
-            "name": "aiTriggerThreshold",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'aiTriggerThreshold',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "requireAiVerification",
-            "type": "bool",
-            "internalType": "bool"
-          }
-        ]
-      }
+            name: 'requireAiVerification',
+            type: 'bool',
+            internalType: 'bool',
+          },
+        ],
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "globalBlacklistCount",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'globalBlacklistCount',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "globalDestinationBlacklist",
-    "inputs": [
+    type: 'function',
+    name: 'globalDestinationBlacklist',
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "globalDestinationCount",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'globalDestinationCount',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "globalDestinationWhitelist",
-    "inputs": [
+    type: 'function',
+    name: 'globalDestinationWhitelist',
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "isBotActive",
-    "inputs": [
+    type: 'function',
+    name: 'isBotActive',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'bot',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "isProtocolApproved",
-    "inputs": [
+    type: 'function',
+    name: 'isProtocolApproved',
+    inputs: [
       {
-        "name": "protocol",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'protocol',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "operator",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'operator',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "operatorBotCount",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'operatorBotCount',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "operatorCeilings",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'operatorCeilings',
+    inputs: [],
+    outputs: [
       {
-        "name": "maxPerTxAmount",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: 'maxPerTxAmount',
+        type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        "name": "maxBotDailyLimit",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: 'maxBotDailyLimit',
+        type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        "name": "maxOperatorBots",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: 'maxOperatorBots',
+        type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        "name": "vaultDailyAggregate",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: 'vaultDailyAggregate',
+        type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        "name": "minAiTriggerFloor",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: 'minAiTriggerFloor',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "operatorMaxDrainPerDay",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'operatorMaxDrainPerDay',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "owner",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'owner',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "pause",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    type: 'function',
+    name: 'pause',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "paused",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'paused',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "pendingOwner",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'pendingOwner',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "rebalanceTokenCount",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'rebalanceTokenCount',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "rebalanceTokenWhitelist",
-    "inputs": [
+    type: 'function',
+    name: 'rebalanceTokenWhitelist',
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "removeBot",
-    "inputs": [
+    type: 'function',
+    name: 'removeBot',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'bot',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "removeBotDestination",
-    "inputs": [
+    type: 'function',
+    name: 'removeBotDestination',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "destination",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "removeGlobalBlacklist",
-    "inputs": [
+    type: 'function',
+    name: 'removeGlobalBlacklist',
+    inputs: [
       {
-        "name": "destination",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "removeGlobalDestination",
-    "inputs": [
+    type: 'function',
+    name: 'removeGlobalDestination',
+    inputs: [
       {
-        "name": "destination",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "removeProtocol",
-    "inputs": [
+    type: 'function',
+    name: 'removeProtocol',
+    inputs: [
       {
-        "name": "protocol",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'protocol',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "removeRebalanceTokens",
-    "inputs": [
+    type: 'function',
+    name: 'removeRebalanceTokens',
+    inputs: [
       {
-        "name": "tokens",
-        "type": "address[]",
-        "internalType": "address[]"
-      }
+        name: 'tokens',
+        type: 'address[]',
+        internalType: 'address[]',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "renounceOwnership",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    type: 'function',
+    name: 'renounceOwnership',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "setOperator",
-    "inputs": [
+    type: 'function',
+    name: 'setOperator',
+    inputs: [
       {
-        "name": "_operator",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: '_operator',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "setOperatorCeilings",
-    "inputs": [
+    type: 'function',
+    name: 'setOperatorCeilings',
+    inputs: [
       {
-        "name": "ceilings",
-        "type": "tuple",
-        "internalType": "struct AxonVault.OperatorCeilings",
-        "components": [
+        name: 'ceilings',
+        type: 'tuple',
+        internalType: 'struct AxonVault.OperatorCeilings',
+        components: [
           {
-            "name": "maxPerTxAmount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxPerTxAmount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "maxBotDailyLimit",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxBotDailyLimit',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "maxOperatorBots",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxOperatorBots',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "vaultDailyAggregate",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'vaultDailyAggregate',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "minAiTriggerFloor",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      }
+            name: 'minAiTriggerFloor',
+            type: 'uint256',
+            internalType: 'uint256',
+          },
+        ],
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "trackUsedIntents",
-    "inputs": [],
-    "outputs": [
+    type: 'function',
+    name: 'trackUsedIntents',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "transferOwnership",
-    "inputs": [
+    type: 'function',
+    name: 'transferOwnership',
+    inputs: [
       {
-        "name": "newOwner",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'newOwner',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "unpause",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    type: 'function',
+    name: 'unpause',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "updateBotConfig",
-    "inputs": [
+    type: 'function',
+    name: 'updateBotConfig',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "params",
-        "type": "tuple",
-        "internalType": "struct AxonVault.BotConfigParams",
-        "components": [
+        name: 'params',
+        type: 'tuple',
+        internalType: 'struct AxonVault.BotConfigParams',
+        components: [
           {
-            "name": "maxPerTxAmount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxPerTxAmount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "maxRebalanceAmount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxRebalanceAmount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "spendingLimits",
-            "type": "tuple[]",
-            "internalType": "struct AxonVault.SpendingLimit[]",
-            "components": [
+            name: 'spendingLimits',
+            type: 'tuple[]',
+            internalType: 'struct AxonVault.SpendingLimit[]',
+            components: [
               {
-                "name": "amount",
-                "type": "uint256",
-                "internalType": "uint256"
+                name: 'amount',
+                type: 'uint256',
+                internalType: 'uint256',
               },
               {
-                "name": "maxCount",
-                "type": "uint256",
-                "internalType": "uint256"
+                name: 'maxCount',
+                type: 'uint256',
+                internalType: 'uint256',
               },
               {
-                "name": "windowSeconds",
-                "type": "uint256",
-                "internalType": "uint256"
-              }
-            ]
+                name: 'windowSeconds',
+                type: 'uint256',
+                internalType: 'uint256',
+              },
+            ],
           },
           {
-            "name": "aiTriggerThreshold",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'aiTriggerThreshold',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "requireAiVerification",
-            "type": "bool",
-            "internalType": "bool"
-          }
-        ]
-      }
+            name: 'requireAiVerification',
+            type: 'bool',
+            internalType: 'bool',
+          },
+        ],
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "function",
-    "name": "usedIntents",
-    "inputs": [
+    type: 'function',
+    name: 'usedIntents',
+    inputs: [
       {
-        "name": "",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
+        name: '',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: 'view',
   },
   {
-    "type": "function",
-    "name": "withdraw",
-    "inputs": [
+    type: 'function',
+    name: 'withdraw',
+    inputs: [
       {
-        "name": "token",
-        "type": "address",
-        "internalType": "address"
+        name: 'token',
+        type: 'address',
+        internalType: 'address',
       },
       {
-        "name": "amount",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: 'amount',
+        type: 'uint256',
+        internalType: 'uint256',
       },
       {
-        "name": "to",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: 'to',
+        type: 'address',
+        internalType: 'address',
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
-    "type": "event",
-    "name": "BotAdded",
-    "inputs": [
+    type: 'event',
+    name: 'BotAdded',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "addedBy",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'addedBy',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "BotConfigUpdated",
-    "inputs": [
+    type: 'event',
+    name: 'BotConfigUpdated',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "updatedBy",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'updatedBy',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "BotDestinationAdded",
-    "inputs": [
+    type: 'event',
+    name: 'BotDestinationAdded',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "destination",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "BotDestinationRemoved",
-    "inputs": [
+    type: 'event',
+    name: 'BotDestinationRemoved',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "destination",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "BotRemoved",
-    "inputs": [
+    type: 'event',
+    name: 'BotRemoved',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "removedBy",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'removedBy',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "Deposited",
-    "inputs": [
+    type: 'event',
+    name: 'Deposited',
+    inputs: [
       {
-        "name": "from",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'from',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "token",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'token',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "amount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        name: 'amount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
       {
-        "name": "ref",
-        "type": "bytes32",
-        "indexed": false,
-        "internalType": "bytes32"
-      }
+        name: 'ref',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "EIP712DomainChanged",
-    "inputs": [],
-    "anonymous": false
+    type: 'event',
+    name: 'EIP712DomainChanged',
+    inputs: [],
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "GlobalBlacklistAdded",
-    "inputs": [
+    type: 'event',
+    name: 'GlobalBlacklistAdded',
+    inputs: [
       {
-        "name": "destination",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "GlobalBlacklistRemoved",
-    "inputs": [
+    type: 'event',
+    name: 'GlobalBlacklistRemoved',
+    inputs: [
       {
-        "name": "destination",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "GlobalDestinationAdded",
-    "inputs": [
+    type: 'event',
+    name: 'GlobalDestinationAdded',
+    inputs: [
       {
-        "name": "destination",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "GlobalDestinationRemoved",
-    "inputs": [
+    type: 'event',
+    name: 'GlobalDestinationRemoved',
+    inputs: [
       {
-        "name": "destination",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'destination',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "OperatorCeilingsUpdated",
-    "inputs": [
+    type: 'event',
+    name: 'OperatorCeilingsUpdated',
+    inputs: [
       {
-        "name": "ceilings",
-        "type": "tuple",
-        "indexed": false,
-        "internalType": "struct AxonVault.OperatorCeilings",
-        "components": [
+        name: 'ceilings',
+        type: 'tuple',
+        indexed: false,
+        internalType: 'struct AxonVault.OperatorCeilings',
+        components: [
           {
-            "name": "maxPerTxAmount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxPerTxAmount',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "maxBotDailyLimit",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxBotDailyLimit',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "maxOperatorBots",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'maxOperatorBots',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "vaultDailyAggregate",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: 'vaultDailyAggregate',
+            type: 'uint256',
+            internalType: 'uint256',
           },
           {
-            "name": "minAiTriggerFloor",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      }
+            name: 'minAiTriggerFloor',
+            type: 'uint256',
+            internalType: 'uint256',
+          },
+        ],
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "OperatorSet",
-    "inputs": [
+    type: 'event',
+    name: 'OperatorSet',
+    inputs: [
       {
-        "name": "oldOperator",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'oldOperator',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "newOperator",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'newOperator',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "OwnershipTransferStarted",
-    "inputs": [
+    type: 'event',
+    name: 'OwnershipTransferStarted',
+    inputs: [
       {
-        "name": "previousOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'previousOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "newOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'newOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "OwnershipTransferred",
-    "inputs": [
+    type: 'event',
+    name: 'OwnershipTransferred',
+    inputs: [
       {
-        "name": "previousOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'previousOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "newOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'newOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "Paused",
-    "inputs": [
+    type: 'event',
+    name: 'Paused',
+    inputs: [
       {
-        "name": "account",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
-      }
+        name: 'account',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "PaymentExecuted",
-    "inputs": [
+    type: 'event',
+    name: 'PaymentExecuted',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "to",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'to',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "token",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'token',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "amount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        name: 'amount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
       {
-        "name": "ref",
-        "type": "bytes32",
-        "indexed": false,
-        "internalType": "bytes32"
-      }
+        name: 'ref',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "ProtocolAdded",
-    "inputs": [
+    type: 'event',
+    name: 'ProtocolAdded',
+    inputs: [
       {
-        "name": "protocol",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'protocol',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "ProtocolExecuted",
-    "inputs": [
+    type: 'event',
+    name: 'ProtocolExecuted',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "protocol",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'protocol',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "token",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
+        name: 'token',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
       },
       {
-        "name": "amount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        name: 'amount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
       {
-        "name": "ref",
-        "type": "bytes32",
-        "indexed": false,
-        "internalType": "bytes32"
-      }
+        name: 'ref',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "ProtocolRemoved",
-    "inputs": [
+    type: 'event',
+    name: 'ProtocolRemoved',
+    inputs: [
       {
-        "name": "protocol",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'protocol',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "RebalanceTokenAdded",
-    "inputs": [
+    type: 'event',
+    name: 'RebalanceTokenAdded',
+    inputs: [
       {
-        "name": "token",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'token',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "RebalanceTokenRemoved",
-    "inputs": [
+    type: 'event',
+    name: 'RebalanceTokenRemoved',
+    inputs: [
       {
-        "name": "token",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'token',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "SwapExecuted",
-    "inputs": [
+    type: 'event',
+    name: 'SwapExecuted',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "fromToken",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
+        name: 'fromToken',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
       },
       {
-        "name": "toToken",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
+        name: 'toToken',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
       },
       {
-        "name": "fromAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        name: 'fromAmount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
       {
-        "name": "toAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        name: 'toAmount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
       {
-        "name": "ref",
-        "type": "bytes32",
-        "indexed": false,
-        "internalType": "bytes32"
-      }
+        name: 'ref',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "SwapPaymentExecuted",
-    "inputs": [
+    type: 'event',
+    name: 'SwapPaymentExecuted',
+    inputs: [
       {
-        "name": "bot",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'bot',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "to",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'to',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "fromToken",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
+        name: 'fromToken',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
       },
       {
-        "name": "toToken",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
+        name: 'toToken',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
       },
       {
-        "name": "fromAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        name: 'fromAmount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
       {
-        "name": "toAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        name: 'toAmount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
       {
-        "name": "ref",
-        "type": "bytes32",
-        "indexed": false,
-        "internalType": "bytes32"
-      }
+        name: 'ref',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "Unpaused",
-    "inputs": [
+    type: 'event',
+    name: 'Unpaused',
+    inputs: [
       {
-        "name": "account",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
-      }
+        name: 'account',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "Withdrawn",
-    "inputs": [
+    type: 'event',
+    name: 'Withdrawn',
+    inputs: [
       {
-        "name": "token",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: 'token',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
       {
-        "name": "amount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        name: 'amount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
       {
-        "name": "to",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: 'to',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "error",
-    "name": "AlreadyApprovedProtocol",
-    "inputs": []
+    type: 'error',
+    name: 'AlreadyApprovedProtocol',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "AmountMismatch",
-    "inputs": []
+    type: 'error',
+    name: 'AmountMismatch',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "BotAlreadyExists",
-    "inputs": []
+    type: 'error',
+    name: 'BotAlreadyExists',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "BotDoesNotExist",
-    "inputs": []
+    type: 'error',
+    name: 'BotDoesNotExist',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "BotNotActive",
-    "inputs": []
+    type: 'error',
+    name: 'BotNotActive',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "CalldataHashMismatch",
-    "inputs": []
+    type: 'error',
+    name: 'CalldataHashMismatch',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "DeadlineExpired",
-    "inputs": []
+    type: 'error',
+    name: 'DeadlineExpired',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "DestinationBlacklisted",
-    "inputs": []
+    type: 'error',
+    name: 'DestinationBlacklisted',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "DestinationNotWhitelisted",
-    "inputs": []
+    type: 'error',
+    name: 'DestinationNotWhitelisted',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "ECDSAInvalidSignature",
-    "inputs": []
+    type: 'error',
+    name: 'ECDSAInvalidSignature',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "ECDSAInvalidSignatureLength",
-    "inputs": [
+    type: 'error',
+    name: 'ECDSAInvalidSignatureLength',
+    inputs: [
       {
-        "name": "length",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ]
+        name: 'length',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
   },
   {
-    "type": "error",
-    "name": "ECDSAInvalidSignatureS",
-    "inputs": [
+    type: 'error',
+    name: 'ECDSAInvalidSignatureS',
+    inputs: [
       {
-        "name": "s",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
-    ]
+        name: 's',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+    ],
   },
   {
-    "type": "error",
-    "name": "EnforcedPause",
-    "inputs": []
+    type: 'error',
+    name: 'EnforcedPause',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "ExceedsOperatorCeiling",
-    "inputs": []
+    type: 'error',
+    name: 'ExceedsOperatorCeiling',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "ExpectedPause",
-    "inputs": []
+    type: 'error',
+    name: 'ExpectedPause',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "InsufficientBalance",
-    "inputs": []
+    type: 'error',
+    name: 'InsufficientBalance',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "IntentAlreadyUsed",
-    "inputs": []
+    type: 'error',
+    name: 'IntentAlreadyUsed',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "InvalidShortString",
-    "inputs": []
+    type: 'error',
+    name: 'InvalidShortString',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "InvalidSignature",
-    "inputs": []
+    type: 'error',
+    name: 'InvalidSignature',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "MaxPerTxExceeded",
-    "inputs": []
+    type: 'error',
+    name: 'MaxPerTxExceeded',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "MaxRebalanceAmountExceeded",
-    "inputs": []
+    type: 'error',
+    name: 'MaxRebalanceAmountExceeded',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "NativeTransferFailed",
-    "inputs": []
+    type: 'error',
+    name: 'NativeTransferFailed',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "NotAuthorized",
-    "inputs": []
+    type: 'error',
+    name: 'NotAuthorized',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "NotAuthorizedRelayer",
-    "inputs": []
+    type: 'error',
+    name: 'NotAuthorizedRelayer',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "OperatorBotLimitReached",
-    "inputs": []
+    type: 'error',
+    name: 'OperatorBotLimitReached',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "OperatorCannotBeOwner",
-    "inputs": []
+    type: 'error',
+    name: 'OperatorCannotBeOwner',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "OracleNotConfigured",
-    "inputs": []
+    type: 'error',
+    name: 'OracleNotConfigured',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "OracleUnavailable",
-    "inputs": []
+    type: 'error',
+    name: 'OracleUnavailable',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "OwnableInvalidOwner",
-    "inputs": [
+    type: 'error',
+    name: 'OwnableInvalidOwner',
+    inputs: [
       {
-        "name": "owner",
-        "type": "address",
-        "internalType": "address"
-      }
-    ]
+        name: 'owner',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
   },
   {
-    "type": "error",
-    "name": "OwnableUnauthorizedAccount",
-    "inputs": [
+    type: 'error',
+    name: 'OwnableUnauthorizedAccount',
+    inputs: [
       {
-        "name": "account",
-        "type": "address",
-        "internalType": "address"
-      }
-    ]
+        name: 'account',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
   },
   {
-    "type": "error",
-    "name": "OwnerCannotBeBot",
-    "inputs": []
+    type: 'error',
+    name: 'OwnerCannotBeBot',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "PaymentToZeroAddress",
-    "inputs": []
+    type: 'error',
+    name: 'PaymentToZeroAddress',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "ProtocolCallFailed",
-    "inputs": []
+    type: 'error',
+    name: 'ProtocolCallFailed',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "ProtocolNotApproved",
-    "inputs": []
+    type: 'error',
+    name: 'ProtocolNotApproved',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "ProtocolNotInList",
-    "inputs": []
+    type: 'error',
+    name: 'ProtocolNotInList',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "RebalanceTokenNotAllowed",
-    "inputs": []
+    type: 'error',
+    name: 'RebalanceTokenNotAllowed',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "ReentrancyGuardReentrantCall",
-    "inputs": []
+    type: 'error',
+    name: 'ReentrancyGuardReentrantCall',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "RouterNotApproved",
-    "inputs": []
+    type: 'error',
+    name: 'RouterNotApproved',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "SafeERC20FailedOperation",
-    "inputs": [
+    type: 'error',
+    name: 'SafeERC20FailedOperation',
+    inputs: [
       {
-        "name": "token",
-        "type": "address",
-        "internalType": "address"
-      }
-    ]
+        name: 'token',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
   },
   {
-    "type": "error",
-    "name": "SelfPayment",
-    "inputs": []
+    type: 'error',
+    name: 'SelfPayment',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "StringTooLong",
-    "inputs": [
+    type: 'error',
+    name: 'StringTooLong',
+    inputs: [
       {
-        "name": "str",
-        "type": "string",
-        "internalType": "string"
-      }
-    ]
+        name: 'str',
+        type: 'string',
+        internalType: 'string',
+      },
+    ],
   },
   {
-    "type": "error",
-    "name": "SwapFailed",
-    "inputs": []
+    type: 'error',
+    name: 'SwapFailed',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "SwapOutputInsufficient",
-    "inputs": []
+    type: 'error',
+    name: 'SwapOutputInsufficient',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "TooManySpendingLimits",
-    "inputs": []
+    type: 'error',
+    name: 'TooManySpendingLimits',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "UnexpectedETH",
-    "inputs": []
+    type: 'error',
+    name: 'UnexpectedETH',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "ZeroAddress",
-    "inputs": []
+    type: 'error',
+    name: 'ZeroAddress',
+    inputs: [],
   },
   {
-    "type": "error",
-    "name": "ZeroAmount",
-    "inputs": []
-  }
+    type: 'error',
+    name: 'ZeroAmount',
+    inputs: [],
+  },
 ] as const;

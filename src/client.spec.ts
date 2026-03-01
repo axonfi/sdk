@@ -439,10 +439,7 @@ describe('acceptTos()', () => {
     // Second call: POST accept
     mockFetchOk({ accepted: true, tosVersion: 'v1' });
 
-    const result = await client.acceptTos(
-      { signMessage: mockSignMessage as any },
-      '0xOwnerWallet',
-    );
+    const result = await client.acceptTos({ signMessage: mockSignMessage as any }, '0xOwnerWallet');
 
     expect(result.accepted).toBe(true);
     expect(mockSignMessage).toHaveBeenCalledTimes(1);
@@ -474,9 +471,9 @@ describe('acceptTos()', () => {
     // accept fails
     mockFetchFail(400, 'Invalid signature');
 
-    await expect(
-      client.acceptTos({ signMessage: mockSignMessage as any }, '0xOwnerWallet'),
-    ).rejects.toThrow('TOS acceptance failed [400]');
+    await expect(client.acceptTos({ signMessage: mockSignMessage as any }, '0xOwnerWallet')).rejects.toThrow(
+      'TOS acceptance failed [400]',
+    );
   });
 });
 
