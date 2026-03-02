@@ -1,8 +1,10 @@
 # @axonfi/sdk
 
+Give your AI agents a wallet they can't drain.
+
 Treasury and payment infrastructure for autonomous AI agents. Non-custodial vaults, gasless bots, AI verification.
 
-## Why Axon
+## Why Axon Finance
 
 Giving bots funded wallets is risky: scattered keys, no spending controls, one compromised key drains everything. Axon flips this model:
 
