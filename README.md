@@ -21,7 +21,7 @@ Your agents pay. You stay in control.
 ## Install
 
 ```bash
-npm install @axonfi/sdk viem
+npm install @axonfi/sdk
 ```
 
 ## Quick Start
