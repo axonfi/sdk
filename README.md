@@ -26,14 +26,19 @@ npm install @axonfi/sdk
 
 ## Quick Start
 
+### With Encrypted Keystore (recommended)
+
 ```typescript
-import { AxonClient } from '@axonfi/sdk';
+import { AxonClient, decryptKeystore } from '@axonfi/sdk';
+import fs from 'fs';
+
+const keystore = fs.readFileSync('./axon-bot.json', 'utf8');
+const botPrivateKey = await decryptKeystore(keystore, process.env.BOT_PASSPHRASE!);
 
 const axon = new AxonClient({
   vaultAddress: '0x...',
   chainId: 8453, // Base
-  botPrivateKey: '0x...',
-  relayerUrl: 'https://relay.axonfi.xyz',
+  botPrivateKey,
 });
 
 // Pay 5 USDC — SDK handles decimals automatically
@@ -45,6 +50,18 @@ const result = await axon.pay({
 });
 
 console.log(result.status, result.txHash);
+```
+
+### With Raw Private Key
+
+```typescript
+import { AxonClient } from '@axonfi/sdk';
+
+const axon = new AxonClient({
+  vaultAddress: '0x...',
+  chainId: 8453,
+  botPrivateKey: process.env.BOT_PRIVATE_KEY!,
+});
 ```
 
 ### Human-Friendly Amounts
@@ -72,29 +89,13 @@ token: Token.USDC; // type-safe enum
 token: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // raw address
 ```
 
-### Encrypted Bot Keys
-
-```typescript
-import { AxonClient, decryptKeystore } from '@axonfi/sdk';
-import fs from 'fs';
-
-const keystore = fs.readFileSync('./axon-bot.json', 'utf8');
-const botPrivateKey = await decryptKeystore(keystore, process.env.BOT_PASSPHRASE!);
-
-const axon = new AxonClient({
-  vaultAddress: '0x...',
-  chainId: 8453,
-  botPrivateKey,
-  relayerUrl: 'https://relay.axonfi.xyz',
-});
-```
-
 ## API
 
 ### Payments
 
+Send USDC (or any ERC-20) to any address. The bot signs an EIP-712 intent — Axon verifies it against your vault's spending policies, simulates the transaction, and executes on-chain. If the payment exceeds the AI threshold, it goes through 3-agent verification before execution.
+
 ```typescript
-// Send a payment
 const result = await axon.pay({
   to: '0xRecipient',
   token: 'USDC', // or Token.USDC, or an address
@@ -102,11 +103,13 @@ const result = await axon.pay({
   memo: 'Invoice #42',
 });
 
-// Poll async payments
+// Poll async payments (AI scan or human review)
 const status = await axon.poll(result.requestId);
 ```
 
 ### In-Vault Swaps
+
+Rebalance tokens inside your vault without withdrawing. Swap between any tokens on the vault's rebalance whitelist (set by the owner). Each bot has a separate `maxRebalanceAmount` cap — independent from payment limits.
 
 ```typescript
 const result = await axon.swap({
@@ -117,6 +120,8 @@ const result = await axon.swap({
 ```
 
 ### DeFi Protocol Execution
+
+Interact with DeFi and Web3 protocols (Uniswap, Aave, GMX, etc.) that need permission to access collateral from your vault. The bot signs an `ExecuteIntent` specifying the target contract and calldata. The relayer handles token approvals, execution, and revocation in a single atomic transaction. All executions are subject to the bot's per-transaction and daily spending limits.
 
 ```typescript
 const result = await axon.execute({
@@ -129,8 +134,10 @@ const result = await axon.execute({
 
 ### Vault Reads
 
+Query your vault's on-chain state — balances, bot status, pause state, and destination checks. All reads go through the relayer (no RPC connection needed).
+
 ```typescript
-await axon.getBalance('0xUSDC...'); // vault token balance
+await axon.getBalance('USDC'); // vault token balance
 await axon.isActive(); // bot registered + active?
 await axon.isPaused(); // vault paused?
 await axon.getVaultInfo(); // owner, operator, version
@@ -138,6 +145,8 @@ await axon.canPayTo('0xRecipient'); // destination allowed?
 ```
 
 ### Utilities
+
+Helper functions for amount conversion, token resolution, and reference encoding.
 
 ```typescript
 import { parseAmount, resolveTokenDecimals, resolveToken, encodeRef } from '@axonfi/sdk';

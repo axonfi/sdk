@@ -43,7 +43,6 @@ import { keccak256 } from 'viem';
  *   vaultAddress: '0x...',
  *   chainId: 84532,           // Base Sepolia
  *   botPrivateKey: '0x...',
- *   relayerUrl: 'https://relay.axonfi.xyz',
  * })
  *
  * const result = await client.pay({
@@ -65,7 +64,7 @@ export class AxonClient {
   constructor(config: AxonClientConfig) {
     this.vaultAddress = config.vaultAddress;
     this.chainId = config.chainId;
-    this.relayerUrl = config.relayerUrl.replace(/\/$/, ''); // strip trailing slash
+    this.relayerUrl = 'https://relay.axonfi.xyz';
 
     if (!config.botPrivateKey) {
       throw new Error('botPrivateKey is required in AxonClientConfig');

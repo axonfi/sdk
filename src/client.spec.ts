@@ -28,14 +28,13 @@ const { RELAYER_API } = await import('./constants.js');
 const VAULT_ADDR = '0x1111111111111111111111111111111111111111' as Address;
 const BOT_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' as Hex;
 const CHAIN_ID = 84532;
-const RELAYER_URL = 'https://relay.example.com';
+const RELAYER_URL = 'https://relay.axonfi.xyz';
 
 function makeClient() {
   return new AxonClient({
     vaultAddress: VAULT_ADDR,
     chainId: CHAIN_ID,
     botPrivateKey: BOT_KEY,
-    relayerUrl: RELAYER_URL,
   });
 }
 
@@ -68,31 +67,17 @@ beforeEach(() => {
 // ---------------------------------------------------------------------------
 
 describe('AxonClient constructor', () => {
-  it('strips trailing slash from relayerUrl', () => {
-    const client = new AxonClient({
-      vaultAddress: VAULT_ADDR,
-      chainId: CHAIN_ID,
-      botPrivateKey: BOT_KEY,
-      relayerUrl: 'https://relay.example.com/',
-    });
-    // Verify by calling poll and checking the URL
-    mockFetchOk({ requestId: 'r1', status: 'approved' });
-    client.poll('r1');
-    expect(fetchMock).toHaveBeenCalledWith(expect.not.stringContaining('//v1'), expect.anything());
-  });
-
   it('throws if botPrivateKey is missing', () => {
     expect(
       () =>
         new AxonClient({
           vaultAddress: VAULT_ADDR,
           chainId: CHAIN_ID,
-          relayerUrl: RELAYER_URL,
         }),
     ).toThrow('botPrivateKey is required');
   });
 
-  it('does not require rpcUrl', () => {
+  it('creates client with minimal config', () => {
     expect(() => makeClient()).not.toThrow();
   });
 });

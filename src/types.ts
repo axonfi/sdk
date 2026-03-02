@@ -343,9 +343,4 @@ export interface AxonClientConfig {
    */
   botPrivateKey?: Hex;
 
-  /**
-   * Relayer base URL. Required for all SDK methods (pay, poll, getBalance, etc.).
-   * Example: "https://relay.axonfi.xyz"
-   */
-  relayerUrl: string;
 }
