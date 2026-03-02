@@ -1,6 +1,6 @@
 {
   "name": "@axonfi/sdk",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Give your AI agents a wallet they can't drain. TypeScript SDK for Axon Finance.",
   "license": "MIT",
   "author": "Axon",

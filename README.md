@@ -176,13 +176,13 @@ Payments resolve through one of three paths:
 
 ## Chains
 
-| Chain        | ID    | Status  |
-| ------------ | ----- | ------- |
-| Base         | 8453  | Live    |
-| Arbitrum One | 42161 | Live    |
-| Optimism     | 10    | Live    |
-| Polygon PoS  | 137   | Live    |
-| Base Sepolia | 84532 | Testnet |
+| Chain        | ID    | Status      |
+| ------------ | ----- | ----------- |
+| Base Sepolia | 84532 | Live        |
+| Base         | 8453  | Coming soon |
+| Arbitrum One | 42161 | Coming soon |
+| Optimism     | 10    | Coming soon |
+| Polygon PoS  | 137   | Coming soon |
 
 ## Documentation
 
