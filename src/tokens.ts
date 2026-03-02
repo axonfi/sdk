@@ -249,8 +249,11 @@ export function getTokenSymbolByAddress(address: string): string | null {
  * @throws if the symbol has no address on the given chain.
  */
 export function resolveToken(token: Address | Token | KnownTokenSymbol, chainId: number): Address {
-  // Already an address — pass through
+  // Already an address — pass through (with zero-address guard)
   if (typeof token === 'string' && token.startsWith('0x')) {
+    if (token === '0x0000000000000000000000000000000000000000') {
+      throw new Error('Token address cannot be the zero address');
+    }
     return token as Address;
   }
 

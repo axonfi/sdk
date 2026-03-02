@@ -9,7 +9,6 @@ import {
   getVaultVersion,
   getVaultOwner,
   getVaultOperator,
-  getTrackUsedIntents,
   isDestinationAllowed,
   getChain,
 } from './vault.js';
@@ -91,13 +90,6 @@ describe('getVaultOperator', () => {
   it('returns the operator address', async () => {
     const client = mockPublicClient({ operator: OPERATOR });
     expect(await getVaultOperator(client, VAULT)).toBe(OPERATOR);
-  });
-});
-
-describe('getTrackUsedIntents', () => {
-  it('returns true when tracking is enabled', async () => {
-    const client = mockPublicClient({ trackUsedIntents: true });
-    expect(await getTrackUsedIntents(client, VAULT)).toBe(true);
   });
 });
 

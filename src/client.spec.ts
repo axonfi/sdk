@@ -338,7 +338,7 @@ describe('isActive()', () => {
 describe('isPaused()', () => {
   it('fetches vault info from relayer and returns paused state', async () => {
     const client = makeClient();
-    mockFetchOk({ owner: '0xAAA', operator: '0xBBB', paused: false, version: 1, trackUsedIntents: true });
+    mockFetchOk({ owner: '0xAAA', operator: '0xBBB', paused: false, version: 1 });
 
     expect(await client.isPaused()).toBe(false);
 
@@ -359,7 +359,6 @@ describe('getVaultInfo()', () => {
       operator: '0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
       paused: false,
       version: 1,
-      trackUsedIntents: true,
     };
     mockFetchOk(expected);
 

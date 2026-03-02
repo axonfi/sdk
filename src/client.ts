@@ -201,7 +201,7 @@ export class AxonClient {
   // getVaultInfo() — via relayer
   // ============================================================================
 
-  /** Returns high-level vault info (owner, operator, paused, version, trackUsedIntents) via relayer. */
+  /** Returns high-level vault info (owner, operator, paused, version) via relayer. */
   async getVaultInfo(): Promise<VaultInfo> {
     const path = RELAYER_API.vaultInfo(this.vaultAddress, this.chainId);
     return this._get(path) as Promise<VaultInfo>;
@@ -371,6 +371,9 @@ export class AxonClient {
   }
 
   private _buildPaymentIntent(input: PayInput): PaymentIntent {
+    if (input.to === '0x0000000000000000000000000000000000000000') {
+      throw new Error('Payment recipient cannot be the zero address');
+    }
     return {
       bot: this.botAddress,
       to: input.to,

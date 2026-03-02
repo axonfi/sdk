@@ -63,7 +63,6 @@ export {
   getVaultVersion,
   getVaultOwner,
   getVaultOperator,
-  getTrackUsedIntents,
   isDestinationAllowed,
   getRebalanceTokenCount,
   isRebalanceTokenWhitelisted,

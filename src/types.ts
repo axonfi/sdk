@@ -303,7 +303,6 @@ export interface VaultInfo {
   operator: Address;
   paused: boolean;
   version: number;
-  trackUsedIntents: boolean;
 }
 
 /** Result of a destination check (canPayTo / isDestinationAllowed). */
@@ -342,5 +341,4 @@ export interface AxonClientConfig {
    * Provide either this or `account`.
    */
   botPrivateKey?: Hex;
-
 }

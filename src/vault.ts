@@ -184,15 +184,6 @@ export async function getVaultOperator(publicClient: PublicClient, vaultAddress:
   });
 }
 
-/** Returns whether the vault tracks used intent hashes on-chain. */
-export async function getTrackUsedIntents(publicClient: PublicClient, vaultAddress: Address): Promise<boolean> {
-  return publicClient.readContract({
-    address: vaultAddress,
-    abi: AxonVaultAbi,
-    functionName: 'trackUsedIntents',
-  });
-}
-
 /**
  * Check whether a destination address is allowed for a given bot.
  *
@@ -299,16 +290,12 @@ export async function isRebalanceTokenWhitelisted(
  *
  * @param walletClient      Wallet that will own the deployed vault.
  * @param factoryAddress    Address of the deployed AxonVaultFactory.
- * @param trackUsedIntents  If true, executed intent hashes are stored on-chain
- *                          to prevent exact replay. Default true — only disable
- *                          for extreme high-frequency bots.
  * @returns                 Address of the newly deployed vault.
  */
 export async function deployVault(
   walletClient: WalletClient,
   publicClient: PublicClient,
   factoryAddress: Address,
-  trackUsedIntents = true,
 ): Promise<Address> {
   if (!walletClient.account) {
     throw new Error('walletClient has no account attached');
@@ -318,7 +305,7 @@ export async function deployVault(
     address: factoryAddress,
     abi: AxonVaultFactoryAbi,
     functionName: 'deployVault',
-    args: [trackUsedIntents],
+    args: [],
     account: walletClient.account,
     chain: walletClient.chain ?? null,
   });
