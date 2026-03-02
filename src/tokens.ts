@@ -62,6 +62,7 @@ export const KNOWN_TOKENS = {
     decimals: 6,
     addresses: {
       8453: '0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2',
+      84532: '0x323e78f944A9a1FcF3a10efcC5319DBb0bB6e673',
       42161: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
     },
   },
