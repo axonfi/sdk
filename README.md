@@ -2,6 +2,8 @@
 
 Give your AI agents a wallet they can't drain.
 
+## What is Axon Finance
+
 Treasury and payment infrastructure for autonomous AI agents. Non-custodial vaults, gasless bots, AI verification.
 
 ## Why Axon Finance
