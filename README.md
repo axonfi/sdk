@@ -29,7 +29,7 @@ npm install @axonfi/sdk
 ### With Encrypted Keystore (recommended)
 
 ```typescript
-import { AxonClient, Chain, decryptKeystore } from '@axonfi/sdk';
+import { AxonClient, Chain, Token, decryptKeystore } from '@axonfi/sdk';
 import fs from 'fs';
 
 const keystore = fs.readFileSync('./axon-bot.json', 'utf8');
@@ -44,7 +44,7 @@ const axon = new AxonClient({
 // Pay 5 USDC — SDK handles decimals automatically
 const result = await axon.pay({
   to: '0xRecipient',
-  token: 'USDC',
+  token: Token.USDC,
   amount: 5,
   memo: 'API call payment',
 });
@@ -70,13 +70,13 @@ The SDK accepts amounts in three formats:
 
 ```typescript
 // Human-readable number — SDK converts using token decimals
-await axon.pay({ to, token: 'USDC', amount: 5.2 });
+await axon.pay({ to, token: Token.USDC, amount: 5.2 });
 
 // Human-readable string — recommended for computed values
-await axon.pay({ to, token: 'USDC', amount: '5.2' });
+await axon.pay({ to, token: Token.USDC, amount: '5.2' });
 
 // Raw bigint — base units, passed through as-is
-await axon.pay({ to, token: 'USDC', amount: 5_200_000n });
+await axon.pay({ to, token: Token.USDC, amount: 5_200_000n });
 ```
 
 Token field accepts addresses, `Token` enum values, or symbol strings:
@@ -98,8 +98,8 @@ Send USDC (or any ERC-20) to any address. The bot signs an EIP-712 intent — Ax
 ```typescript
 const result = await axon.pay({
   to: '0xRecipient',
-  token: 'USDC', // or Token.USDC, or an address
-  amount: 25, // or '25', or 25_000_000n
+  token: Token.USDC,
+  amount: 25,
   memo: 'Invoice #42',
 });
 
@@ -113,7 +113,7 @@ Rebalance tokens inside your vault without withdrawing. Swap between any tokens 
 
 ```typescript
 const result = await axon.swap({
-  toToken: 'WETH',
+  toToken: Token.WETH,
   minToAmount: 0.001,
   memo: 'Rebalance to WETH',
 });
@@ -127,7 +127,7 @@ Interact with DeFi and Web3 protocols (Uniswap, Aave, GMX, etc.) that need permi
 const result = await axon.execute({
   protocol: '0xUniswapRouter',
   callData: '0x...',
-  token: 'USDC',
+  token: Token.USDC,
   amount: 100,
 });
 ```
