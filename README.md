@@ -184,13 +184,16 @@ Payments resolve through one of three paths:
 | Optimism     | 10    | Coming soon |
 | Polygon PoS  | 137   | Coming soon |
 
-## Documentation
+## Links
 
-- [Full SDK Reference](https://axonfi.xyz/docs/sdk/typescript/client)
-- [Quickstart Guide](https://axonfi.xyz/docs/getting-started/quickstart)
-- [How It Works](https://axonfi.xyz/docs/getting-started/how-it-works)
-- [Security Model](https://axonfi.xyz/docs/architecture/security-model)
-- [HTTP 402 Payments](https://axonfi.xyz/docs/guides/http-402)
+- [Website](https://axonfi.xyz)
+- [Dashboard](https://app.axonfi.xyz)
+- [Documentation](https://axonfi.xyz/llms.txt)
+- [npm — @axonfi/sdk](https://www.npmjs.com/package/@axonfi/sdk)
+- [PyPI — axonfi](https://pypi.org/project/axonfi/) (Python SDK)
+- [Smart Contracts](https://github.com/axonfi/contracts)
+- [Examples](https://github.com/axonfi/examples)
+- [Twitter/X — @axonfixyz](https://x.com/axonfixyz)
 
 ## License
 
