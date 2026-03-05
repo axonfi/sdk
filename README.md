@@ -29,7 +29,7 @@ npm install @axonfi/sdk
 ### With Encrypted Keystore (recommended)
 
 ```typescript
-import { AxonClient, decryptKeystore } from '@axonfi/sdk';
+import { AxonClient, Chain, decryptKeystore } from '@axonfi/sdk';
 import fs from 'fs';
 
 const keystore = fs.readFileSync('./axon-bot.json', 'utf8');
@@ -37,7 +37,7 @@ const botPrivateKey = await decryptKeystore(keystore, process.env.BOT_PASSPHRASE
 
 const axon = new AxonClient({
   vaultAddress: '0x...',
-  chainId: 8453, // Base
+  chainId: Chain.Base,
   botPrivateKey,
 });
 
@@ -55,11 +55,11 @@ console.log(result.status, result.txHash);
 ### With Raw Private Key
 
 ```typescript
-import { AxonClient } from '@axonfi/sdk';
+import { AxonClient, Chain } from '@axonfi/sdk';
 
 const axon = new AxonClient({
   vaultAddress: '0x...',
-  chainId: 8453,
+  chainId: Chain.Base,
   botPrivateKey: process.env.BOT_PRIVATE_KEY!,
 });
 ```
