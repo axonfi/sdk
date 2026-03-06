@@ -214,14 +214,21 @@ Supports EIP-3009 (USDC, gasless) and Permit2 (any ERC-20) settlement schemes.
 - **Relayer** (Axon) can only execute bot-signed intents within configured limits. Cannot withdraw or modify vault config.
 - **If Axon goes offline**, the owner retains full withdrawal access directly through the on-chain vault contract.
 
-## Chains
+## Supported Chains
 
-| Chain        | ID    | Status      |
-| ------------ | ----- | ----------- |
-| Base Sepolia | 84532 | Live        |
-| Base         | 8453  | Coming soon |
-| Arbitrum One | 42161 | Coming soon |
-| Arbitrum Sepolia | 421614 | Live |
+### Mainnet
+
+| Chain        | ID    |
+| ------------ | ----- |
+| Base         | 8453  |
+| Arbitrum One | 42161 |
+
+### Testnet
+
+| Chain            | ID     |
+| ---------------- | ------ |
+| Base Sepolia     | 84532  |
+| Arbitrum Sepolia | 421614 |
 
 ## Links
 
