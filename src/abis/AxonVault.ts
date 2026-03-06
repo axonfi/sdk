@@ -186,12 +186,12 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
-    "name": "approveProtocol",
+    "name": "addRebalanceTokens",
     "inputs": [
       {
-        "name": "protocol",
-        "type": "address",
-        "internalType": "address"
+        "name": "tokens",
+        "type": "address[]",
+        "internalType": "address[]"
       }
     ],
     "outputs": [],
@@ -199,12 +199,12 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
-    "name": "addRebalanceTokens",
+    "name": "approveProtocol",
     "inputs": [
       {
-        "name": "tokens",
-        "type": "address[]",
-        "internalType": "address[]"
+        "name": "protocol",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "outputs": [],
@@ -988,19 +988,6 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
-    "name": "revokeProtocol",
-    "inputs": [
-      {
-        "name": "protocol",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
     "name": "removeRebalanceTokens",
     "inputs": [
       {
@@ -1016,6 +1003,19 @@ export const AxonVaultAbi = [
     "type": "function",
     "name": "renounceOwnership",
     "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "revokeProtocol",
+    "inputs": [
+      {
+        "name": "protocol",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
     "outputs": [],
     "stateMutability": "nonpayable"
   },
@@ -1778,6 +1778,11 @@ export const AxonVaultAbi = [
   },
   {
     "type": "error",
+    "name": "ContractNotApproved",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "DeadlineExpired",
     "inputs": []
   },
@@ -1933,11 +1938,6 @@ export const AxonVaultAbi = [
   {
     "type": "error",
     "name": "ProtocolCallFailed",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "ContractNotApproved",
     "inputs": []
   },
   {
