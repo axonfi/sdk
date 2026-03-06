@@ -230,7 +230,7 @@ export type KnownTokenSymbol = keyof typeof KNOWN_TOKENS;
  * Used by: AxonRegistry (on-chain default list), deploy scripts, dashboard.
  */
 export const DEFAULT_APPROVED_TOKENS: KnownTokenSymbol[] = [
-  'USDC', 'USDT', 'DAI', 'WETH', 'WBTC', 'cbBTC',
+  'USDC', 'USDT', 'DAI', 'WETH', 'WBTC', 'cbBTC', 'wstETH',
 ];
 
 /** Get default approved token addresses for a specific chain. */
