@@ -6,6 +6,7 @@ import { AxonVaultAbi } from './abis/AxonVault.js';
 import { AxonVaultFactoryAbi } from './abis/AxonVaultFactory.js';
 import { erc20Abi } from 'viem';
 import { NATIVE_ETH } from './constants.js';
+import { parseAmount } from './amounts.js';
 import { resolveToken, type KnownTokenSymbol } from './tokens.js';
 import type { BotConfig, BotConfigParams, BotConfigInput, OperatorCeilings, VaultInfo, DestinationCheckResult } from './types.js';
 
@@ -508,7 +509,7 @@ export async function removeBot(
  * @param publicClient    Public client for the vault's chain.
  * @param vaultAddress    Vault to deposit into.
  * @param token           Token symbol ('USDC', 'WETH'), Token enum, raw address, or NATIVE_ETH / 'ETH' for ETH deposits.
- * @param amount          Amount in base units (e.g. 5_000_000n for 5 USDC, 10n**16n for 0.01 ETH).
+ * @param amount          Human-readable amount (e.g. 500 for 500 USDC, 0.1 for 0.1 ETH) or raw bigint in base units.
  * @param ref             Optional bytes32 reference linking to an off-chain record. Defaults to 0x0.
  * @returns               Transaction hash of the deposit.
  */
@@ -517,7 +518,7 @@ export async function deposit(
   publicClient: PublicClient,
   vaultAddress: Address,
   token: Address | string,
-  amount: bigint,
+  amount: bigint | number | string,
   ref: Hex = '0x0000000000000000000000000000000000000000000000000000000000000000',
 ): Promise<Hex> {
   if (!walletClient.account) {
@@ -539,13 +540,23 @@ export async function deposit(
 
   const isEth = tokenAddress.toLowerCase() === NATIVE_ETH.toLowerCase();
 
+  // Resolve human-readable amount to base units (e.g. 500 USDC → 500_000_000n)
+  let resolvedAmount: bigint;
+  if (typeof amount === 'bigint') {
+    resolvedAmount = amount;
+  } else if (isEth) {
+    resolvedAmount = parseAmount(amount, 'WETH'); // ETH has same 18 decimals as WETH
+  } else {
+    resolvedAmount = parseAmount(amount, token as KnownTokenSymbol);
+  }
+
   if (!isEth) {
     // ERC-20: approve the vault to pull tokens, then deposit
     const approveTx = await walletClient.writeContract({
       address: tokenAddress,
       abi: erc20Abi,
       functionName: 'approve',
-      args: [vaultAddress, amount],
+      args: [vaultAddress, resolvedAmount],
       account: walletClient.account,
       chain: walletClient.chain ?? null,
     });
@@ -556,10 +567,10 @@ export async function deposit(
     address: vaultAddress,
     abi: AxonVaultAbi,
     functionName: 'deposit',
-    args: [tokenAddress, amount, ref],
+    args: [tokenAddress, resolvedAmount, ref],
     account: walletClient.account,
     chain: walletClient.chain ?? null,
-    ...(isEth ? { value: amount } : {}),
+    ...(isEth ? { value: resolvedAmount } : {}),
   });
 
   await publicClient.waitForTransactionReceipt({ hash });
