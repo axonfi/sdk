@@ -186,7 +186,7 @@ export interface PayInput {
 export interface ExecuteIntent {
   /** Bot's own address. Must be registered in the vault. */
   bot: Address;
-  /** Target DeFi protocol contract address. Must be in vault's approvedProtocols. */
+  /** Target contract address (protocol or token). Must be approved via approveProtocol() or be a registry default token. */
   protocol: Address;
   /** keccak256 of the callData bytes. Verified by relayer before submission. */
   calldataHash: Hex;

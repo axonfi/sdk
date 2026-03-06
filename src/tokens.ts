@@ -219,6 +219,28 @@ export const KNOWN_TOKENS = {
 
 export type KnownTokenSymbol = keyof typeof KNOWN_TOKENS;
 
+/**
+ * Tokens that new vaults should pre-approve as protocols at deploy time.
+ * This enables the two-step approval pattern (approve token → call DeFi protocol)
+ * without the owner having to manually add common tokens.
+ *
+ * Used by: AxonRegistry (on-chain default list), deploy scripts, dashboard.
+ */
+export const DEFAULT_APPROVED_TOKENS: KnownTokenSymbol[] = [
+  'USDC', 'USDT', 'DAI', 'WETH', 'WBTC', 'cbBTC',
+];
+
+/** Get default approved token addresses for a specific chain. */
+export function getDefaultApprovedTokens(chainId: number): Address[] {
+  const addresses: Address[] = [];
+  for (const symbol of DEFAULT_APPROVED_TOKENS) {
+    const entry = KNOWN_TOKENS[symbol];
+    const addr = (entry.addresses as Record<number, Address | undefined>)[chainId];
+    if (addr) addresses.push(addr);
+  }
+  return addresses;
+}
+
 // Pre-build reverse lookup map: lowercase address → symbol
 const addressToSymbol = new Map<string, string>();
 for (const token of Object.values(KNOWN_TOKENS)) {

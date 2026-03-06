@@ -186,7 +186,7 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
-    "name": "addProtocol",
+    "name": "approveProtocol",
     "inputs": [
       {
         "name": "protocol",
@@ -762,7 +762,7 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
-    "name": "isProtocolApproved",
+    "name": "isContractApproved",
     "inputs": [
       {
         "name": "protocol",
@@ -988,7 +988,7 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
-    "name": "removeProtocol",
+    "name": "revokeProtocol",
     "inputs": [
       {
         "name": "protocol",
@@ -1529,7 +1529,7 @@ export const AxonVaultAbi = [
   },
   {
     "type": "event",
-    "name": "ProtocolAdded",
+    "name": "ProtocolApproved",
     "inputs": [
       {
         "name": "protocol",
@@ -1579,7 +1579,7 @@ export const AxonVaultAbi = [
   },
   {
     "type": "event",
-    "name": "ProtocolRemoved",
+    "name": "ProtocolRevoked",
     "inputs": [
       {
         "name": "protocol",
@@ -1937,12 +1937,12 @@ export const AxonVaultAbi = [
   },
   {
     "type": "error",
-    "name": "ProtocolNotApproved",
+    "name": "ContractNotApproved",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "ProtocolNotInList",
+    "name": "ProtocolNotApproved",
     "inputs": []
   },
   {

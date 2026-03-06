@@ -77,7 +77,7 @@ export { encryptKeystore, decryptKeystore } from './keystore.js';
 export type { KeystoreV3 } from './keystore.js';
 
 // Token registry (shared by dashboard, relayer, and SDK consumers)
-export { Token, KNOWN_TOKENS, getKnownTokensForChain, getTokenSymbolByAddress, resolveToken } from './tokens.js';
+export { Token, KNOWN_TOKENS, DEFAULT_APPROVED_TOKENS, getKnownTokensForChain, getDefaultApprovedTokens, getTokenSymbolByAddress, resolveToken } from './tokens.js';
 export type { KnownToken, KnownTokenSymbol } from './tokens.js';
 
 // Amount conversion utilities

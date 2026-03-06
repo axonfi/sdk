@@ -227,11 +227,11 @@ export class AxonClient {
   }
 
   // ============================================================================
-  // isProtocolApproved() — via relayer
+  // isContractApproved() — via relayer
   // ============================================================================
 
-  /** Returns whether a protocol address is approved for executeProtocol() calls (via relayer). */
-  async isProtocolApproved(protocol: Address): Promise<boolean> {
+  /** Returns whether a contract address (protocol or token) is approved for executeProtocol() calls (via relayer). */
+  async isContractApproved(protocol: Address): Promise<boolean> {
     const path = RELAYER_API.protocolCheck(this.vaultAddress, protocol, this.chainId);
     const data = await this._get(path);
     return data.approved;

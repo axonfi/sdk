@@ -390,16 +390,16 @@ describe('canPayTo()', () => {
 });
 
 // ---------------------------------------------------------------------------
-// isProtocolApproved() — via relayer
+// isContractApproved() — via relayer
 // ---------------------------------------------------------------------------
 
-describe('isProtocolApproved()', () => {
-  it('checks protocol via relayer', async () => {
+describe('isContractApproved()', () => {
+  it('checks contract approval via relayer', async () => {
     const client = makeClient();
     const protocol = '0x000000000000000000000000000000000000beef' as Address;
     mockFetchOk({ approved: true });
 
-    expect(await client.isProtocolApproved(protocol)).toBe(true);
+    expect(await client.isContractApproved(protocol)).toBe(true);
 
     const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe(`${RELAYER_URL}/v1/vault/${VAULT_ADDR}/protocol/${protocol}?chainId=${CHAIN_ID}`);
