@@ -69,7 +69,7 @@ export class AxonClient {
   constructor(config: AxonClientConfig) {
     this.vaultAddress = config.vaultAddress;
     this.chainId = config.chainId;
-    this.relayerUrl = 'https://relay.axonfi.xyz';
+    this.relayerUrl = config.relayerUrl ?? 'https://relay.axonfi.xyz';
 
     if (!config.botPrivateKey) {
       throw new Error('botPrivateKey is required in AxonClientConfig');

@@ -348,4 +348,7 @@ export interface AxonClientConfig {
    * Provide either this or `account`.
    */
   botPrivateKey?: Hex;
+
+  /** Override the relayer URL (defaults to https://relay.axonfi.xyz). */
+  relayerUrl?: string;
 }
