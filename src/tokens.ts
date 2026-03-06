@@ -17,6 +17,7 @@ export enum Token {
   cbETH = 'cbETH',
   wstETH = 'wstETH',
   rETH = 'rETH',
+  weETH = 'weETH',
   LINK = 'LINK',
   UNI = 'UNI',
   AAVE = 'AAVE',
@@ -133,7 +134,17 @@ export const KNOWN_TOKENS = {
     name: 'Rocket Pool ETH',
     decimals: 18,
     addresses: {
+      8453: '0xB6fe221Fe9EeF5aBa221c348bA20A1Bf5e73624c',
       42161: '0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8',
+    },
+  },
+  weETH: {
+    symbol: 'weETH',
+    name: 'EtherFi Wrapped eETH',
+    decimals: 18,
+    addresses: {
+      8453: '0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A',
+      42161: '0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe',
     },
   },
 
@@ -230,7 +241,7 @@ export type KnownTokenSymbol = keyof typeof KNOWN_TOKENS;
  * Used by: AxonRegistry (on-chain default list), deploy scripts, dashboard.
  */
 export const DEFAULT_APPROVED_TOKENS: KnownTokenSymbol[] = [
-  'USDC', 'USDT', 'DAI', 'WETH', 'WBTC', 'cbBTC', 'wstETH',
+  'USDC', 'USDT', 'DAI', 'WETH', 'WBTC', 'cbBTC', 'wstETH', 'weETH', 'cbETH', 'rETH',
 ];
 
 /** Get default approved token addresses for a specific chain. */
