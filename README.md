@@ -14,7 +14,7 @@ Giving bots funded wallets is risky: scattered keys, no spending controls, one c
 - **Bounded risk** — per-tx caps, daily limits, velocity windows, destination whitelists. Bots can only operate within the policies you set.
 - **AI verification** — 3-agent LLM consensus (safety, behavioral, reasoning) for flagged transactions. 2/3 consensus required.
 - **Gasless bots** — bots sign EIP-712 intents off-chain. Axon's relayer handles gas, simulation, and on-chain execution.
-- **Multi-chain** — Base, Arbitrum, Optimism, Polygon. USDC as base asset.
+- **Multi-chain** — Base, Arbitrum. USDC as base asset.
 
 Your agents pay. You stay in control.
 
@@ -222,8 +222,6 @@ Supports EIP-3009 (USDC, gasless) and Permit2 (any ERC-20) settlement schemes.
 | Base         | 8453  | Coming soon |
 | Arbitrum One | 42161 | Coming soon |
 | Arbitrum Sepolia | 421614 | Live |
-| Optimism     | 10    | Coming soon |
-| Polygon PoS  | 137   | Coming soon |
 
 ## Links
 
