@@ -56,8 +56,7 @@ const ownerWallet = createAxonWalletClient(ownerKey, chainId);
 const publicClient = createAxonPublicClient(chainId, 'https://sepolia.base.org');
 
 // ── 2. Deploy vault (on-chain tx, ~0.001 ETH gas) ─────────────────
-const FACTORY = '0x...'; // AxonVaultFactory address for your chain
-const vaultAddress = await deployVault(ownerWallet, publicClient, FACTORY);
+const vaultAddress = await deployVault(ownerWallet, publicClient);
 console.log('Vault deployed:', vaultAddress);
 
 // ── 3. Generate a bot keypair ──────────────────────────────────────
@@ -70,14 +69,14 @@ await axon.acceptTos(ownerWallet, ownerWallet.account!.address);
 
 // ── 5. Register the bot on the vault (on-chain tx, ~0.0005 ETH gas)
 await addBot(ownerWallet, publicClient, vaultAddress, botAddress, {
-  maxPerTxAmount: parseUnits('100', 6),       // $100 hard cap per tx
-  maxRebalanceAmount: 0n,                      // no rebalance cap
+  maxPerTxAmount: 100,                // $100 hard cap per tx
+  maxRebalanceAmount: 0,              // no rebalance cap
   spendingLimits: [{
-    amount: parseUnits('1000', 6),             // $1,000/day rolling limit
-    maxCount: 0n,                              // no tx count limit
+    amount: 1000,                     // $1,000/day rolling limit
+    maxCount: 0,                      // no tx count limit
     windowSeconds: WINDOW.ONE_DAY,
   }],
-  aiTriggerThreshold: parseUnits('50', 6),     // AI scan above $50
+  aiTriggerThreshold: 50,            // AI scan above $50
   requireAiVerification: false,
 });
 

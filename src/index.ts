@@ -8,8 +8,10 @@ export { AxonClient } from './client.js';
 // Types
 export type {
   SpendingLimit,
+  SpendingLimitInput,
   BotConfig,
   BotConfigParams,
+  BotConfigInput,
   OperatorCeilings,
   PaymentIntent,
   ExecuteIntent,
@@ -54,6 +56,7 @@ export { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './sig
 
 // Vault helpers (for dashboards and tooling that need direct chain access)
 export {
+  toBotConfigParams,
   isBotActive,
   getBotConfig,
   getOperatorCeilings,

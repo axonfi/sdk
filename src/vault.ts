@@ -6,7 +6,7 @@ import { AxonVaultAbi } from './abis/AxonVault.js';
 import { AxonVaultFactoryAbi } from './abis/AxonVaultFactory.js';
 import { erc20Abi } from 'viem';
 import { NATIVE_ETH } from './constants.js';
-import type { BotConfig, BotConfigParams, OperatorCeilings, VaultInfo, DestinationCheckResult } from './types.js';
+import type { BotConfig, BotConfigParams, BotConfigInput, OperatorCeilings, VaultInfo, DestinationCheckResult } from './types.js';
 
 // ============================================================================
 // Chain helpers
@@ -46,6 +46,47 @@ export function createAxonWalletClient(privateKey: Hex, chainId: number): Wallet
     chain: getChain(chainId),
     transport: http(), // signing is local — transport is unused but required by viem
   });
+}
+
+// ============================================================================
+// BotConfigInput → BotConfigParams conversion
+// ============================================================================
+
+const USDC_DECIMALS = 6n;
+const USDC_UNIT = 10n ** USDC_DECIMALS; // 1_000_000n
+
+/** Convert human-friendly BotConfigInput (dollar amounts) to on-chain BotConfigParams (6-decimal bigints). */
+export function toBotConfigParams(input: BotConfigInput): BotConfigParams {
+  return {
+    maxPerTxAmount: BigInt(Math.round(input.maxPerTxAmount * Number(USDC_UNIT))),
+    maxRebalanceAmount: BigInt(Math.round(input.maxRebalanceAmount * Number(USDC_UNIT))),
+    spendingLimits: input.spendingLimits.map((sl) => ({
+      amount: BigInt(Math.round(sl.amount * Number(USDC_UNIT))),
+      maxCount: BigInt(sl.maxCount),
+      windowSeconds: BigInt(sl.windowSeconds),
+    })),
+    aiTriggerThreshold: BigInt(Math.round(input.aiTriggerThreshold * Number(USDC_UNIT))),
+    requireAiVerification: input.requireAiVerification,
+  };
+}
+
+// ============================================================================
+// Factory address resolution
+// ============================================================================
+
+const DEFAULT_RELAYER_URL = 'https://relay.axonfi.xyz';
+
+/** Fetch the factory address for a chain from the relayer's /v1/chains endpoint. */
+async function getFactoryAddress(chainId: number, relayerUrl?: string): Promise<Address> {
+  const base = relayerUrl ?? DEFAULT_RELAYER_URL;
+  const resp = await fetch(`${base}/v1/chains`);
+  if (!resp.ok) throw new Error(`Failed to fetch chain config from relayer [${resp.status}]`);
+  const data = await resp.json();
+  const chain = data.chains?.find((c: { chainId: number }) => c.chainId === chainId);
+  if (!chain?.factoryAddress) {
+    throw new Error(`No factory address available for chainId ${chainId}. Check the relayer's chain configuration.`);
+  }
+  return chain.factoryAddress as Address;
 }
 
 // ============================================================================
@@ -290,18 +331,25 @@ export async function isRebalanceTokenWhitelisted(
  * The vault is owned by the walletClient's account. Permissionless — any
  * address can deploy, no Axon approval required.
  *
+ * The factory address is fetched automatically from the Axon relayer.
+ *
  * @param walletClient      Wallet that will own the deployed vault.
- * @param factoryAddress    Address of the deployed AxonVaultFactory.
+ * @param publicClient      Public client for the vault's chain.
+ * @param relayerUrl        Override relayer URL (defaults to https://relay.axonfi.xyz).
  * @returns                 Address of the newly deployed vault.
  */
 export async function deployVault(
   walletClient: WalletClient,
   publicClient: PublicClient,
-  factoryAddress: Address,
+  relayerUrl?: string,
 ): Promise<Address> {
   if (!walletClient.account) {
     throw new Error('walletClient has no account attached');
   }
+
+  const chainId = walletClient.chain?.id;
+  if (!chainId) throw new Error('walletClient has no chain configured');
+  const factoryAddress = await getFactoryAddress(chainId, relayerUrl);
 
   const hash = await walletClient.writeContract({
     address: factoryAddress,
@@ -344,7 +392,7 @@ export async function deployVault(
  * @param publicClient    Public client for the vault's chain.
  * @param vaultAddress    Vault to register the bot on.
  * @param botAddress      Public address of the bot to register.
- * @param config          Bot spending configuration (limits, AI threshold, etc.).
+ * @param config          Bot spending configuration — human-readable USD amounts (e.g. 100 = $100).
  * @returns               Transaction hash.
  */
 export async function addBot(
@@ -352,17 +400,18 @@ export async function addBot(
   publicClient: PublicClient,
   vaultAddress: Address,
   botAddress: Address,
-  config: BotConfigParams,
+  config: BotConfigInput,
 ): Promise<Hex> {
   if (!walletClient.account) {
     throw new Error('walletClient has no account attached');
   }
 
+  const params = toBotConfigParams(config);
   const hash = await walletClient.writeContract({
     address: vaultAddress,
     abi: AxonVaultAbi,
     functionName: 'addBot',
-    args: [botAddress, config],
+    args: [botAddress, params],
     account: walletClient.account,
     chain: walletClient.chain ?? null,
   });
@@ -381,7 +430,7 @@ export async function addBot(
  * @param publicClient    Public client for the vault's chain.
  * @param vaultAddress    Vault the bot is registered on.
  * @param botAddress      Bot to update.
- * @param config          New spending configuration.
+ * @param config          New spending configuration — human-readable USD amounts.
  * @returns               Transaction hash.
  */
 export async function updateBotConfig(
@@ -389,17 +438,18 @@ export async function updateBotConfig(
   publicClient: PublicClient,
   vaultAddress: Address,
   botAddress: Address,
-  config: BotConfigParams,
+  config: BotConfigInput,
 ): Promise<Hex> {
   if (!walletClient.account) {
     throw new Error('walletClient has no account attached');
   }
 
+  const params = toBotConfigParams(config);
   const hash = await walletClient.writeContract({
     address: vaultAddress,
     abi: AxonVaultAbi,
     functionName: 'updateBotConfig',
-    args: [botAddress, config],
+    args: [botAddress, params],
     account: walletClient.account,
     chain: walletClient.chain ?? null,
   });

@@ -52,13 +52,42 @@ export interface BotConfig {
   requireAiVerification: boolean;
 }
 
-/** Parameters for addBot / updateBotConfig. */
+/** Parameters for addBot / updateBotConfig (raw on-chain format). */
 export interface BotConfigParams {
   maxPerTxAmount: bigint;
   /** Hard cap for rebalancing (executeSwap) input amount in USD. 0 = no cap (default). */
   maxRebalanceAmount: bigint;
   spendingLimits: SpendingLimit[];
   aiTriggerThreshold: bigint;
+  requireAiVerification: boolean;
+}
+
+/** Human-friendly spending limit input. SDK converts dollar amounts to 6-decimal base units. */
+export interface SpendingLimitInput {
+  /** Max spend in this window in USD (e.g. 1000 = $1,000). */
+  amount: number;
+  /** Max transactions in this window. 0 = no count limit. */
+  maxCount: number;
+  /** Window size in seconds: 3600=1h, 86400=1d, 604800=1w. Use WINDOW constants. */
+  windowSeconds: number;
+}
+
+/**
+ * Human-friendly bot config input for addBot / updateBotConfig.
+ *
+ * Dollar amounts are plain numbers (e.g. 100 = $100). The SDK converts
+ * to 6-decimal base units (USDC precision) before sending to the contract.
+ */
+export interface BotConfigInput {
+  /** Hard per-tx cap in USD (e.g. 100 = $100). 0 = no cap. */
+  maxPerTxAmount: number;
+  /** Hard rebalance cap in USD (e.g. 50 = $50). 0 = no cap. */
+  maxRebalanceAmount: number;
+  /** Rolling window spending limits. Up to 5. */
+  spendingLimits: SpendingLimitInput[];
+  /** AI scan trigger threshold in USD (e.g. 50 = $50). 0 = never by amount. */
+  aiTriggerThreshold: number;
+  /** Always require AI scan regardless of amount. */
   requireAiVerification: boolean;
 }
 
