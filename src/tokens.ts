@@ -1,5 +1,8 @@
 import type { Address } from 'viem';
 
+// !! After editing this file, regenerate the Python SDK copy:
+// !! npx tsx scripts/generate-python-tokens.ts
+
 // ============================================================================
 // Token enum — type-safe token symbols for SDK consumers
 // ============================================================================
