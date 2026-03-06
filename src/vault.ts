@@ -6,6 +6,7 @@ import { AxonVaultAbi } from './abis/AxonVault.js';
 import { AxonVaultFactoryAbi } from './abis/AxonVaultFactory.js';
 import { erc20Abi } from 'viem';
 import { NATIVE_ETH } from './constants.js';
+import { resolveToken, type KnownTokenSymbol } from './tokens.js';
 import type { BotConfig, BotConfigParams, BotConfigInput, OperatorCeilings, VaultInfo, DestinationCheckResult } from './types.js';
 
 // ============================================================================
@@ -506,7 +507,7 @@ export async function removeBot(
  * @param walletClient    Wallet sending the deposit (anyone, not just owner).
  * @param publicClient    Public client for the vault's chain.
  * @param vaultAddress    Vault to deposit into.
- * @param token           Token address, or NATIVE_ETH for ETH deposits.
+ * @param token           Token symbol ('USDC', 'WETH'), Token enum, raw address, or NATIVE_ETH / 'ETH' for ETH deposits.
  * @param amount          Amount in base units (e.g. 5_000_000n for 5 USDC, 10n**16n for 0.01 ETH).
  * @param ref             Optional bytes32 reference linking to an off-chain record. Defaults to 0x0.
  * @returns               Transaction hash of the deposit.
@@ -515,7 +516,7 @@ export async function deposit(
   walletClient: WalletClient,
   publicClient: PublicClient,
   vaultAddress: Address,
-  token: Address,
+  token: Address | string,
   amount: bigint,
   ref: Hex = '0x0000000000000000000000000000000000000000000000000000000000000000',
 ): Promise<Hex> {
@@ -523,12 +524,25 @@ export async function deposit(
     throw new Error('walletClient has no account attached');
   }
 
-  const isEth = token.toLowerCase() === NATIVE_ETH.toLowerCase();
+  // Resolve token symbol to address (e.g. 'USDC' → 0x833589...)
+  const isEthSymbol = token === 'ETH' || token === 'eth';
+  let tokenAddress: Address;
+  if (isEthSymbol) {
+    tokenAddress = NATIVE_ETH as Address;
+  } else if (token.startsWith('0x')) {
+    tokenAddress = token as Address;
+  } else {
+    const chainId = walletClient.chain?.id;
+    if (!chainId) throw new Error('walletClient has no chain — cannot resolve token symbol');
+    tokenAddress = resolveToken(token as KnownTokenSymbol, chainId);
+  }
+
+  const isEth = tokenAddress.toLowerCase() === NATIVE_ETH.toLowerCase();
 
   if (!isEth) {
     // ERC-20: approve the vault to pull tokens, then deposit
     const approveTx = await walletClient.writeContract({
-      address: token,
+      address: tokenAddress,
       abi: erc20Abi,
       functionName: 'approve',
       args: [vaultAddress, amount],
@@ -542,7 +556,7 @@ export async function deposit(
     address: vaultAddress,
     abi: AxonVaultAbi,
     functionName: 'deposit',
-    args: [token, amount, ref],
+    args: [tokenAddress, amount, ref],
     account: walletClient.account,
     chain: walletClient.chain ?? null,
     ...(isEth ? { value: amount } : {}),

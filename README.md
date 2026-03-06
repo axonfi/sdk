@@ -18,6 +18,17 @@ Giving bots funded wallets is risky: scattered keys, no spending controls, one c
 
 Your agents pay. You stay in control.
 
+## Features
+
+- **Payments** — Send USDC or any ERC-20 to any address. Gasless for bots (EIP-712 intents, relayer pays gas). Per-tx caps, daily limits, AI verification.
+- **DeFi Protocol Execution** — Interact with Uniswap, Aave, GMX, Ostium, Lido, and any on-chain protocol from your vault. Atomic approve/call/revoke.
+- **In-Vault Swaps** — Rebalance tokens inside the vault without withdrawing. Separate caps from payment limits.
+- **HTTP 402 Paywalls (x402)** — Native support for [x402](https://www.x402.org/) APIs. One-call `handlePaymentRequired()` handles parsing, vault funding, signing, and retry headers. EIP-3009 (USDC) and Permit2 (any ERC-20).
+- **AI Verification** — 3-agent LLM consensus (safety, behavioral, reasoning) for flagged transactions. Configurable per bot: threshold-based or always-on.
+- **Non-Custodial Vaults** — Each owner deploys their own vault. Only the owner can withdraw. Enforced on-chain.
+- **Human-Friendly Amounts** — Pass `5`, `"5.2"`, or `5_200_000n`. SDK handles decimals. Token resolution by symbol, enum, or address.
+- **Multi-Chain** — Base, Arbitrum. USDC as base asset. Same SDK, same API.
+
 ## Install
 
 ```bash
@@ -44,7 +55,7 @@ Everything can be done from code — no dashboard needed. An agent can bootstrap
 import {
   AxonClient, deployVault, addBot, deposit,
   createAxonPublicClient, createAxonWalletClient,
-  NATIVE_ETH, USDC, WINDOW, Chain,
+  WINDOW, Chain,
 } from '@axonfi/sdk';
 import { parseUnits } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
@@ -83,11 +94,11 @@ await addBot(ownerWallet, publicClient, vaultAddress, botAddress, {
 // ── 6. Deposit funds (on-chain tx, ~0.0005 ETH gas) ───────────────
 // Option A: Deposit ETH (vault accepts native ETH directly)
 await deposit(ownerWallet, publicClient, vaultAddress,
-  NATIVE_ETH, parseUnits('0.1', 18));
+  'ETH', parseUnits('0.1', 18));
 
 // Option B: Deposit USDC (SDK handles approve + deposit)
 await deposit(ownerWallet, publicClient, vaultAddress,
-  USDC[chainId], parseUnits('500', 6));
+  'USDC', parseUnits('500', 6));
 
 // ── 7. Bot is ready — gasless from here ────────────────────────────
 // Save botKey securely. The bot never needs ETH.
@@ -119,7 +130,7 @@ Vaults accept native ETH directly — no wrapping needed. You can start a vault 
 // Deploy vault + deposit ETH — no USDC needed
 const vault = await deployVault(ownerWallet, publicClient, factory);
 await addBot(ownerWallet, publicClient, vault, botAddress, config);
-await deposit(ownerWallet, publicClient, vault, NATIVE_ETH, parseUnits('0.5', 18));
+await deposit(ownerWallet, publicClient, vault, 'ETH', parseUnits('0.5', 18));
 
 // Bot can now pay in any token — the relayer swaps ETH → USDC automatically
 await axon.pay({ to: '0x...', token: 'USDC', amount: 10 });
