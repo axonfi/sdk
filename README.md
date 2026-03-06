@@ -24,23 +24,109 @@ Your agents pay. You stay in control.
 npm install @axonfi/sdk
 ```
 
-## Prerequisites
+## Setup
 
-Before using the SDK, you need an Axon vault with a registered bot:
+There are two ways to set up an Axon vault: through the **dashboard** (UI) or entirely through the **SDK** (programmatic). Both produce the same on-chain result.
 
-1. **Deploy a vault** — Go to [app.axonfi.xyz](https://app.axonfi.xyz), connect your wallet, and deploy a vault on your target chain. The vault is a non-custodial smart contract — only you (the owner) can withdraw funds.
+### Option A: Dashboard Setup
 
-2. **Fund the vault** — Send USDC (or any ERC-20) to your vault address. Anyone can deposit directly to the contract.
+1. Go to [app.axonfi.xyz](https://app.axonfi.xyz), connect your wallet, deploy a vault
+2. Fund the vault — send USDC, ETH, or any ERC-20 to the vault address
+3. Register a bot — generate a keypair or bring your own key
+4. Configure policies — per-tx caps, daily limits, AI threshold
+5. Give the bot key to your agent
 
-3. **Register a bot** — In the dashboard, go to your vault → Bots → Add Bot. You can either:
-   - **Generate a new keypair** (recommended) — the dashboard creates a key and downloads an encrypted keystore JSON file. You set the passphrase.
-   - **Bring your own key** — paste an existing public key if you manage keys externally.
+### Option B: Full SDK Setup (Programmatic)
 
-4. **Configure policies** — Set per-transaction caps, daily spending limits, velocity windows, and destination whitelists. The bot can only operate within these bounds.
+Everything can be done from code — no dashboard needed. An agent can bootstrap its own vault end-to-end.
 
-5. **Get the bot key** — Your agent needs the bot's private key to sign payment intents. Use the keystore file + passphrase (recommended) or export the raw private key for quick testing.
+```typescript
+import {
+  AxonClient, deployVault, addBot, deposit,
+  createAxonPublicClient, createAxonWalletClient,
+  NATIVE_ETH, USDC, WINDOW, Chain,
+} from '@axonfi/sdk';
+import { parseUnits } from 'viem';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
-The vault owner's wallet stays secure — the bot key can only sign intents within the policies you configure, and can be revoked instantly from the dashboard.
+// ── 1. Owner wallet (funded with ETH for gas) ─────────────────────
+const ownerKey = '0x...';  // or generate: generatePrivateKey()
+const chainId = Chain.BaseSepolia;
+const ownerWallet = createAxonWalletClient(ownerKey, chainId);
+const publicClient = createAxonPublicClient(chainId, 'https://sepolia.base.org');
+
+// ── 2. Deploy vault (on-chain tx, ~0.001 ETH gas) ─────────────────
+const FACTORY = '0x...'; // AxonVaultFactory address for your chain
+const vaultAddress = await deployVault(ownerWallet, publicClient, FACTORY);
+console.log('Vault deployed:', vaultAddress);
+
+// ── 3. Generate a bot keypair ──────────────────────────────────────
+const botKey = generatePrivateKey();
+const botAddress = privateKeyToAccount(botKey).address;
+
+// ── 4. Accept Terms of Service (wallet signature, no gas) ─────────
+const axon = new AxonClient({ vaultAddress, chainId, botPrivateKey: botKey });
+await axon.acceptTos(ownerWallet, ownerWallet.account!.address);
+
+// ── 5. Register the bot on the vault (on-chain tx, ~0.0005 ETH gas)
+await addBot(ownerWallet, publicClient, vaultAddress, botAddress, {
+  maxPerTxAmount: parseUnits('100', 6),       // $100 hard cap per tx
+  maxRebalanceAmount: 0n,                      // no rebalance cap
+  spendingLimits: [{
+    amount: parseUnits('1000', 6),             // $1,000/day rolling limit
+    maxCount: 0n,                              // no tx count limit
+    windowSeconds: WINDOW.ONE_DAY,
+  }],
+  aiTriggerThreshold: parseUnits('50', 6),     // AI scan above $50
+  requireAiVerification: false,
+});
+
+// ── 6. Deposit funds (on-chain tx, ~0.0005 ETH gas) ───────────────
+// Option A: Deposit ETH (vault accepts native ETH directly)
+await deposit(ownerWallet, publicClient, vaultAddress,
+  NATIVE_ETH, parseUnits('0.1', 18));
+
+// Option B: Deposit USDC (SDK handles approve + deposit)
+await deposit(ownerWallet, publicClient, vaultAddress,
+  USDC[chainId], parseUnits('500', 6));
+
+// ── 7. Bot is ready — gasless from here ────────────────────────────
+// Save botKey securely. The bot never needs ETH.
+```
+
+### What Needs Gas vs. What's Gasless
+
+| Step | Who pays gas | Notes |
+|------|-------------|-------|
+| Deploy vault | Owner | ~0.001 ETH. One-time. |
+| Accept ToS | Owner | Wallet signature only (no gas). |
+| Register bot | Owner | ~0.0005 ETH. One per bot. |
+| Configure bot | Owner | ~0.0003 ETH. Only when changing limits. |
+| Deposit ETH | Depositor | Anyone can deposit. ETH sent directly. |
+| Deposit ERC-20 | Depositor | Anyone can deposit. SDK handles approve + deposit. |
+| **Pay** | **Free (relayer)** | **Bot signs EIP-712 intent. Axon pays gas.** |
+| **Execute (DeFi)** | **Free (relayer)** | **Bot signs intent. Axon pays gas.** |
+| **Swap (rebalance)** | **Free (relayer)** | **Bot signs intent. Axon pays gas.** |
+| Pause/unpause | Owner | ~0.0002 ETH. Emergency only. |
+| Withdraw | Owner | ~0.0003 ETH. Owner-only. |
+
+**The key insight:** Setup operations (deploy, add bot, deposit) require gas from the owner. Once setup is complete, all bot operations (payments, DeFi, swaps) are gasless — the bot never needs ETH. The relayer pays all execution gas.
+
+### Depositing ETH
+
+Vaults accept native ETH directly — no wrapping needed. You can start a vault with only ETH:
+
+```typescript
+// Deploy vault + deposit ETH — no USDC needed
+const vault = await deployVault(ownerWallet, publicClient, factory);
+await addBot(ownerWallet, publicClient, vault, botAddress, config);
+await deposit(ownerWallet, publicClient, vault, NATIVE_ETH, parseUnits('0.5', 18));
+
+// Bot can now pay in any token — the relayer swaps ETH → USDC automatically
+await axon.pay({ to: '0x...', token: 'USDC', amount: 10 });
+```
+
+When a bot pays in a token the vault doesn't hold directly (e.g., USDC when the vault only has ETH), the relayer automatically routes through a swap. The bot doesn't need to know or care what tokens are in the vault.
 
 ## Quick Start
 

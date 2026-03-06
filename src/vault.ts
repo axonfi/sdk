@@ -4,7 +4,9 @@ import { base, baseSepolia, arbitrum, arbitrumSepolia } from 'viem/chains';
 import type { PublicClient, WalletClient, Address, Hex, Chain } from 'viem';
 import { AxonVaultAbi } from './abis/AxonVault.js';
 import { AxonVaultFactoryAbi } from './abis/AxonVaultFactory.js';
-import type { BotConfig, OperatorCeilings, VaultInfo, DestinationCheckResult } from './types.js';
+import { erc20Abi } from 'viem';
+import { NATIVE_ETH } from './constants.js';
+import type { BotConfig, BotConfigParams, OperatorCeilings, VaultInfo, DestinationCheckResult } from './types.js';
 
 // ============================================================================
 // Chain helpers
@@ -326,4 +328,176 @@ export async function deployVault(
   }
 
   throw new Error('VaultDeployed event not found in transaction receipt');
+}
+
+// ============================================================================
+// Owner write operations (on-chain, require gas)
+// ============================================================================
+
+/**
+ * Register a bot on the vault with its initial spending configuration.
+ *
+ * Must be called by the vault owner (or operator if ceilings allow).
+ * This is an on-chain transaction — requires gas on the owner's wallet.
+ *
+ * @param walletClient    Owner wallet (must be vault owner or authorized operator).
+ * @param publicClient    Public client for the vault's chain.
+ * @param vaultAddress    Vault to register the bot on.
+ * @param botAddress      Public address of the bot to register.
+ * @param config          Bot spending configuration (limits, AI threshold, etc.).
+ * @returns               Transaction hash.
+ */
+export async function addBot(
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+  vaultAddress: Address,
+  botAddress: Address,
+  config: BotConfigParams,
+): Promise<Hex> {
+  if (!walletClient.account) {
+    throw new Error('walletClient has no account attached');
+  }
+
+  const hash = await walletClient.writeContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'addBot',
+    args: [botAddress, config],
+    account: walletClient.account,
+    chain: walletClient.chain ?? null,
+  });
+
+  await publicClient.waitForTransactionReceipt({ hash });
+  return hash;
+}
+
+/**
+ * Update an existing bot's spending configuration.
+ *
+ * Must be called by the vault owner (or operator within ceilings).
+ * On-chain transaction — requires gas.
+ *
+ * @param walletClient    Owner/operator wallet.
+ * @param publicClient    Public client for the vault's chain.
+ * @param vaultAddress    Vault the bot is registered on.
+ * @param botAddress      Bot to update.
+ * @param config          New spending configuration.
+ * @returns               Transaction hash.
+ */
+export async function updateBotConfig(
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+  vaultAddress: Address,
+  botAddress: Address,
+  config: BotConfigParams,
+): Promise<Hex> {
+  if (!walletClient.account) {
+    throw new Error('walletClient has no account attached');
+  }
+
+  const hash = await walletClient.writeContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'updateBotConfig',
+    args: [botAddress, config],
+    account: walletClient.account,
+    chain: walletClient.chain ?? null,
+  });
+
+  await publicClient.waitForTransactionReceipt({ hash });
+  return hash;
+}
+
+/**
+ * Remove a bot from the vault whitelist.
+ *
+ * Must be called by the vault owner (or operator).
+ * The bot will immediately lose the ability to sign valid intents.
+ * On-chain transaction — requires gas.
+ *
+ * @param walletClient    Owner/operator wallet.
+ * @param publicClient    Public client for the vault's chain.
+ * @param vaultAddress    Vault to remove the bot from.
+ * @param botAddress      Bot to remove.
+ * @returns               Transaction hash.
+ */
+export async function removeBot(
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+  vaultAddress: Address,
+  botAddress: Address,
+): Promise<Hex> {
+  if (!walletClient.account) {
+    throw new Error('walletClient has no account attached');
+  }
+
+  const hash = await walletClient.writeContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'removeBot',
+    args: [botAddress],
+    account: walletClient.account,
+    chain: walletClient.chain ?? null,
+  });
+
+  await publicClient.waitForTransactionReceipt({ hash });
+  return hash;
+}
+
+/**
+ * Deposit tokens or native ETH into the vault.
+ *
+ * Permissionless — anyone can deposit. For ERC-20 tokens, this function
+ * handles the approve + deposit in one call. For native ETH, pass
+ * `NATIVE_ETH` (or `'ETH'`) as the token.
+ *
+ * On-chain transaction — requires gas on the depositor's wallet.
+ *
+ * @param walletClient    Wallet sending the deposit (anyone, not just owner).
+ * @param publicClient    Public client for the vault's chain.
+ * @param vaultAddress    Vault to deposit into.
+ * @param token           Token address, or NATIVE_ETH for ETH deposits.
+ * @param amount          Amount in base units (e.g. 5_000_000n for 5 USDC, 10n**16n for 0.01 ETH).
+ * @param ref             Optional bytes32 reference linking to an off-chain record. Defaults to 0x0.
+ * @returns               Transaction hash of the deposit.
+ */
+export async function deposit(
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+  vaultAddress: Address,
+  token: Address,
+  amount: bigint,
+  ref: Hex = '0x0000000000000000000000000000000000000000000000000000000000000000',
+): Promise<Hex> {
+  if (!walletClient.account) {
+    throw new Error('walletClient has no account attached');
+  }
+
+  const isEth = token.toLowerCase() === NATIVE_ETH.toLowerCase();
+
+  if (!isEth) {
+    // ERC-20: approve the vault to pull tokens, then deposit
+    const approveTx = await walletClient.writeContract({
+      address: token,
+      abi: erc20Abi,
+      functionName: 'approve',
+      args: [vaultAddress, amount],
+      account: walletClient.account,
+      chain: walletClient.chain ?? null,
+    });
+    await publicClient.waitForTransactionReceipt({ hash: approveTx });
+  }
+
+  const hash = await walletClient.writeContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'deposit',
+    args: [token, amount, ref],
+    account: walletClient.account,
+    chain: walletClient.chain ?? null,
+    ...(isEth ? { value: amount } : {}),
+  });
+
+  await publicClient.waitForTransactionReceipt({ hash });
+  return hash;
 }
