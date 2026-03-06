@@ -221,6 +221,7 @@ Supports EIP-3009 (USDC, gasless) and Permit2 (any ERC-20) settlement schemes.
 | Base Sepolia | 84532 | Live        |
 | Base         | 8453  | Coming soon |
 | Arbitrum One | 42161 | Coming soon |
+| Arbitrum Sepolia | 421614 | Live |
 | Optimism     | 10    | Coming soon |
 | Polygon PoS  | 137   | Coming soon |
 
