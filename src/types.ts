@@ -165,6 +165,13 @@ export interface PayInput {
    * If set, `memo` is ignored for ref generation but still stored off-chain.
    */
   ref?: Hex;
+
+  /**
+   * Marks this payment as x402 bot-EOA funding. When true, the relayer
+   * records the flag for audit/context (e.g. "bot self-payment for x402").
+   * Does NOT bypass any policy checks — full pipeline still applies.
+   */
+  x402Funding?: boolean;
 }
 
 /**

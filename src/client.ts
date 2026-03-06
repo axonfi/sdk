@@ -13,13 +13,17 @@ import type {
   RebalanceTokensResult,
   TosStatus,
 } from './types.js';
+import type { X402HandleResult } from './x402.js';
 import { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
 import { createAxonWalletClient } from './vault.js';
-import { DEFAULT_DEADLINE_SECONDS, RELAYER_API } from './constants.js';
+import { DEFAULT_DEADLINE_SECONDS, RELAYER_API, USDC } from './constants.js';
 import { resolveToken } from './tokens.js';
 import { parseAmount } from './amounts.js';
 import { generateUuid } from './utils.js';
 import { keccak256 } from 'viem';
+import { parsePaymentRequired, findMatchingOption, extractX402Metadata, formatPaymentSignature } from './x402.js';
+import { signTransferWithAuthorization, randomNonce, USDC_EIP712_DOMAIN } from './eip3009.js';
+import { signPermit2WitnessTransfer, randomPermit2Nonce, PERMIT2_ADDRESS, X402_PROXY_ADDRESS } from './permit2.js';
 
 // ============================================================================
 // AxonClient
@@ -60,6 +64,7 @@ export class AxonClient {
   private readonly chainId: number;
   private readonly relayerUrl: string;
   private readonly walletClient: WalletClient;
+  private readonly botPrivateKey: Hex;
 
   constructor(config: AxonClientConfig) {
     this.vaultAddress = config.vaultAddress;
@@ -69,6 +74,7 @@ export class AxonClient {
     if (!config.botPrivateKey) {
       throw new Error('botPrivateKey is required in AxonClientConfig');
     }
+    this.botPrivateKey = config.botPrivateKey;
     this.walletClient = createAxonWalletClient(config.botPrivateKey, config.chainId);
   }
 
@@ -342,6 +348,219 @@ export class AxonClient {
   }
 
   // ============================================================================
+  // x402 — HTTP 402 Payment Required
+  // ============================================================================
+
+  /**
+   * x402 utilities for handling HTTP 402 Payment Required responses.
+   *
+   * The x402 flow:
+   * 1. Bot hits an API that returns HTTP 402 + PAYMENT-REQUIRED header
+   * 2. SDK parses the header, finds a matching payment option
+   * 3. SDK funds the bot's EOA from the vault (full Axon pipeline applies)
+   * 4. Bot signs an EIP-3009 or Permit2 authorization
+   * 5. SDK returns a PAYMENT-SIGNATURE header for the bot to retry with
+   *
+   * @example
+   * ```ts
+   * const response = await fetch('https://api.example.com/data');
+   * if (response.status === 402) {
+   *   const result = await client.x402.handlePaymentRequired(response.headers);
+   *   const data = await fetch('https://api.example.com/data', {
+   *     headers: { 'PAYMENT-SIGNATURE': result.paymentSignature },
+   *   });
+   * }
+   * ```
+   */
+  readonly x402 = {
+    /**
+     * Fund the bot's EOA from the vault for x402 settlement.
+     *
+     * This is a regular Axon payment (to = bot's own address) that goes through
+     * the full pipeline: policy engine, AI scan, human review if needed.
+     *
+     * @param amount - Amount in token base units
+     * @param token - Token address (defaults to USDC on this chain)
+     * @param metadata - Optional metadata for the payment record
+     */
+    fund: async (
+      amount: bigint,
+      token?: Address,
+      metadata?: { resourceUrl?: string; memo?: string; recipientLabel?: string; metadata?: Record<string, string> },
+    ): Promise<PaymentResult> => {
+      const tokenAddress = token ?? USDC[this.chainId];
+      if (!tokenAddress) {
+        throw new Error(`No default USDC address for chain ${this.chainId}`);
+      }
+
+      return this.pay({
+        to: this.botAddress,
+        token: tokenAddress,
+        amount,
+        x402Funding: true,
+        ...metadata,
+      });
+    },
+
+    /**
+     * Handle a full x402 flow: parse header, fund bot, sign authorization, return header.
+     *
+     * Supports both EIP-3009 (USDC) and Permit2 (any ERC-20) settlement.
+     * The bot's EOA is funded from the vault first (full Axon pipeline applies).
+     *
+     * @param headers - Response headers from the 402 response (must contain PAYMENT-REQUIRED)
+     * @param maxTimeoutMs - Maximum time to wait for pending_review resolution (default: 120s)
+     * @param pollIntervalMs - Polling interval for pending_review (default: 5s)
+     * @returns Payment signature header value + funding details
+     */
+    handlePaymentRequired: async (
+      headers: Headers | Record<string, string>,
+      maxTimeoutMs: number = 120_000,
+      pollIntervalMs: number = 5_000,
+    ): Promise<X402HandleResult> => {
+      // 1. Parse the PAYMENT-REQUIRED header
+      const headerValue =
+        headers instanceof Headers
+          ? (headers.get('payment-required') ?? headers.get('PAYMENT-REQUIRED'))
+          : (headers['payment-required'] ?? headers['PAYMENT-REQUIRED']);
+
+      if (!headerValue) {
+        throw new Error('x402: no PAYMENT-REQUIRED header found');
+      }
+
+      const parsed = parsePaymentRequired(headerValue);
+
+      // 2. Find a matching payment option for this chain
+      const option = findMatchingOption(parsed.accepts, this.chainId);
+      if (!option) {
+        throw new Error(
+          `x402: no payment option matches chain ${this.chainId}. ` +
+            `Available: ${parsed.accepts.map((a) => a.network).join(', ')}`,
+        );
+      }
+
+      // 3. Extract metadata for the payment record
+      const x402Meta = extractX402Metadata(parsed, option);
+
+      // 4. Fund the bot's EOA from the vault
+      const amount = BigInt(option.amount);
+      const tokenAddress = option.asset as Address;
+
+      const payInput: PayInput = {
+        to: this.botAddress,
+        token: tokenAddress,
+        amount,
+        x402Funding: true,
+        resourceUrl: x402Meta.resourceUrl,
+        metadata: x402Meta.metadata,
+      };
+      if (x402Meta.memo) payInput.memo = x402Meta.memo;
+      if (x402Meta.recipientLabel) payInput.recipientLabel = x402Meta.recipientLabel;
+
+      let fundingResult = await this.pay(payInput);
+
+      // 5. If pending_review, poll until resolved or timeout
+      if (fundingResult.status === 'pending_review') {
+        const deadline = Date.now() + maxTimeoutMs;
+        while (fundingResult.status === 'pending_review' && Date.now() < deadline) {
+          await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+          fundingResult = await this.poll(fundingResult.requestId);
+        }
+        if (fundingResult.status === 'pending_review') {
+          throw new Error(`x402: funding timed out after ${maxTimeoutMs}ms (still pending_review)`);
+        }
+      }
+
+      if (fundingResult.status === 'rejected') {
+        throw new Error(`x402: funding rejected — ${fundingResult.reason ?? 'unknown reason'}`);
+      }
+
+      // 6. Sign the appropriate authorization
+      const botPrivateKey = this.botPrivateKey;
+
+      const payTo = option.payTo as Address;
+      const usdcAddress = USDC[this.chainId]?.toLowerCase();
+      const isUsdc = tokenAddress.toLowerCase() === usdcAddress;
+
+      let signaturePayload: Record<string, unknown>;
+
+      if (isUsdc && USDC_EIP712_DOMAIN[this.chainId]) {
+        // EIP-3009 path (USDC — gasless)
+        const nonce = randomNonce();
+        const validAfter = 0n;
+        const validBefore = BigInt(Math.floor(Date.now() / 1000) + 300); // 5 min
+
+        const sig = await signTransferWithAuthorization(botPrivateKey, this.chainId, {
+          from: this.botAddress,
+          to: payTo,
+          value: amount,
+          validAfter,
+          validBefore,
+          nonce,
+        });
+
+        signaturePayload = {
+          scheme: 'exact',
+          signature: sig,
+          authorization: {
+            from: this.botAddress,
+            to: payTo,
+            value: amount.toString(),
+            validAfter: validAfter.toString(),
+            validBefore: validBefore.toString(),
+            nonce,
+          },
+        };
+      } else {
+        // Permit2 path (any ERC-20)
+        const nonce = randomPermit2Nonce();
+        const deadline = BigInt(Math.floor(Date.now() / 1000) + 300);
+
+        const sig = await signPermit2WitnessTransfer(botPrivateKey, this.chainId, {
+          token: tokenAddress,
+          amount,
+          spender: X402_PROXY_ADDRESS,
+          nonce,
+          deadline,
+          witnessTo: payTo,
+          witnessRequestedAmount: amount,
+        });
+
+        signaturePayload = {
+          scheme: 'permit2',
+          signature: sig,
+          permit: {
+            permitted: { token: tokenAddress, amount: amount.toString() },
+            spender: X402_PROXY_ADDRESS,
+            nonce: nonce.toString(),
+            deadline: deadline.toString(),
+          },
+          witness: {
+            to: payTo,
+            requestedAmount: amount.toString(),
+          },
+        };
+      }
+
+      // 7. Format the PAYMENT-SIGNATURE header
+      const paymentSignature = formatPaymentSignature(signaturePayload);
+
+      const handleResult: X402HandleResult = {
+        paymentSignature,
+        selectedOption: option,
+        fundingResult: {
+          requestId: fundingResult.requestId,
+          status: fundingResult.status,
+        },
+      };
+      if (fundingResult.txHash) {
+        handleResult.fundingResult.txHash = fundingResult.txHash;
+      }
+      return handleResult;
+    },
+  };
+
+  // ============================================================================
   // Internal helpers
   // ============================================================================
 
@@ -431,6 +650,7 @@ export class AxonClient {
       ...(input.orderId !== undefined && { orderId: input.orderId }),
       ...(input.recipientLabel !== undefined && { recipientLabel: input.recipientLabel }),
       ...(input.metadata !== undefined && { metadata: input.metadata }),
+      ...(input.x402Funding !== undefined && { x402Funding: input.x402Funding }),
     };
 
     return this._post(RELAYER_API.PAYMENTS, idempotencyKey, body);

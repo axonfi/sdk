@@ -185,6 +185,28 @@ Payments resolve through one of three paths:
 | **AI Scan**      | Exceeds AI threshold | ~30s   | `status: "approved"` or routes to review    |
 | **Human Review** | No AI consensus      | Async  | `status: "pending_review"`, poll for result |
 
+## HTTP 402 Paywalls (x402)
+
+The SDK handles [x402](https://www.x402.org/) paywalls — APIs that charge per-request via HTTP 402 Payment Required. When a bot hits a paywall, the SDK parses the payment requirements, funds the bot from the vault, signs a token authorization, and returns a header for the retry.
+
+```typescript
+const response = await fetch('https://api.example.com/data');
+
+if (response.status === 402) {
+  // SDK handles everything: parse header, fund bot from vault, sign authorization
+  const result = await axon.x402.handlePaymentRequired(response.headers);
+
+  // Retry with the payment signature
+  const data = await fetch('https://api.example.com/data', {
+    headers: { 'PAYMENT-SIGNATURE': result.paymentSignature },
+  });
+}
+```
+
+The full pipeline applies — spending limits, AI verification, human review — even for 402 payments. Vault owners see every paywall payment in the dashboard with the resource URL, merchant address, and amount.
+
+Supports EIP-3009 (USDC, gasless) and Permit2 (any ERC-20) settlement schemes.
+
 ## Security Model
 
 - **Owners** control everything: bot whitelist, spending limits, withdrawal. Hardware wallet recommended.

@@ -83,6 +83,30 @@ export type { KnownToken, KnownTokenSymbol } from './tokens.js';
 // Amount conversion utilities
 export { parseAmount, resolveTokenDecimals } from './amounts.js';
 
+// EIP-3009 (USDC TransferWithAuthorization)
+export { signTransferWithAuthorization, randomNonce, USDC_EIP712_DOMAIN } from './eip3009.js';
+export type { TransferAuthorization } from './eip3009.js';
+
+// Permit2 (universal ERC-20 approvals)
+export {
+  signPermit2WitnessTransfer,
+  randomPermit2Nonce,
+  PERMIT2_ADDRESS,
+  X402_PROXY_ADDRESS,
+  WITNESS_TYPE_STRING,
+} from './permit2.js';
+export type { Permit2Authorization } from './permit2.js';
+
+// x402 protocol utilities
+export {
+  parsePaymentRequired,
+  parseChainId,
+  findMatchingOption,
+  extractX402Metadata,
+  formatPaymentSignature,
+} from './x402.js';
+export type { X402Resource, X402PaymentOption, X402PaymentRequired, X402HandleResult } from './x402.js';
+
 // ABIs (useful for wagmi/viem integrations in frontends/dashboards)
 export { AxonVaultAbi } from './abis/AxonVault.js';
 export { AxonVaultFactoryAbi } from './abis/AxonVaultFactory.js';
