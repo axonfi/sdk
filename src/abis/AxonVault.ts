@@ -2026,6 +2026,11 @@ export const AxonVaultAbi = [
   },
   {
     "type": "error",
+    "name": "DefaultTokenCallRestricted",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "DestinationBlacklisted",
     "inputs": []
   },
