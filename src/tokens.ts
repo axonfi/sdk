@@ -24,8 +24,6 @@ export enum Token {
   COMP = 'COMP',
   CRV = 'CRV',
   SNX = 'SNX',
-  ARB = 'ARB',
-  AERO = 'AERO',
   GMX = 'GMX',
 }
 
@@ -204,23 +202,6 @@ export const KNOWN_TOKENS = {
     },
   },
 
-  // ── Chain-native governance ─────────────────────────────
-  ARB: {
-    symbol: 'ARB',
-    name: 'Arbitrum',
-    decimals: 18,
-    addresses: {
-      42161: '0x912CE59144191C1204E64559FE8253a0e49E6548',
-    },
-  },
-  AERO: {
-    symbol: 'AERO',
-    name: 'Aerodrome',
-    decimals: 18,
-    addresses: {
-      8453: '0x940181a94A35A4569E4529A3CDfB74e38FD98631',
-    },
-  },
   GMX: {
     symbol: 'GMX',
     name: 'GMX',

@@ -76,11 +76,6 @@ export const CHAIN_NAMES: Record<number, string> = {
   [Chain.BaseSepolia]: 'Base Sepolia',
   [Chain.Arbitrum]: 'Arbitrum One',
   [Chain.ArbitrumSepolia]: 'Arbitrum Sepolia',
-  // Future v1 chains (metadata only — not in SUPPORTED_CHAIN_IDS yet)
-  10: 'Optimism',
-  11155420: 'OP Sepolia',
-  137: 'Polygon',
-  80002: 'Polygon Amoy',
 };
 
 /** Block explorer TX URL prefix per chain. */
@@ -89,10 +84,6 @@ export const EXPLORER_TX: Record<number, string> = {
   [Chain.BaseSepolia]: 'https://sepolia.basescan.org/tx/',
   [Chain.Arbitrum]: 'https://arbiscan.io/tx/',
   [Chain.ArbitrumSepolia]: 'https://sepolia.arbiscan.io/tx/',
-  10: 'https://optimistic.etherscan.io/tx/',
-  11155420: 'https://sepolia-optimism.etherscan.io/tx/',
-  137: 'https://polygonscan.com/tx/',
-  80002: 'https://amoy.polygonscan.com/tx/',
 };
 
 /** Block explorer address URL prefix per chain. */
@@ -101,10 +92,6 @@ export const EXPLORER_ADDR: Record<number, string> = {
   [Chain.BaseSepolia]: 'https://sepolia.basescan.org/address/',
   [Chain.Arbitrum]: 'https://arbiscan.io/address/',
   [Chain.ArbitrumSepolia]: 'https://sepolia.arbiscan.io/address/',
-  10: 'https://optimistic.etherscan.io/address/',
-  11155420: 'https://sepolia-optimism.etherscan.io/address/',
-  137: 'https://polygonscan.com/address/',
-  80002: 'https://amoy.polygonscan.com/address/',
 };
 
 // ============================================================================
