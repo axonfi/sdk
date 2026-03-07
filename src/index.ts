@@ -70,6 +70,7 @@ export {
   getRebalanceTokenCount,
   isRebalanceTokenWhitelisted,
   deployVault,
+  predictVaultAddress,
   addBot,
   updateBotConfig,
   removeBot,

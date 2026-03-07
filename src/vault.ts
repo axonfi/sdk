@@ -387,6 +387,35 @@ export async function deployVault(
   throw new Error('VaultDeployed event not found in transaction receipt');
 }
 
+/**
+ * Predict the deterministic address of a vault before deployment.
+ *
+ * Vault addresses are deterministic via CREATE2: same owner + same nonce = same
+ * address across all chains (given the factory is at the same address).
+ *
+ * @param publicClient    Public client for the target chain.
+ * @param owner           Address that will own the vault.
+ * @param nonce           Vault index for this owner (0 for first, 1 for second, etc.).
+ * @param relayerUrl      Override relayer URL (defaults to https://relay.axonfi.xyz).
+ * @returns               The deterministic vault address.
+ */
+export async function predictVaultAddress(
+  publicClient: PublicClient,
+  owner: Address,
+  nonce: number,
+  relayerUrl?: string,
+): Promise<Address> {
+  const chainId = await publicClient.getChainId();
+  const factoryAddress = await getFactoryAddress(chainId, relayerUrl);
+
+  return publicClient.readContract({
+    address: factoryAddress,
+    abi: AxonVaultFactoryAbi,
+    functionName: 'predictVaultAddress',
+    args: [owner, BigInt(nonce)],
+  });
+}
+
 // ============================================================================
 // Owner write operations (on-chain, require gas)
 // ============================================================================

@@ -1,18 +1,7 @@
 export const AxonVaultAbi = [
   {
     "type": "constructor",
-    "inputs": [
-      {
-        "name": "_owner",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "_axonRegistry",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
+    "inputs": [],
     "stateMutability": "nonpayable"
   },
   {
@@ -745,6 +734,24 @@ export const AxonVaultAbi = [
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "inputs": [
+      {
+        "name": "_owner",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_axonRegistry",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -1649,6 +1656,19 @@ export const AxonVaultAbi = [
   },
   {
     "type": "event",
+    "name": "Initialized",
+    "inputs": [
+      {
+        "name": "version",
+        "type": "uint64",
+        "indexed": false,
+        "internalType": "uint64"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "OperatorCeilingsUpdated",
     "inputs": [
       {
@@ -2122,7 +2142,7 @@ export const AxonVaultAbi = [
   },
   {
     "type": "error",
-    "name": "InvalidShortString",
+    "name": "InvalidInitialization",
     "inputs": []
   },
   {
@@ -2153,6 +2173,11 @@ export const AxonVaultAbi = [
   {
     "type": "error",
     "name": "NotAuthorizedRelayer",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotInitializing",
     "inputs": []
   },
   {
@@ -2252,17 +2277,6 @@ export const AxonVaultAbi = [
     "type": "error",
     "name": "SelfPayment",
     "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "StringTooLong",
-    "inputs": [
-      {
-        "name": "str",
-        "type": "string",
-        "internalType": "string"
-      }
-    ]
   },
   {
     "type": "error",
