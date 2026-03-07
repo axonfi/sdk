@@ -71,6 +71,38 @@ export const AxonRegistryAbi = [
   },
   {
     "type": "function",
+    "name": "approveProtocol",
+    "inputs": [
+      {
+        "name": "protocol",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "isApprovedProtocol",
+    "inputs": [
+      {
+        "name": "protocol",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "isApprovedSwapRouter",
     "inputs": [
       {
@@ -191,6 +223,19 @@ export const AxonRegistryAbi = [
     "inputs": [
       {
         "name": "token",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "revokeProtocol",
+    "inputs": [
+      {
+        "name": "protocol",
         "type": "address",
         "internalType": "address"
       }
@@ -355,6 +400,32 @@ export const AxonRegistryAbi = [
       },
       {
         "name": "newOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ProtocolApproved",
+    "inputs": [
+      {
+        "name": "protocol",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ProtocolRevoked",
+    "inputs": [
+      {
+        "name": "protocol",
         "type": "address",
         "indexed": true,
         "internalType": "address"

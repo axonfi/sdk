@@ -8,7 +8,14 @@ import { erc20Abi } from 'viem';
 import { NATIVE_ETH } from './constants.js';
 import { parseAmount } from './amounts.js';
 import { resolveToken, type KnownTokenSymbol } from './tokens.js';
-import type { BotConfig, BotConfigParams, BotConfigInput, OperatorCeilings, VaultInfo, DestinationCheckResult } from './types.js';
+import type {
+  BotConfig,
+  BotConfigParams,
+  BotConfigInput,
+  OperatorCeilings,
+  VaultInfo,
+  DestinationCheckResult,
+} from './types.js';
 
 // ============================================================================
 // Chain helpers

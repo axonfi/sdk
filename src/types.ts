@@ -210,7 +210,7 @@ export interface PayInput {
  * executeProtocol() on-chain. The contract approves `token` to `protocol`,
  * calls it with `callData`, then revokes the approval.
  *
- * TypeHash: keccak256("ExecuteIntent(address bot,address protocol,bytes32 calldataHash,address token,uint256 amount,uint256 deadline,bytes32 ref)")
+ * TypeHash: keccak256("ExecuteIntent(address bot,address protocol,bytes32 calldataHash,address token,uint256 amount,uint256 value,uint256 deadline,bytes32 ref)")
  */
 export interface ExecuteIntent {
   /** Bot's own address. Must be registered in the vault. */
@@ -223,6 +223,8 @@ export interface ExecuteIntent {
   token: Address;
   /** Amount to approve (in token base units). */
   amount: bigint;
+  /** Native ETH to send with the protocol call (e.g. WETH.deposit, Lido.submit). 0 = no ETH. */
+  value: bigint;
   /** Unix timestamp after which this intent is invalid. */
   deadline: bigint;
   /** keccak256 of the off-chain memo. Full memo text stored by relayer. */
@@ -263,6 +265,9 @@ export interface ExecuteInput {
   token: TokenInput;
   /** Amount to approve: bigint (raw base units), number (human-readable), or string (human-readable). */
   amount: AmountInput;
+
+  /** Native ETH to send with the call (wei). Optional, defaults to 0. Used for payable functions like WETH.deposit() or Lido.submit(). */
+  value?: bigint;
 
   /** Human-readable description. Gets keccak256-hashed to ref. */
   memo?: string;

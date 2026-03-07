@@ -17,7 +17,7 @@ export const PAYMENT_INTENT_TYPEHASH: `0x${string}` = keccak256(
 /** keccak256 of the ExecuteIntent type string for DeFi protocol interactions. */
 export const EXECUTE_INTENT_TYPEHASH: `0x${string}` = keccak256(
   stringToBytes(
-    'ExecuteIntent(address bot,address protocol,bytes32 calldataHash,address token,uint256 amount,uint256 deadline,bytes32 ref)',
+    'ExecuteIntent(address bot,address protocol,bytes32 calldataHash,address token,uint256 amount,uint256 value,uint256 deadline,bytes32 ref)',
   ),
 );
 

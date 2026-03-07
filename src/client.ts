@@ -629,6 +629,7 @@ export class AxonClient {
       calldataHash: keccak256(input.callData),
       token: resolveToken(input.token, this.chainId),
       amount: parseAmount(input.amount, input.token, this.chainId),
+      value: input.value ?? 0n,
       deadline: input.deadline ?? this._defaultDeadline(),
       ref: this._resolveRef(input.memo, input.ref),
     };
@@ -695,6 +696,7 @@ export class AxonClient {
       calldataHash: intent.calldataHash,
       token: intent.token,
       amount: intent.amount.toString(),
+      value: intent.value.toString(),
       deadline: intent.deadline.toString(),
       ref: intent.ref,
       signature,
