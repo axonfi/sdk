@@ -44,7 +44,7 @@ describe('encodeRef', () => {
 describe('signPayment', () => {
   const intent: PaymentIntent = {
     bot: TEST_ACCOUNT.address,
-    to: '0x000000000000000000000000000000000000dead' as `0x${string}`,
+    to: '0x0000000000000000000000000000000000C0FFEE' as `0x${string}`,
     token: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as `0x${string}`,
     amount: 1_000_000n,
     deadline: BigInt(Math.floor(Date.now() / 1000) + 300),

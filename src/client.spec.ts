@@ -105,7 +105,7 @@ describe('pay()', () => {
     mockFetchOk(result);
 
     const response = await client.pay({
-      to: '0x000000000000000000000000000000000000dead' as Address,
+      to: '0x0000000000000000000000000000000000C0FFEE' as Address,
       token: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address,
       amount: 1_000_000n,
       memo: 'test',
@@ -123,7 +123,7 @@ describe('pay()', () => {
     mockFetchOk({ requestId: 'pay-2', status: 'approved' });
 
     await client.pay({
-      to: '0x000000000000000000000000000000000000dead' as Address,
+      to: '0x0000000000000000000000000000000000C0FFEE' as Address,
       token: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address,
       amount: 1_000_000n,
       memo: 'test',
@@ -144,7 +144,7 @@ describe('pay()', () => {
 
     await expect(
       client.pay({
-        to: '0x000000000000000000000000000000000000dead' as Address,
+        to: '0x0000000000000000000000000000000000C0FFEE' as Address,
         token: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address,
         amount: 1_000_000n,
       }),
@@ -162,7 +162,7 @@ describe('pay() with human-friendly inputs', () => {
     mockFetchOk({ requestId: 'pay-hf1', status: 'approved' });
 
     await client.pay({
-      to: '0x000000000000000000000000000000000000dead' as Address,
+      to: '0x0000000000000000000000000000000000C0FFEE' as Address,
       token: 'USDC',
       amount: 5.2,
     });
@@ -179,7 +179,7 @@ describe('pay() with human-friendly inputs', () => {
     mockFetchOk({ requestId: 'pay-hf2', status: 'approved' });
 
     await client.pay({
-      to: '0x000000000000000000000000000000000000dead' as Address,
+      to: '0x0000000000000000000000000000000000C0FFEE' as Address,
       token: 'USDC',
       amount: '10.5',
     });
@@ -193,7 +193,7 @@ describe('pay() with human-friendly inputs', () => {
     mockFetchOk({ requestId: 'pay-hf3', status: 'approved' });
 
     await client.pay({
-      to: '0x000000000000000000000000000000000000dead' as Address,
+      to: '0x0000000000000000000000000000000000C0FFEE' as Address,
       token: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address,
       amount: 1_000_000n,
     });
@@ -376,7 +376,7 @@ describe('getVaultInfo()', () => {
 describe('canPayTo()', () => {
   it('checks destination via relayer', async () => {
     const client = makeClient();
-    const dest = '0x000000000000000000000000000000000000dead' as Address;
+    const dest = '0x0000000000000000000000000000000000C0FFEE' as Address;
     mockFetchOk({ allowed: true });
 
     const result = await client.canPayTo(dest);
@@ -543,7 +543,7 @@ describe('signPayment() (low-level)', () => {
     const client = makeClient();
     const sig = await client.signPayment({
       bot: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266' as Address,
-      to: '0x000000000000000000000000000000000000dead' as Address,
+      to: '0x0000000000000000000000000000000000C0FFEE' as Address,
       token: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address,
       amount: 1_000_000n,
       deadline: 99999999n,

@@ -26,6 +26,26 @@ import { signTransferWithAuthorization, randomNonce, USDC_EIP712_DOMAIN } from '
 import { signPermit2WitnessTransfer, randomPermit2Nonce, PERMIT2_ADDRESS, X402_PROXY_ADDRESS } from './permit2.js';
 
 // ============================================================================
+// Helpers
+// ============================================================================
+
+/** Known burn / dead addresses that should never be used as destinations. */
+const BURN_ADDRESSES = new Set([
+  '0x0000000000000000000000000000000000000000',
+  '0x0000000000000000000000000000000000000001',
+  '0x000000000000000000000000000000000000dead',
+  '0xdead000000000000000000000000000000000000',
+  '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000',
+  '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+]);
+
+function _rejectBurnAddress(address: string, label: string): void {
+  if (BURN_ADDRESSES.has(address.toLowerCase())) {
+    throw new Error(`${label} cannot be a burn/dead address (${address})`);
+  }
+}
+
+// ============================================================================
 // AxonClient
 // ============================================================================
 
@@ -590,9 +610,7 @@ export class AxonClient {
   }
 
   private _buildPaymentIntent(input: PayInput): PaymentIntent {
-    if (input.to === '0x0000000000000000000000000000000000000000') {
-      throw new Error('Payment recipient cannot be the zero address');
-    }
+    _rejectBurnAddress(input.to, 'Payment recipient');
     return {
       bot: this.botAddress,
       to: input.to,
@@ -604,6 +622,7 @@ export class AxonClient {
   }
 
   private _buildExecuteIntent(input: ExecuteInput): ExecuteIntent {
+    _rejectBurnAddress(input.protocol, 'Protocol address');
     return {
       bot: this.botAddress,
       protocol: input.protocol,
