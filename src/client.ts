@@ -630,6 +630,8 @@ export class AxonClient {
       token: resolveToken(input.token, this.chainId),
       amount: parseAmount(input.amount, input.token, this.chainId),
       value: input.value ?? 0n,
+      extraTokens: input.extraTokens ?? [],
+      extraAmounts: input.extraAmounts ?? [],
       deadline: input.deadline ?? this._defaultDeadline(),
       ref: this._resolveRef(input.memo, input.ref),
     };

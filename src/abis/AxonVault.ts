@@ -495,6 +495,16 @@ export const AxonVaultAbi = [
             "internalType": "uint256"
           },
           {
+            "name": "extraTokens",
+            "type": "address[]",
+            "internalType": "address[]"
+          },
+          {
+            "name": "extraAmounts",
+            "type": "uint256[]",
+            "internalType": "uint256[]"
+          },
+          {
             "name": "deadline",
             "type": "uint256",
             "internalType": "uint256"
@@ -2086,6 +2096,11 @@ export const AxonVaultAbi = [
   {
     "type": "error",
     "name": "AmountMismatch",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ArrayLengthMismatch",
     "inputs": []
   },
   {
