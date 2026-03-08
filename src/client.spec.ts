@@ -215,8 +215,8 @@ describe('execute()', () => {
     await client.execute({
       protocol: '0x000000000000000000000000000000000000beef' as Address,
       callData: '0x1234' as Hex,
-      token: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address,
-      amount: 500_000n,
+      tokens: ['0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address],
+      amounts: [500_000n],
     });
 
     const [url] = fetchMock.mock.calls[0] as [string, RequestInit];

@@ -80,11 +80,9 @@ describe('signExecuteIntent', () => {
     bot: TEST_ACCOUNT.address,
     protocol: '0x000000000000000000000000000000000000beef' as `0x${string}`,
     calldataHash: keccak256('0x1234'),
-    token: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as `0x${string}`,
-    amount: 500_000n,
+    tokens: ['0x036CbD53842c5426634e7929541eC2318f3dCF7e' as `0x${string}`],
+    amounts: [500_000n],
     value: 0n,
-    extraTokens: [],
-    extraAmounts: [],
     deadline: BigInt(Math.floor(Date.now() / 1000) + 300),
     ref: encodeRef('test execute'),
   };

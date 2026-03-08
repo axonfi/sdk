@@ -480,29 +480,19 @@ export const AxonVaultAbi = [
             "internalType": "bytes32"
           },
           {
-            "name": "token",
-            "type": "address",
-            "internalType": "address"
+            "name": "tokens",
+            "type": "address[]",
+            "internalType": "address[]"
           },
           {
-            "name": "amount",
-            "type": "uint256",
-            "internalType": "uint256"
+            "name": "amounts",
+            "type": "uint256[]",
+            "internalType": "uint256[]"
           },
           {
             "name": "value",
             "type": "uint256",
             "internalType": "uint256"
-          },
-          {
-            "name": "extraTokens",
-            "type": "address[]",
-            "internalType": "address[]"
-          },
-          {
-            "name": "extraAmounts",
-            "type": "uint256[]",
-            "internalType": "uint256[]"
           },
           {
             "name": "deadline",
@@ -2351,6 +2341,11 @@ export const AxonVaultAbi = [
   {
     "type": "error",
     "name": "TooManySpendingLimits",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "TooManyTokens",
     "inputs": []
   },
   {

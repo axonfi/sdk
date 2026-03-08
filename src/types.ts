@@ -207,10 +207,10 @@ export interface PayInput {
  * Signed execute intent for DeFi protocol interactions.
  *
  * The bot signs this struct using EIP-712. The relayer submits it to
- * executeProtocol() on-chain. The contract approves `token` to `protocol`,
- * calls it with `callData`, then revokes the approval.
+ * executeProtocol() on-chain. The contract approves `tokens` to `protocol`,
+ * calls it with `callData`, then revokes the approvals.
  *
- * TypeHash: keccak256("ExecuteIntent(address bot,address protocol,bytes32 calldataHash,address token,uint256 amount,uint256 value,address[] extraTokens,uint256[] extraAmounts,uint256 deadline,bytes32 ref)")
+ * TypeHash: keccak256("ExecuteIntent(address bot,address protocol,bytes32 calldataHash,address[] tokens,uint256[] amounts,uint256 value,uint256 deadline,bytes32 ref)")
  */
 export interface ExecuteIntent {
   /** Bot's own address. Must be registered in the vault. */
@@ -219,16 +219,12 @@ export interface ExecuteIntent {
   protocol: Address;
   /** keccak256 of the callData bytes. Verified by relayer before submission. */
   calldataHash: Hex;
-  /** Token to approve to the protocol before calling. */
-  token: Address;
-  /** Amount to approve (in token base units). */
-  amount: bigint;
+  /** Tokens to approve to the protocol (e.g. [USDC, WETH] for GMX). Empty = no approvals. */
+  tokens: Address[];
+  /** Approval amounts for each token (must match tokens length). */
+  amounts: bigint[];
   /** Native ETH to send with the protocol call (e.g. WETH.deposit, Lido.submit). 0 = no ETH. */
   value: bigint;
-  /** Additional tokens to approve to the SAME protocol (e.g. WETH for GMX execution fee). Bot-signed. */
-  extraTokens: Address[];
-  /** Approval amounts for each extra token. Must match extraTokens length. */
-  extraAmounts: bigint[];
   /** Unix timestamp after which this intent is invalid. */
   deadline: bigint;
   /** keccak256 of the off-chain memo. Full memo text stored by relayer. */
@@ -265,17 +261,21 @@ export interface ExecuteInput {
   protocol: Address;
   /** The actual calldata bytes to send to the protocol. */
   callData: Hex;
-  /** Token to approve to the protocol — an address, Token enum, or bare symbol string ('USDC'). */
-  token: TokenInput;
-  /** Amount to approve: bigint (raw base units), number (human-readable), or string (human-readable). */
-  amount: AmountInput;
+
+  /**
+   * Tokens to approve to the protocol. Each entry is an address, Token enum, or bare symbol string.
+   * Example: ['USDC'] for single token, ['USDC', 'WETH'] for multi-token (GMX).
+   * Empty or omitted = no token approvals (e.g. closing a position).
+   */
+  tokens?: TokenInput[];
+  /**
+   * Approval amounts for each token. Must match tokens length.
+   * Each entry: bigint (raw base units), number (human-readable), or string (human-readable).
+   */
+  amounts?: AmountInput[];
 
   /** Native ETH to send with the call (wei). Optional, defaults to 0. Used for payable functions like WETH.deposit() or Lido.submit(). */
   value?: bigint;
-  /** Additional tokens to approve to the protocol (e.g. WETH for GMX execution fee). Bot signs these. */
-  extraTokens?: Address[];
-  /** Approval amounts for each extra token (raw base units). Must match extraTokens length. */
-  extraAmounts?: bigint[];
 
   /** Human-readable description. Gets keccak256-hashed to ref. */
   memo?: string;

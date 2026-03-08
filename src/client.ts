@@ -623,15 +623,30 @@ export class AxonClient {
 
   private _buildExecuteIntent(input: ExecuteInput): ExecuteIntent {
     _rejectBurnAddress(input.protocol, 'Protocol address');
+    const inputTokens = input.tokens ?? [];
+    const inputAmounts = input.amounts ?? [];
+    if (inputTokens.length !== inputAmounts.length) {
+      throw new Error(`tokens length (${inputTokens.length}) must match amounts length (${inputAmounts.length})`);
+    }
+    if (inputTokens.length > 5) {
+      throw new Error(`Too many tokens (${inputTokens.length}): maximum 5 allowed. Contact Axon if you need more.`);
+    }
+    const resolvedTokens = inputTokens.map((t) => resolveToken(t, this.chainId));
+    const zeroAddr = '0x0000000000000000000000000000000000000000';
+    for (const t of resolvedTokens) {
+      if (t.toLowerCase() === zeroAddr) throw new Error('Zero address not allowed in tokens array');
+    }
+    const uniqueTokens = new Set(resolvedTokens.map((t) => t.toLowerCase()));
+    if (uniqueTokens.size !== resolvedTokens.length) {
+      throw new Error('Duplicate token addresses in tokens array');
+    }
     return {
       bot: this.botAddress,
       protocol: input.protocol,
       calldataHash: keccak256(input.callData),
-      token: resolveToken(input.token, this.chainId),
-      amount: parseAmount(input.amount, input.token, this.chainId),
+      tokens: resolvedTokens,
+      amounts: inputTokens.map((t, i) => parseAmount(inputAmounts[i]!, t, this.chainId)),
       value: input.value ?? 0n,
-      extraTokens: input.extraTokens ?? [],
-      extraAmounts: input.extraAmounts ?? [],
       deadline: input.deadline ?? this._defaultDeadline(),
       ref: this._resolveRef(input.memo, input.ref),
     };
@@ -685,7 +700,7 @@ export class AxonClient {
     const fromToken = input.fromToken !== undefined ? resolveToken(input.fromToken, this.chainId) : undefined;
     const maxFromAmount =
       input.maxFromAmount !== undefined
-        ? parseAmount(input.maxFromAmount, input.fromToken ?? input.token, this.chainId)
+        ? parseAmount(input.maxFromAmount, input.fromToken ?? input.tokens?.[0] ?? 'USDC', this.chainId)
         : undefined;
 
     const body = {
@@ -696,8 +711,8 @@ export class AxonClient {
       bot: intent.bot,
       protocol: intent.protocol,
       calldataHash: intent.calldataHash,
-      token: intent.token,
-      amount: intent.amount.toString(),
+      tokens: intent.tokens,
+      amounts: intent.amounts.map((a) => a.toString()),
       value: intent.value.toString(),
       deadline: intent.deadline.toString(),
       ref: intent.ref,

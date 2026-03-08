@@ -238,8 +238,8 @@ Interact with DeFi and Web3 protocols (Uniswap, Aave, GMX, Ostium, etc.) from yo
 const result = await axon.execute({
   protocol: '0xUniswapRouter',
   callData: '0x...',
-  token: Token.USDC,
-  amount: 100,
+  tokens: [Token.USDC],
+  amounts: [100],
 });
 ```
 
@@ -268,8 +268,8 @@ const OSTIUM_TRADING_STORAGE = '0x...'; // pulls USDC via transferFrom()
 await axon.execute({
   protocol: USDC,                    // call target: the token contract itself
   callData: encodeApprove(OSTIUM_TRADING_STORAGE, MaxUint256),
-  token: USDC,
-  amount: 0,                         // no token spend, just setting an allowance
+  tokens: [USDC],
+  amounts: [0],                      // no token spend, just setting an allowance
   protocolName: 'USDC Approve',
 });
 
@@ -277,8 +277,8 @@ await axon.execute({
 await axon.execute({
   protocol: OSTIUM_TRADING,          // call target: the Trading contract
   callData: encodeOpenTrade(...),
-  token: USDC,
-  amount: 50_000_000,                // 50 USDC — passed for dashboard/AI visibility
+  tokens: [USDC],
+  amounts: [50_000_000],             // 50 USDC — passed for dashboard/AI visibility
   protocolName: 'Ostium',
 });
 ```
