@@ -292,12 +292,6 @@ export interface ExecuteInput {
   deadline?: bigint;
   /** Arbitrary metadata stored off-chain. */
   metadata?: Record<string, string>;
-
-  // Pre-swap fields (if vault doesn't hold the required token)
-  /** Source token for pre-swap — an address, Token enum, or bare symbol string. */
-  fromToken?: TokenInput;
-  /** Max input for pre-swap: bigint (raw), number (human), or string (human). */
-  maxFromAmount?: AmountInput;
 }
 
 /**
@@ -344,6 +338,13 @@ export interface PaymentResult {
   estimatedResolutionMs?: number;
   /** Rejection reason. Present when status === 'rejected'. */
   reason?: string;
+  /**
+   * Machine-readable error code. Present when status === 'rejected'.
+   * Notable values:
+   * - `'SWAP_REQUIRED'` — vault lacks the payment token. The SDK auto-handles
+   *   this by signing a SwapIntent and resubmitting.
+   */
+  errorCode?: string;
 }
 
 /** High-level vault info returned by AxonClient.getVaultInfo(). */

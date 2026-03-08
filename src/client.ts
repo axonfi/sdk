@@ -120,11 +120,30 @@ export class AxonClient {
    * - `"approved"`: fast path — txHash available immediately
    * - `"pending_review"`: AI scan or human review in progress — poll for status
    * - `"rejected"`: payment was rejected — reason field explains why
+   *
+   * If the vault doesn't hold enough of the payment token, the relayer returns
+   * `errorCode: 'SWAP_REQUIRED'`. The SDK automatically signs a SwapIntent and
+   * resubmits the payment with swap fields — no action needed from the caller.
    */
   async pay(input: PayInput): Promise<PaymentResult> {
     const intent = this._buildPaymentIntent(input);
     const signature = await signPayment(this.walletClient, this.vaultAddress, this.chainId, intent);
-    return this._submitPayment(intent, signature, input);
+    const result = await this._submitPayment(intent, signature, input);
+
+    // If vault needs a token swap first, sign a SwapIntent and resubmit
+    if (result.status === 'rejected' && result.errorCode === 'SWAP_REQUIRED') {
+      const swapIntent: SwapIntent = {
+        bot: this.botAddress,
+        toToken: intent.token,        // swap TO the payment token
+        minToAmount: intent.amount,    // need at least the payment amount
+        deadline: intent.deadline,     // same deadline
+        ref: intent.ref,
+      };
+      const swapSig = await signSwapIntent(this.walletClient, this.vaultAddress, this.chainId, swapIntent);
+      return this._submitPaymentWithSwap(intent, signature, input, swapIntent, swapSig);
+    }
+
+    return result;
   }
 
   // ============================================================================
@@ -662,6 +681,51 @@ export class AxonClient {
     };
   }
 
+  private async _submitPaymentWithSwap(
+    intent: PaymentIntent,
+    signature: Hex,
+    input: PayInput,
+    swapIntent: SwapIntent,
+    swapSignature: Hex,
+  ): Promise<PaymentResult> {
+    // New idempotency key for the retry (original was consumed by the SWAP_REQUIRED rejection)
+    const idempotencyKey = generateUuid();
+
+    const body = {
+      // Routing
+      chainId: this.chainId,
+      vaultAddress: this.vaultAddress,
+
+      // Flat intent fields (matches relayer DTO)
+      bot: intent.bot,
+      to: intent.to,
+      token: intent.token,
+      amount: intent.amount.toString(),
+      deadline: intent.deadline.toString(),
+      ref: intent.ref,
+      signature,
+
+      // Swap fields
+      swapSignature,
+      swapToToken: swapIntent.toToken,
+      swapMinToAmount: swapIntent.minToAmount.toString(),
+      swapDeadline: swapIntent.deadline.toString(),
+      swapRef: swapIntent.ref,
+
+      // Off-chain metadata
+      idempotencyKey,
+      ...(input.memo !== undefined && { memo: input.memo }),
+      ...(input.resourceUrl !== undefined && { resourceUrl: input.resourceUrl }),
+      ...(input.invoiceId !== undefined && { invoiceId: input.invoiceId }),
+      ...(input.orderId !== undefined && { orderId: input.orderId }),
+      ...(input.recipientLabel !== undefined && { recipientLabel: input.recipientLabel }),
+      ...(input.metadata !== undefined && { metadata: input.metadata }),
+      ...(input.x402Funding !== undefined && { x402Funding: input.x402Funding }),
+    };
+
+    return this._post(RELAYER_API.PAYMENTS, idempotencyKey, body);
+  }
+
   private async _submitPayment(intent: PaymentIntent, signature: Hex, input: PayInput): Promise<PaymentResult> {
     const idempotencyKey = input.idempotencyKey ?? generateUuid();
 
@@ -696,13 +760,6 @@ export class AxonClient {
   private async _submitExecute(intent: ExecuteIntent, signature: Hex, input: ExecuteInput): Promise<PaymentResult> {
     const idempotencyKey = input.idempotencyKey ?? generateUuid();
 
-    // Resolve optional pre-swap fields
-    const fromToken = input.fromToken !== undefined ? resolveToken(input.fromToken, this.chainId) : undefined;
-    const maxFromAmount =
-      input.maxFromAmount !== undefined
-        ? parseAmount(input.maxFromAmount, input.fromToken ?? input.tokens?.[0] ?? 'USDC', this.chainId)
-        : undefined;
-
     const body = {
       chainId: this.chainId,
       vaultAddress: this.vaultAddress,
@@ -720,10 +777,6 @@ export class AxonClient {
 
       // Protocol calldata
       callData: input.callData,
-
-      // Optional pre-swap
-      ...(fromToken !== undefined && { fromToken }),
-      ...(maxFromAmount !== undefined && { maxFromAmount: maxFromAmount.toString() }),
 
       // Off-chain metadata
       idempotencyKey,
