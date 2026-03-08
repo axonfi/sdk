@@ -430,26 +430,6 @@ export const AxonVaultAbi = [
         "name": "signature",
         "type": "bytes",
         "internalType": "bytes"
-      },
-      {
-        "name": "fromToken",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "maxFromAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "swapRouter",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "swapCalldata",
-        "type": "bytes",
-        "internalType": "bytes"
       }
     ],
     "outputs": [],
@@ -513,26 +493,6 @@ export const AxonVaultAbi = [
       },
       {
         "name": "callData",
-        "type": "bytes",
-        "internalType": "bytes"
-      },
-      {
-        "name": "fromToken",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "maxFromAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "swapRouter",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "swapCalldata",
         "type": "bytes",
         "internalType": "bytes"
       }
@@ -1993,55 +1953,6 @@ export const AxonVaultAbi = [
   },
   {
     "type": "event",
-    "name": "SwapPaymentExecuted",
-    "inputs": [
-      {
-        "name": "bot",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "to",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "fromToken",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
-      },
-      {
-        "name": "toToken",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
-      },
-      {
-        "name": "fromAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      },
-      {
-        "name": "toAmount",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      },
-      {
-        "name": "ref",
-        "type": "bytes32",
-        "indexed": false,
-        "internalType": "bytes32"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
     "name": "Unpaused",
     "inputs": [
       {
@@ -2178,11 +2089,6 @@ export const AxonVaultAbi = [
   {
     "type": "error",
     "name": "ExpectedPause",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InsufficientBalance",
     "inputs": []
   },
   {
