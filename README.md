@@ -318,6 +318,31 @@ await axon.getVaultInfo(); // owner, operator, version
 await axon.canPayTo('0xRecipient'); // destination allowed?
 ```
 
+### ERC-1271 Bot Signatures (External Protocol Signing)
+
+By default, only the vault owner's signatures are accepted by external protocols that check ERC-1271 (e.g., Permit2, Cowswap, Seaport). Bot signatures are rejected.
+
+If your bot needs to sign messages that external protocols validate against the vault (e.g., signing a Cowswap order, a Permit2 approval, or a Seaport listing), the vault owner must explicitly enable bot signing:
+
+```typescript
+// Check if ERC-1271 bot signing is enabled (direct chain read)
+import { isErc1271BotsEnabled, createAxonPublicClient } from '@axonfi/sdk';
+
+const publicClient = createAxonPublicClient(chainId, rpcUrl);
+const enabled = await isErc1271BotsEnabled(publicClient, vaultAddress);
+
+if (!enabled) {
+  console.log('ERC-1271 bot signatures are disabled on this vault.');
+  console.log('The vault owner must enable it via the dashboard or by calling setErc1271Bots(true).');
+}
+```
+
+**When to enable:** Only if your bots interact with protocols that verify signatures via ERC-1271 — Cowswap (off-chain order signing), Permit2 (gasless token approvals), Seaport (NFT marketplace listings).
+
+**When to keep disabled (default):** If your bots only make payments, execute DeFi calls, or rebalance tokens through Axon's standard `pay()` / `execute()` / `swap()` endpoints.
+
+**Security note:** If a bot key is compromised while ERC-1271 is enabled, the attacker could sign Permit2 approvals or marketplace listings that drain vault funds. The owner can disable it instantly via the dashboard or `setErc1271Bots(false)`.
+
 ### Utilities
 
 Helper functions for amount conversion, token resolution, and reference encoding.
@@ -366,7 +391,7 @@ Supports EIP-3009 (USDC, gasless) and Permit2 (any ERC-20) settlement schemes.
 ## Security Model
 
 - **Owners** control everything: bot whitelist, spending limits, withdrawal. Hardware wallet recommended.
-- **Bots** only sign payment intents. They never hold ETH, never submit transactions, and can be removed instantly.
+- **Bots** only sign payment intents. They never hold ETH, never submit transactions, and can be removed instantly. External protocol signing (ERC-1271) is disabled by default — must be explicitly enabled by the owner.
 - **Relayer** (Axon) can only execute bot-signed intents within configured limits. Cannot withdraw or modify vault config.
 - **If Axon goes offline**, the owner retains full withdrawal access directly through the on-chain vault contract.
 

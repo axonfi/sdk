@@ -190,6 +190,27 @@ export async function operatorMaxDrainPerDay(publicClient: PublicClient, vaultAd
   });
 }
 
+/**
+ * Returns whether ERC-1271 bot signatures are enabled on the vault.
+ *
+ * When disabled (default), only the vault owner's signatures are accepted by
+ * external protocols (Permit2, Cowswap, Seaport). Bot signatures return
+ * `0xffffffff` (invalid).
+ *
+ * When enabled, active bot keys can sign messages that external protocols
+ * treat as vault-authorized — useful for Permit2 approvals, Cowswap orders, etc.
+ *
+ * If your bot interacts with a protocol that checks ERC-1271 and gets rejected,
+ * the vault owner needs to call `setErc1271Bots(true)` to enable it.
+ */
+export async function isErc1271BotsEnabled(publicClient: PublicClient, vaultAddress: Address): Promise<boolean> {
+  return publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'erc1271BotsEnabled',
+  });
+}
+
 /** Returns whether the vault is currently paused. */
 export async function isVaultPaused(publicClient: PublicClient, vaultAddress: Address): Promise<boolean> {
   return publicClient.readContract({

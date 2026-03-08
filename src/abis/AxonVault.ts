@@ -374,6 +374,19 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
+    "name": "erc1271BotsEnabled",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "executePayment",
     "inputs": [
       {
@@ -1169,6 +1182,19 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
+    "name": "setErc1271Bots",
+    "inputs": [
+      {
+        "name": "enabled",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "setOperator",
     "inputs": [
       {
@@ -1579,6 +1605,19 @@ export const AxonVaultAbi = [
   },
   {
     "type": "event",
+    "name": "ERC1271BotsToggled",
+    "inputs": [
+      {
+        "name": "enabled",
+        "type": "bool",
+        "indexed": false,
+        "internalType": "bool"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "ERC721Withdrawn",
     "inputs": [
       {
@@ -1851,6 +1890,12 @@ export const AxonVaultAbi = [
       },
       {
         "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "value",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
