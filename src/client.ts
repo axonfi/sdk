@@ -156,6 +156,12 @@ export class AxonClient {
    * The vault approves `token` to `protocol`, calls it with `callData`,
    * then revokes the approval. Tokens stay in the vault or go to the protocol
    * as specified by the calldata.
+   *
+   * **Approval rules for default tokens** (USDC, WETH, etc.): when calling
+   * `approve()` on a default token, the spender must be an approved protocol
+   * or swap router — the contract rejects arbitrary addresses. The approve
+   * amount is capped by the bot's `maxPerTxAmount` and counts toward
+   * spending limits.
    */
   async execute(input: ExecuteInput): Promise<PaymentResult> {
     const intent = this._buildExecuteIntent(input);
