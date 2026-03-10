@@ -5,7 +5,7 @@ import type { PublicClient, WalletClient, Address, Hex, Chain } from 'viem';
 import { AxonVaultAbi } from './abis/AxonVault.js';
 import { AxonVaultFactoryAbi } from './abis/AxonVaultFactory.js';
 import { erc20Abi } from 'viem';
-import { NATIVE_ETH } from './constants.js';
+import { NATIVE_ETH, ALLOWED_WINDOWS } from './constants.js';
 import { parseAmount } from './amounts.js';
 import { resolveToken, type KnownTokenSymbol } from './tokens.js';
 import type {
@@ -66,6 +66,14 @@ const USDC_UNIT = 10n ** USDC_DECIMALS; // 1_000_000n
 
 /** Convert human-friendly BotConfigInput (dollar amounts) to on-chain BotConfigParams (6-decimal bigints). */
 export function toBotConfigParams(input: BotConfigInput): BotConfigParams {
+  // Validate spending windows before converting
+  for (const sl of input.spendingLimits) {
+    if (!ALLOWED_WINDOWS.has(BigInt(sl.windowSeconds))) {
+      const allowed = [...ALLOWED_WINDOWS].map((w) => `${Number(w)}s`).join(', ');
+      throw new Error(`Invalid spending window: ${sl.windowSeconds}s. Allowed values: ${allowed}. Use WINDOW constants.`);
+    }
+  }
+
   return {
     maxPerTxAmount: BigInt(Math.round(input.maxPerTxAmount * Number(USDC_UNIT))),
     maxRebalanceAmount: BigInt(Math.round(input.maxRebalanceAmount * Number(USDC_UNIT))),

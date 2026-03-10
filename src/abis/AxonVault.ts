@@ -2108,6 +2108,11 @@ export const AxonVaultAbi = [
   },
   {
     "type": "error",
+    "name": "InvalidSpendingWindow",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "MaxPerTxExceeded",
     "inputs": []
   },

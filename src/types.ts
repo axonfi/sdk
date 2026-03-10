@@ -32,7 +32,7 @@ export interface SpendingLimit {
   amount: bigint;
   /** Max number of transactions in this window. 0 = no count limit. */
   maxCount: bigint;
-  /** Window size: 3600=1h, 86400=1d, 604800=1w, 2592000=30d */
+  /** Window duration. Must be one of the allowed WINDOW values: 1h, 3h, 24h, 7d, 30d. */
   windowSeconds: bigint;
 }
 
@@ -68,7 +68,7 @@ export interface SpendingLimitInput {
   amount: number;
   /** Max transactions in this window. 0 = no count limit. */
   maxCount: number;
-  /** Window size in seconds: 3600=1h, 86400=1d, 604800=1w. Use WINDOW constants. */
+  /** Window duration. Must be one of the allowed WINDOW values: 1h, 3h, 24h, 7d, 30d. */
   windowSeconds: number;
 }
 

@@ -101,13 +101,21 @@ export const EXPLORER_ADDR: Record<number, string> = {
 /** Default intent validity window when no deadline is specified. */
 export const DEFAULT_DEADLINE_SECONDS = 300; // 5 minutes
 
-/** Window presets for SpendingLimit.windowSeconds. */
+/**
+ * Allowed window presets for SpendingLimit.windowSeconds.
+ * These are the ONLY values accepted by the contract — arbitrary
+ * durations are rejected on-chain with InvalidSpendingWindow().
+ */
 export const WINDOW = {
   ONE_HOUR: 3600n,
+  THREE_HOURS: 10800n,
   ONE_DAY: 86400n,
   ONE_WEEK: 604800n,
   THIRTY_DAYS: 2592000n,
 } as const;
+
+/** Set of all allowed window values for validation. */
+export const ALLOWED_WINDOWS: ReadonlySet<bigint> = new Set(Object.values(WINDOW));
 
 // ============================================================================
 // Payment rejection error codes

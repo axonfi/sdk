@@ -13,6 +13,7 @@ import {
   EIP712_DOMAIN_VERSION,
   PaymentErrorCode,
   RELAYER_API,
+  ALLOWED_WINDOWS,
 } from './constants.js';
 
 describe('USDC addresses', () => {
@@ -60,8 +61,22 @@ describe('WINDOW constants', () => {
     expect(WINDOW.ONE_WEEK).toBe(604800n);
   });
 
+  it('THREE_HOURS is 10800 seconds', () => {
+    expect(WINDOW.THREE_HOURS).toBe(10800n);
+  });
+
   it('THIRTY_DAYS is 2592000 seconds', () => {
     expect(WINDOW.THIRTY_DAYS).toBe(2592000n);
+  });
+
+  it('ALLOWED_WINDOWS contains exactly the 5 allowed values', () => {
+    expect(ALLOWED_WINDOWS.size).toBe(5);
+    expect(ALLOWED_WINDOWS.has(WINDOW.ONE_HOUR)).toBe(true);
+    expect(ALLOWED_WINDOWS.has(WINDOW.THREE_HOURS)).toBe(true);
+    expect(ALLOWED_WINDOWS.has(WINDOW.ONE_DAY)).toBe(true);
+    expect(ALLOWED_WINDOWS.has(WINDOW.ONE_WEEK)).toBe(true);
+    expect(ALLOWED_WINDOWS.has(WINDOW.THIRTY_DAYS)).toBe(true);
+    expect(ALLOWED_WINDOWS.has(86401n)).toBe(false);
   });
 });
 
