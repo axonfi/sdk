@@ -4,6 +4,7 @@ import {
   getBotConfig,
   isBotActive,
   getOperatorCeilings,
+  operatorMaxDrainPerDay,
   isVaultPaused,
   getVaultVersion,
   getVaultOwner,
@@ -128,6 +129,38 @@ describe('getOperatorCeilings', () => {
   });
 });
 
+describe('operatorMaxDrainPerDay', () => {
+  const base = {
+    maxPerTxAmount: 1000n,
+    maxBotDailyLimit: 5_000_000_000n, // $5k in USDC decimals
+    maxOperatorBots: 5n,
+    vaultDailyAggregate: 10_000_000_000n, // $10k
+    minAiTriggerFloor: 50n,
+  };
+
+  it('returns min(theoretical, aggregate) in USD', () => {
+    // 5 × $5k = $25k theoretical, capped by $10k aggregate
+    expect(operatorMaxDrainPerDay(base)).toBe(10_000);
+  });
+
+  it('returns theoretical when no aggregate', () => {
+    // 5 × $5k = $25k
+    expect(operatorMaxDrainPerDay({ ...base, vaultDailyAggregate: 0n })).toBe(25_000);
+  });
+
+  it('returns 0 when maxOperatorBots is 0', () => {
+    expect(operatorMaxDrainPerDay({ ...base, maxOperatorBots: 0n })).toBe(0);
+  });
+
+  it('returns 0 when maxBotDailyLimit is 0', () => {
+    expect(operatorMaxDrainPerDay({ ...base, maxBotDailyLimit: 0n })).toBe(0);
+  });
+
+  it('returns theoretical when it equals aggregate', () => {
+    // 2 × $5k = $10k = aggregate → returns $10k
+    expect(operatorMaxDrainPerDay({ ...base, maxOperatorBots: 2n })).toBe(10_000);
+  });
+});
 
 describe('isDestinationAllowed', () => {
   it('blocks blacklisted destinations', async () => {

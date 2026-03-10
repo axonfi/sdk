@@ -61,6 +61,7 @@ export {
   isBotActive,
   getBotConfig,
   getOperatorCeilings,
+  operatorMaxDrainPerDay,
   isErc1271BotsEnabled,
   isVaultPaused,
   getDomainSeparator,

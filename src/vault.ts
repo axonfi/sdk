@@ -185,6 +185,25 @@ export async function getOperatorCeilings(
   };
 }
 
+/**
+ * Computes the maximum USD an operator-compromised wallet could drain per day.
+ * Pure computation from operator ceilings — no RPC call needed.
+ *
+ * Formula: `min(maxOperatorBots × maxBotDailyLimit, vaultDailyAggregate)`.
+ * Returns `0` if the operator has no bot-add permission (`maxOperatorBots === 0`).
+ *
+ * Returns a human-readable USD number (e.g. `1000` for $1,000).
+ *
+ * This is accurate because the contract enforces that sub-daily spending windows
+ * cannot exceed `maxBotDailyLimit` when extrapolated to 24 hours.
+ */
+export function operatorMaxDrainPerDay(ceilings: OperatorCeilings): number {
+  const { maxOperatorBots, maxBotDailyLimit, vaultDailyAggregate } = ceilings;
+  if (maxOperatorBots === 0n || maxBotDailyLimit === 0n) return 0;
+  const theoretical = maxOperatorBots * maxBotDailyLimit;
+  const raw = vaultDailyAggregate > 0n && vaultDailyAggregate < theoretical ? vaultDailyAggregate : theoretical;
+  return Number(raw) / 1e6;
+}
 
 /**
  * Returns whether ERC-1271 bot signatures are enabled on the vault.
