@@ -152,8 +152,12 @@ describe('operatorMaxDrainPerDay', () => {
     expect(operatorMaxDrainPerDay({ ...base, maxOperatorBots: 0n })).toBe(0);
   });
 
-  it('returns 0 when maxBotDailyLimit is 0', () => {
-    expect(operatorMaxDrainPerDay({ ...base, maxBotDailyLimit: 0n })).toBe(0);
+  it('returns Infinity when maxBotDailyLimit is 0 (unlimited) and no aggregate', () => {
+    expect(operatorMaxDrainPerDay({ ...base, maxBotDailyLimit: 0n, vaultDailyAggregate: 0n })).toBe(Infinity);
+  });
+
+  it('returns aggregate when maxBotDailyLimit is 0 but aggregate is set', () => {
+    expect(operatorMaxDrainPerDay({ ...base, maxBotDailyLimit: 0n })).toBe(10_000);
   });
 
   it('returns theoretical when it equals aggregate', () => {

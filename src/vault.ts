@@ -199,7 +199,12 @@ export async function getOperatorCeilings(
  */
 export function operatorMaxDrainPerDay(ceilings: OperatorCeilings): number {
   const { maxOperatorBots, maxBotDailyLimit, vaultDailyAggregate } = ceilings;
-  if (maxOperatorBots === 0n || maxBotDailyLimit === 0n) return 0;
+  if (maxOperatorBots === 0n) return 0; // operator can't add bots → zero drain
+  if (maxBotDailyLimit === 0n) {
+    // 0 = unlimited daily limit per bot
+    if (vaultDailyAggregate > 0n) return Number(vaultDailyAggregate) / 1e6;
+    return Infinity;
+  }
   const theoretical = maxOperatorBots * maxBotDailyLimit;
   const raw = vaultDailyAggregate > 0n && vaultDailyAggregate < theoretical ? vaultDailyAggregate : theoretical;
   return Number(raw) / 1e6;
