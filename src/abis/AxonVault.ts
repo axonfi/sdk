@@ -961,19 +961,6 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
-    "name": "operatorMaxDrainPerDay",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "owner",
     "inputs": [],
     "outputs": [

@@ -185,18 +185,6 @@ export async function getOperatorCeilings(
   };
 }
 
-/**
- * Returns the maximum USDC an operator-compromised wallet could drain per day.
- * Computed on-chain as: min(maxOperatorBots × maxBotDailyLimit, vaultDailyAggregate).
- * Returns 0n if operator has no bot-add permission.
- */
-export async function operatorMaxDrainPerDay(publicClient: PublicClient, vaultAddress: Address): Promise<bigint> {
-  return publicClient.readContract({
-    address: vaultAddress,
-    abi: AxonVaultAbi,
-    functionName: 'operatorMaxDrainPerDay',
-  });
-}
 
 /**
  * Returns whether ERC-1271 bot signatures are enabled on the vault.

@@ -4,7 +4,6 @@ import {
   getBotConfig,
   isBotActive,
   getOperatorCeilings,
-  operatorMaxDrainPerDay,
   isVaultPaused,
   getVaultVersion,
   getVaultOwner,
@@ -129,12 +128,6 @@ describe('getOperatorCeilings', () => {
   });
 });
 
-describe('operatorMaxDrainPerDay', () => {
-  it('returns the drain amount', async () => {
-    const client = mockPublicClient({ operatorMaxDrainPerDay: 500_000_000n });
-    expect(await operatorMaxDrainPerDay(client, VAULT)).toBe(500_000_000n);
-  });
-});
 
 describe('isDestinationAllowed', () => {
   it('blocks blacklisted destinations', async () => {
