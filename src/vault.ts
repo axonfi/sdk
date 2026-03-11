@@ -70,7 +70,9 @@ export function toBotConfigParams(input: BotConfigInput): BotConfigParams {
   for (const sl of input.spendingLimits) {
     if (!ALLOWED_WINDOWS.has(BigInt(sl.windowSeconds))) {
       const allowed = [...ALLOWED_WINDOWS].map((w) => `${Number(w)}s`).join(', ');
-      throw new Error(`Invalid spending window: ${sl.windowSeconds}s. Allowed values: ${allowed}. Use WINDOW constants.`);
+      throw new Error(
+        `Invalid spending window: ${sl.windowSeconds}s. Allowed values: ${allowed}. Use WINDOW constants.`,
+      );
     }
   }
 

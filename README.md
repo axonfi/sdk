@@ -4,7 +4,7 @@ Give your AI agents a wallet they can't drain.
 
 ## What is Axon Finance
 
-Treasury and payment infrastructure for autonomous AI agents. Non-custodial vaults, gasless bots, AI verification.
+Agentic finance infrastructure. Secure, non-custodial vaults for autonomous AI agents. Gasless bots, AI verification.
 
 ## Why Axon Finance
 
@@ -53,14 +53,19 @@ Everything can be done from code — no dashboard needed. An agent can bootstrap
 
 ```typescript
 import {
-  AxonClient, deployVault, addBot, deposit,
-  createAxonPublicClient, createAxonWalletClient,
-  WINDOW, Chain,
+  AxonClient,
+  deployVault,
+  addBot,
+  deposit,
+  createAxonPublicClient,
+  createAxonWalletClient,
+  WINDOW,
+  Chain,
 } from '@axonfi/sdk';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 // ── 1. Owner wallet (funded with ETH for gas) ─────────────────────
-const ownerKey = '0x...';  // or generate: generatePrivateKey()
+const ownerKey = '0x...'; // or generate: generatePrivateKey()
 const chainId = Chain.BaseSepolia;
 const ownerWallet = createAxonWalletClient(ownerKey, chainId);
 const publicClient = createAxonPublicClient(chainId, 'https://sepolia.base.org');
@@ -79,14 +84,16 @@ await axon.acceptTos(ownerWallet, ownerWallet.account!.address);
 
 // ── 5. Register the bot on the vault (on-chain tx, ~0.0005 ETH gas)
 await addBot(ownerWallet, publicClient, vaultAddress, botAddress, {
-  maxPerTxAmount: 100,                // $100 hard cap per tx
-  maxRebalanceAmount: 0,              // no rebalance cap
-  spendingLimits: [{
-    amount: 1000,                     // $1,000/day rolling limit
-    maxCount: 0,                      // no tx count limit
-    windowSeconds: WINDOW.ONE_DAY,
-  }],
-  aiTriggerThreshold: 50,            // AI scan above $50
+  maxPerTxAmount: 100, // $100 hard cap per tx
+  maxRebalanceAmount: 0, // no rebalance cap
+  spendingLimits: [
+    {
+      amount: 1000, // $1,000/day rolling limit
+      maxCount: 0, // no tx count limit
+      windowSeconds: WINDOW.ONE_DAY,
+    },
+  ],
+  aiTriggerThreshold: 50, // AI scan above $50
   requireAiVerification: false,
 });
 
@@ -103,19 +110,19 @@ await deposit(ownerWallet, publicClient, vaultAddress, 'USDC', 500);
 
 ### What Needs Gas vs. What's Gasless
 
-| Step | Who pays gas | Notes |
-|------|-------------|-------|
-| Deploy vault | Owner | ~0.001 ETH. One-time. |
-| Accept ToS | Owner | Wallet signature only (no gas). |
-| Register bot | Owner | ~0.0005 ETH. One per bot. |
-| Configure bot | Owner | ~0.0003 ETH. Only when changing limits. |
-| Deposit ETH | Depositor | Anyone can deposit. ETH sent directly. |
-| Deposit ERC-20 | Depositor | Anyone can deposit. SDK handles approve + deposit. |
-| **Pay** | **Free (relayer)** | **Bot signs EIP-712 intent. Axon pays gas.** |
-| **Execute (DeFi)** | **Free (relayer)** | **Bot signs intent. Axon pays gas.** |
-| **Swap (rebalance)** | **Free (relayer)** | **Bot signs intent. Axon pays gas.** |
-| Pause/unpause | Owner | ~0.0002 ETH. Emergency only. |
-| Withdraw | Owner | ~0.0003 ETH. Owner-only. |
+| Step                 | Who pays gas       | Notes                                              |
+| -------------------- | ------------------ | -------------------------------------------------- |
+| Deploy vault         | Owner              | ~0.001 ETH. One-time.                              |
+| Accept ToS           | Owner              | Wallet signature only (no gas).                    |
+| Register bot         | Owner              | ~0.0005 ETH. One per bot.                          |
+| Configure bot        | Owner              | ~0.0003 ETH. Only when changing limits.            |
+| Deposit ETH          | Depositor          | Anyone can deposit. ETH sent directly.             |
+| Deposit ERC-20       | Depositor          | Anyone can deposit. SDK handles approve + deposit. |
+| **Pay**              | **Free (relayer)** | **Bot signs EIP-712 intent. Axon pays gas.**       |
+| **Execute (DeFi)**   | **Free (relayer)** | **Bot signs intent. Axon pays gas.**               |
+| **Swap (rebalance)** | **Free (relayer)** | **Bot signs intent. Axon pays gas.**               |
+| Pause/unpause        | Owner              | ~0.0002 ETH. Emergency only.                       |
+| Withdraw             | Owner              | ~0.0003 ETH. Owner-only.                           |
 
 **The key insight:** Setup operations (deploy, add bot, deposit) require gas from the owner. Once setup is complete, all bot operations (payments, DeFi, swaps) are gasless — the bot never needs ETH. The relayer pays all execution gas.
 
@@ -284,10 +291,11 @@ await axon.execute({
 ```
 
 **Vault setup (owner, one-time):** Two contracts must be approved via `approveProtocol()`:
+
 1. **USDC** (the token contract) — because the vault calls `approve()` on it directly
 2. **Trading** — because the vault calls `openTrade()` on it
 
-TradingStorage does *not* need to be approved — it's just an argument to `approve()`, not a contract the vault calls.
+TradingStorage does _not_ need to be approved — it's just an argument to `approve()`, not a contract the vault calls.
 
 > **Note:** Common tokens (USDC, USDT, WETH, etc.) are pre-approved globally via the Axon registry as default tokens, so you typically only need to approve the DeFi protocol contract itself. You only need to approve a token if it's uncommon and not in the registry defaults.
 
@@ -303,6 +311,7 @@ If `execute()` reverts with `ContractNotApproved`, the `protocol` address you're
 2. **The token contract isn't approved** — when doing a token approval (Step 1 above), the token must either be approved on the vault via `approveProtocol(tokenAddress)` or be a registry default token. Common tokens (USDC, USDT, WETH, DAI, etc.) are pre-approved globally by Axon, but uncommon tokens (e.g., stETH, aUSDC, cTokens) may need manual approval.
 
 **Example — Lido staking/unstaking:** To unstake stETH, Lido's withdrawal contract calls `transferFrom()` to pull stETH from your vault. You need:
+
 - `approveProtocol(stETH)` — so the vault can call `approve()` on the stETH token to grant Lido an allowance
 - `approveProtocol(lidoWithdrawalQueue)` — so the vault can call `requestWithdrawals()` on Lido
 

@@ -134,9 +134,9 @@ export class AxonClient {
     if (result.status === 'rejected' && result.errorCode === 'SWAP_REQUIRED') {
       const swapIntent: SwapIntent = {
         bot: this.botAddress,
-        toToken: intent.token,        // swap TO the payment token
-        minToAmount: intent.amount,    // need at least the payment amount
-        deadline: intent.deadline,     // same deadline
+        toToken: intent.token, // swap TO the payment token
+        minToAmount: intent.amount, // need at least the payment amount
+        deadline: intent.deadline, // same deadline
         ref: intent.ref,
       };
       const swapSig = await signSwapIntent(this.walletClient, this.vaultAddress, this.chainId, swapIntent);
