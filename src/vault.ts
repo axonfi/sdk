@@ -480,15 +480,12 @@ export async function deployVault(
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
   // Extract vault address from the VaultDeployed event
+  // Event: VaultDeployed(address indexed owner, address indexed vault, uint16 version, address axonRegistry)
+  const vaultDeployedSig = '0x42315f4340c2734f2a8ef1b71fd45068eafc3ed5730a08a98e8d7ef57105626a';
   for (const log of receipt.logs) {
-    try {
-      // The second indexed topic is the vault address (owner is first indexed)
-      if (log.topics.length >= 3 && log.topics[2]) {
-        const vaultAddress = `0x${log.topics[2].slice(26)}` as Address;
-        return vaultAddress;
-      }
-    } catch {
-      // Not a VaultDeployed log, continue
+    if (log.topics.length >= 3 && log.topics[0] === vaultDeployedSig && log.topics[2]) {
+      const vaultAddress = `0x${log.topics[2].slice(26)}` as Address;
+      return vaultAddress;
     }
   }
 
