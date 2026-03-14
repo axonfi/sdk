@@ -429,7 +429,7 @@ Supports EIP-3009 (USDC, gasless) and Permit2 (any ERC-20) settlement schemes.
 - [Documentation](https://axonfi.xyz/llms.txt)
 - [npm — @axonfi/sdk](https://www.npmjs.com/package/@axonfi/sdk)
 - [PyPI — axonfi](https://pypi.org/project/axonfi/) (Python SDK)
-- [Smart Contracts](https://github.com/axonfi/smart-contracts)
+- [Smart Contracts](https://github.com/axonfi/core)
 - [Examples](https://github.com/axonfi/examples)
 - [Twitter/X — @axonfixyz](https://x.com/axonfixyz)
 
