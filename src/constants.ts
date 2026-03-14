@@ -23,7 +23,7 @@ export const EXECUTE_INTENT_TYPEHASH: `0x${string}` = keccak256(
 
 /** keccak256 of the SwapIntent type string for in-vault token rebalancing. */
 export const SWAP_INTENT_TYPEHASH: `0x${string}` = keccak256(
-  stringToBytes('SwapIntent(address bot,address toToken,uint256 minToAmount,uint256 deadline,bytes32 ref)'),
+  stringToBytes('SwapIntent(address bot,address toToken,uint256 minToAmount,address fromToken,uint256 maxFromAmount,uint256 deadline,bytes32 ref)'),
 );
 
 /** EIP-712 domain name and version for AxonVault. Matches the constructor. */

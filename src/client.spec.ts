@@ -236,6 +236,8 @@ describe('swap()', () => {
     await client.swap({
       toToken: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address,
       minToAmount: 900_000n,
+      fromToken: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as Address,
+      maxFromAmount: 1_000_000n,
     });
 
     const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
@@ -255,6 +257,8 @@ describe('swap() with human-friendly inputs', () => {
     await client.swap({
       toToken: 'WETH',
       minToAmount: 0.001,
+      fromToken: 'USDC',
+      maxFromAmount: 5,
     });
 
     const body = JSON.parse((fetchMock.mock.calls[0] as [string, RequestInit])[1].body as string);

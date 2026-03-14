@@ -207,6 +207,19 @@ export const AxonVaultFactoryAbi = [
     "stateMutability": "view"
   },
   {
+    "type": "function",
+    "name": "vaultVersion",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint16",
+        "internalType": "uint16"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "type": "event",
     "name": "OwnershipTransferStarted",
     "inputs": [

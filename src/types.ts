@@ -201,6 +201,18 @@ export interface PayInput {
    * Does NOT bypass any policy checks — full pipeline still applies.
    */
   x402Funding?: boolean;
+
+  /**
+   * Source token for auto-swap if vault lacks the payment token.
+   * Required for SWAP_REQUIRED auto-retry — the bot must sign fromToken.
+   * If omitted and SWAP_REQUIRED occurs, pay() throws instead of auto-retrying.
+   */
+  swapFromToken?: TokenInput;
+  /**
+   * Max input amount for auto-swap. Required alongside swapFromToken.
+   * Accepts bigint (raw), number (human), or string (human).
+   */
+  swapMaxFromAmount?: AmountInput;
 }
 
 /**
@@ -237,7 +249,7 @@ export interface ExecuteIntent {
  * The bot signs this struct using EIP-712. The relayer submits it to
  * executeSwap() on-chain. Tokens stay in the vault (no recipient).
  *
- * TypeHash: keccak256("SwapIntent(address bot,address toToken,uint256 minToAmount,uint256 deadline,bytes32 ref)")
+ * TypeHash: keccak256("SwapIntent(address bot,address toToken,uint256 minToAmount,address fromToken,uint256 maxFromAmount,uint256 deadline,bytes32 ref)")
  */
 export interface SwapIntent {
   /** Bot's own address. Must be registered in the vault. */
@@ -246,6 +258,10 @@ export interface SwapIntent {
   toToken: Address;
   /** Minimum output amount (slippage floor). */
   minToAmount: bigint;
+  /** Source token to swap from. Bot-signed to prevent relayer substitution. */
+  fromToken: Address;
+  /** Maximum input amount the vault will spend. Bot-signed to prevent relayer substitution. */
+  maxFromAmount: bigint;
   /** Unix timestamp after which this intent is invalid. */
   deadline: bigint;
   /** keccak256 of the off-chain memo. Full memo text stored by relayer. */
@@ -313,11 +329,10 @@ export interface SwapInput {
   /** Intent expiry (defaults to 5 min). */
   deadline?: bigint;
 
-  // Swap source (relayer resolves if omitted)
-  /** Source token to swap from — an address, Token enum, or bare symbol string. */
-  fromToken?: TokenInput;
-  /** Max input amount for swap: bigint (raw), number (human), or string (human). */
-  maxFromAmount?: AmountInput;
+  /** Source token to swap from — an address, Token enum, or bare symbol string. Bot-signed. */
+  fromToken: TokenInput;
+  /** Max input amount for swap: bigint (raw), number (human), or string (human). Bot-signed. */
+  maxFromAmount: AmountInput;
 }
 
 /** Possible statuses returned by the relayer. */

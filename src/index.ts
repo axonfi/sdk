@@ -71,6 +71,8 @@ export {
   isDestinationAllowed,
   getRebalanceTokenCount,
   isRebalanceTokenWhitelisted,
+  getMaxSwapSlippageBps,
+  previewSwapSlippage,
   deployVault,
   predictVaultAddress,
   addBot,
@@ -81,6 +83,7 @@ export {
   createAxonWalletClient,
   getChain,
 } from './vault.js';
+export type { SwapSlippagePreview } from './vault.js';
 
 // Keystore utilities
 export { encryptKeystore, decryptKeystore } from './keystore.js';

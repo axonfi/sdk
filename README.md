@@ -233,6 +233,8 @@ Rebalance tokens inside your vault without withdrawing. Swap between any tokens 
 const result = await axon.swap({
   toToken: Token.WETH,
   minToAmount: 0.001,
+  fromToken: Token.USDC,
+  maxFromAmount: 5,
   memo: 'Rebalance to WETH',
 });
 ```

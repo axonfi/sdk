@@ -257,8 +257,8 @@ export const AxonVaultAbi = [
     "outputs": [
       {
         "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "stateMutability": "view"
@@ -531,6 +531,16 @@ export const AxonVaultAbi = [
             "internalType": "uint256"
           },
           {
+            "name": "fromToken",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "maxFromAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
             "name": "deadline",
             "type": "uint256",
             "internalType": "uint256"
@@ -546,16 +556,6 @@ export const AxonVaultAbi = [
         "name": "signature",
         "type": "bytes",
         "internalType": "bytes"
-      },
-      {
-        "name": "fromToken",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "maxFromAmount",
-        "type": "uint256",
-        "internalType": "uint256"
       },
       {
         "name": "swapRouter",
@@ -790,6 +790,19 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
+    "name": "maxSwapSlippageBps",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "onERC1155BatchReceived",
     "inputs": [
       {
@@ -961,6 +974,30 @@ export const AxonVaultAbi = [
   },
   {
     "type": "function",
+    "name": "oracleUsdValue",
+    "inputs": [
+      {
+        "name": "token",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "owner",
     "inputs": [],
     "outputs": [
@@ -1001,6 +1038,55 @@ export const AxonVaultAbi = [
         "name": "",
         "type": "address",
         "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "previewSwapSlippage",
+    "inputs": [
+      {
+        "name": "fromToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "fromAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "toAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "wouldPass",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "fromUsd",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "toUsd",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "minToUsd",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -1135,6 +1221,19 @@ export const AxonVaultAbi = [
         "name": "enabled",
         "type": "bool",
         "internalType": "bool"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setMaxSwapSlippageBps",
+    "inputs": [
+      {
+        "name": "bps",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "outputs": [],
@@ -1655,6 +1754,19 @@ export const AxonVaultAbi = [
   },
   {
     "type": "event",
+    "name": "MaxSwapSlippageBpsSet",
+    "inputs": [
+      {
+        "name": "bps",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "OperatorCeilingsUpdated",
     "inputs": [
       {
@@ -1708,6 +1820,31 @@ export const AxonVaultAbi = [
         "type": "address",
         "indexed": true,
         "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "OracleCheckSkipped",
+    "inputs": [
+      {
+        "name": "fromToken",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "toToken",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "reason",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
       }
     ],
     "anonymous": false
@@ -2234,6 +2371,11 @@ export const AxonVaultAbi = [
   {
     "type": "error",
     "name": "SwapOutputInsufficient",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SwapSlippageTooHigh",
     "inputs": []
   },
   {

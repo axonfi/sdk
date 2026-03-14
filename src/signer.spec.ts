@@ -99,6 +99,8 @@ describe('signSwapIntent', () => {
     bot: TEST_ACCOUNT.address,
     toToken: '0x036CbD53842c5426634e7929541eC2318f3dCF7e' as `0x${string}`,
     minToAmount: 900_000n,
+    fromToken: '0x000000000000000000000000000000000000dEaD' as `0x${string}`,
+    maxFromAmount: 1_000_000n,
     deadline: BigInt(Math.floor(Date.now() / 1000) + 300),
     ref: encodeRef('test swap'),
   };

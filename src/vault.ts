@@ -374,6 +374,71 @@ export async function isRebalanceTokenWhitelisted(
 }
 
 // ============================================================================
+// Swap slippage — oracle-based pre-flight check
+// ============================================================================
+
+/** Result of previewSwapSlippage — mirrors the on-chain view return values. */
+export interface SwapSlippagePreview {
+  /** True if the swap would pass the oracle slippage check (or if check is disabled/oracle unavailable). */
+  wouldPass: boolean;
+  /** USD value of the input amount (0 if oracle unavailable). */
+  fromUsd: bigint;
+  /** USD value of the output amount (0 if oracle unavailable). */
+  toUsd: bigint;
+  /** Minimum toUsd required to pass the check (0 if check disabled). */
+  minToUsd: bigint;
+}
+
+/**
+ * Read the vault's maxSwapSlippageBps setting.
+ * e.g. 9500 means swaps must retain ≥95% of USD value. 0 = check disabled.
+ */
+export async function getMaxSwapSlippageBps(
+  publicClient: PublicClient,
+  vaultAddress: Address,
+): Promise<bigint> {
+  return publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'maxSwapSlippageBps',
+  }) as Promise<bigint>;
+}
+
+/**
+ * Preview whether a swap would pass the on-chain oracle slippage check.
+ *
+ * Calls the vault's `previewSwapSlippage()` view function — zero gas, always
+ * in sync with the on-chain oracle logic. Use this before signing a SwapIntent
+ * to avoid signing intents that would fail on-chain.
+ *
+ * @param publicClient  Public client for the vault's chain.
+ * @param vaultAddress  The vault address.
+ * @param fromToken     Token being sold.
+ * @param fromAmount    Amount being sold (base units).
+ * @param toToken       Token being received.
+ * @param toAmount      Expected amount received (base units).
+ * @returns             Preview result with wouldPass, fromUsd, toUsd, minToUsd.
+ */
+export async function previewSwapSlippage(
+  publicClient: PublicClient,
+  vaultAddress: Address,
+  fromToken: Address,
+  fromAmount: bigint,
+  toToken: Address,
+  toAmount: bigint,
+): Promise<SwapSlippagePreview> {
+  const result = await publicClient.readContract({
+    address: vaultAddress,
+    abi: AxonVaultAbi,
+    functionName: 'previewSwapSlippage',
+    args: [fromToken, fromAmount, toToken, toAmount],
+  });
+
+  const [wouldPass, fromUsd, toUsd, minToUsd] = result as [boolean, bigint, bigint, bigint];
+  return { wouldPass, fromUsd, toUsd, minToUsd };
+}
+
+// ============================================================================
 // Factory — deploy a new vault
 // ============================================================================
 
@@ -545,6 +610,11 @@ export async function updateBotConfig(
  * Must be called by the vault owner (or operator).
  * The bot will immediately lose the ability to sign valid intents.
  * On-chain transaction — requires gas.
+ *
+ * Note: Clears the bot's config and destination count, but individual destination
+ * whitelist entries persist in storage (Solidity cannot bulk-delete nested mappings).
+ * If you re-register the same address, it will inherit stale whitelist entries.
+ * Use a fresh keypair for new bots to avoid this.
  *
  * @param walletClient    Owner/operator wallet.
  * @param publicClient    Public client for the vault's chain.

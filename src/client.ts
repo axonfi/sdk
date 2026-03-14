@@ -130,12 +130,21 @@ export class AxonClient {
     const signature = await signPayment(this.walletClient, this.vaultAddress, this.chainId, intent);
     const result = await this._submitPayment(intent, signature, input);
 
-    // If vault needs a token swap first, sign a SwapIntent and resubmit
+    // If vault needs a token swap first, sign a SwapIntent and resubmit.
+    // Bot must sign fromToken + maxFromAmount — caller provides via swapFromToken/swapMaxFromAmount.
     if (result.status === 'rejected' && result.errorCode === 'SWAP_REQUIRED') {
+      if (!input.swapFromToken || !input.swapMaxFromAmount) {
+        throw new Error(
+          'Vault lacks the payment token (SWAP_REQUIRED). ' +
+          'Provide swapFromToken and swapMaxFromAmount in PayInput to enable auto-swap.',
+        );
+      }
       const swapIntent: SwapIntent = {
         bot: this.botAddress,
         toToken: intent.token, // swap TO the payment token
         minToAmount: intent.amount, // need at least the payment amount
+        fromToken: resolveToken(input.swapFromToken, this.chainId),
+        maxFromAmount: parseAmount(input.swapMaxFromAmount, input.swapFromToken, this.chainId),
         deadline: intent.deadline, // same deadline
         ref: intent.ref,
       };
@@ -682,6 +691,8 @@ export class AxonClient {
       bot: this.botAddress,
       toToken: resolveToken(input.toToken, this.chainId),
       minToAmount: parseAmount(input.minToAmount, input.toToken, this.chainId),
+      fromToken: resolveToken(input.fromToken, this.chainId),
+      maxFromAmount: parseAmount(input.maxFromAmount, input.fromToken, this.chainId),
       deadline: input.deadline ?? this._defaultDeadline(),
       ref: this._resolveRef(input.memo, input.ref),
     };
@@ -711,10 +722,12 @@ export class AxonClient {
       ref: intent.ref,
       signature,
 
-      // Swap fields
+      // Swap fields (all bot-signed)
       swapSignature,
       swapToToken: swapIntent.toToken,
       swapMinToAmount: swapIntent.minToAmount.toString(),
+      swapFromToken: swapIntent.fromToken,
+      swapMaxFromAmount: swapIntent.maxFromAmount.toString(),
       swapDeadline: swapIntent.deadline.toString(),
       swapRef: swapIntent.ref,
 
@@ -797,28 +810,19 @@ export class AxonClient {
   private async _submitSwap(intent: SwapIntent, signature: Hex, input: SwapInput): Promise<PaymentResult> {
     const idempotencyKey = input.idempotencyKey ?? generateUuid();
 
-    // Resolve optional source token fields
-    const fromToken = input.fromToken !== undefined ? resolveToken(input.fromToken, this.chainId) : undefined;
-    const maxFromAmount =
-      input.maxFromAmount !== undefined
-        ? parseAmount(input.maxFromAmount, input.fromToken ?? input.toToken, this.chainId)
-        : undefined;
-
     const body = {
       chainId: this.chainId,
       vaultAddress: this.vaultAddress,
 
-      // Flat intent fields
+      // Flat intent fields (all bot-signed)
       bot: intent.bot,
       toToken: intent.toToken,
       minToAmount: intent.minToAmount.toString(),
+      fromToken: intent.fromToken,
+      maxFromAmount: intent.maxFromAmount.toString(),
       deadline: intent.deadline.toString(),
       ref: intent.ref,
       signature,
-
-      // Optional source token
-      ...(fromToken !== undefined && { fromToken }),
-      ...(maxFromAmount !== undefined && { maxFromAmount: maxFromAmount.toString() }),
 
       // Off-chain metadata
       idempotencyKey,
