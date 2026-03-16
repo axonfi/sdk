@@ -412,8 +412,8 @@ Supports EIP-3009 (USDC, gasless) and Permit2 (any ERC-20) settlement schemes.
 
 | Chain        | ID    | Status      |
 | ------------ | ----- | ----------- |
-| Base         | 8453  | Coming soon |
-| Arbitrum One | 42161 | Coming soon |
+| Base         | 8453  | Live |
+| Arbitrum One | 42161 | Live |
 
 ### Testnet
 

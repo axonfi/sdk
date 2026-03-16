@@ -1,6 +1,6 @@
 {
   "name": "@axonfi/sdk",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "description": "Give your AI agents a wallet they can't drain. TypeScript SDK for Axon Finance.",
   "license": "MIT",
   "author": "Axon",
@@ -12,14 +12,24 @@
   },
   "keywords": [
     "axon",
+    "axonfi",
     "agentic-finance",
     "ai-agents",
+    "ai-wallet",
+    "agent-payments",
     "secure-vaults",
+    "non-custodial",
     "payments",
+    "x402",
+    "http-402",
     "eip-712",
+    "gasless",
     "usdc",
+    "defi",
     "base",
-    "viem"
+    "arbitrum",
+    "viem",
+    "treasury"
   ],
   "type": "module",
   "main": "./dist/index.cjs",
