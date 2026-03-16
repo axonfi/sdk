@@ -207,6 +207,17 @@ token: Token.USDC; // type-safe enum
 token: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // raw address
 ```
 
+The client also provides convenience helpers for looking up token addresses and decimals:
+
+```typescript
+axon.usdcAddress;              // "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" (chain-aware)
+axon.tokenAddress('WETH');     // "0x4200000000000000000000000000000000000006"
+axon.tokenDecimals('USDC');    // 6
+axon.tokenDecimals('WETH');    // 18
+```
+
+These use the SDK's `KNOWN_TOKENS` registry internally. `usdcAddress` and `tokenAddress()` are scoped to the client's `chainId` — they return the correct address for whichever chain the client was initialized with.
+
 ## API
 
 ### Payments

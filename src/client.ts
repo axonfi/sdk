@@ -18,8 +18,9 @@ import type { X402HandleResult } from './x402.js';
 import { signPayment, signExecuteIntent, signSwapIntent, encodeRef } from './signer.js';
 import { createAxonWalletClient } from './vault.js';
 import { DEFAULT_DEADLINE_SECONDS, RELAYER_API, USDC } from './constants.js';
-import { resolveToken } from './tokens.js';
-import { parseAmount } from './amounts.js';
+import { KNOWN_TOKENS, resolveToken } from './tokens.js';
+import type { KnownTokenSymbol } from './tokens.js';
+import { parseAmount, resolveTokenDecimals } from './amounts.js';
 import { generateUuid } from './utils.js';
 import { keccak256 } from 'viem';
 import { parsePaymentRequired, findMatchingOption, extractX402Metadata, formatPaymentSignature } from './x402.js';
@@ -108,6 +109,59 @@ export class AxonClient {
     const account = this.walletClient.account;
     if (!account) throw new Error('No account on walletClient');
     return account.address;
+  }
+
+  // ============================================================================
+  // Token address helpers
+  // ============================================================================
+
+  /** Returns the USDC address for this client's chain. Throws if USDC is not available on the chain. */
+  get usdcAddress(): Address {
+    const addr = USDC[this.chainId];
+    if (!addr) {
+      throw new Error(`No USDC address for chain ${this.chainId}`);
+    }
+    return addr;
+  }
+
+  /**
+   * Returns the on-chain address for a known token symbol on this client's chain.
+   *
+   * @param symbol - A token symbol from the `Token` enum or `KNOWN_TOKENS` (e.g. `'WETH'`, `'USDC'`).
+   * @throws If the symbol is unknown or has no address on this chain.
+   *
+   * @example
+   * ```ts
+   * axon.tokenAddress('WETH')  // "0x4200000000000000000000000000000000000006"
+   * axon.tokenAddress('USDC')  // "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+   * ```
+   */
+  tokenAddress(symbol: string): Address {
+    const entry = KNOWN_TOKENS[symbol as KnownTokenSymbol];
+    if (!entry) {
+      throw new Error(`Unknown token symbol: ${symbol}`);
+    }
+    const addr = (entry.addresses as Record<number, Address | undefined>)[this.chainId];
+    if (!addr) {
+      throw new Error(`Token ${symbol} is not available on chain ${this.chainId}`);
+    }
+    return addr;
+  }
+
+  /**
+   * Returns the number of decimals for a known token symbol.
+   *
+   * @param symbol - A token symbol (e.g. `'USDC'`, `'WETH'`).
+   * @throws If the symbol is unknown.
+   *
+   * @example
+   * ```ts
+   * axon.tokenDecimals('USDC')  // 6
+   * axon.tokenDecimals('WETH')  // 18
+   * ```
+   */
+  tokenDecimals(symbol: string): number {
+    return resolveTokenDecimals(symbol as KnownTokenSymbol);
   }
 
   // ============================================================================
