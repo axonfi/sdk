@@ -9,6 +9,7 @@ import type {
   SwapInput,
   SwapIntent,
   VaultInfo,
+  VaultValueResult,
   DestinationCheckResult,
   RebalanceTokensResult,
   TosStatus,
@@ -265,6 +266,21 @@ export class AxonClient {
   async getVaultInfo(): Promise<VaultInfo> {
     const path = RELAYER_API.vaultInfo(this.vaultAddress, this.chainId);
     return this._get(path) as Promise<VaultInfo>;
+  }
+
+  // ============================================================================
+  // getVaultValue() — via relayer
+  // ============================================================================
+
+  /**
+   * Returns the total USD value of the vault with a per-token breakdown (via relayer).
+   *
+   * Includes all ERC-20 holdings with non-zero balances, their USD prices,
+   * and the aggregate vault value.
+   */
+  async getVaultValue(): Promise<VaultValueResult> {
+    const path = RELAYER_API.vaultValue(this.vaultAddress, this.chainId);
+    return this._get(path) as Promise<VaultValueResult>;
   }
 
   // ============================================================================

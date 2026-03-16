@@ -23,6 +23,8 @@ export type {
   PaymentStatus,
   AxonClientConfig,
   VaultInfo,
+  VaultValueToken,
+  VaultValueResult,
   DestinationCheckResult,
   RebalanceTokensResult,
   TosStatus,

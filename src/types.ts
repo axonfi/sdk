@@ -386,6 +386,34 @@ export interface RebalanceTokensResult {
   rebalanceTokenCount: number;
 }
 
+/** A single token holding with USD valuation, returned by getVaultValue(). */
+export interface VaultValueToken {
+  /** Token contract address. */
+  token: Address;
+  /** Human-readable token symbol (e.g. "USDC"). */
+  symbol: string;
+  /** Raw balance in base units (string to preserve precision). */
+  balance: string;
+  /** Token decimals. */
+  decimals: number;
+  /** Price per token in USD. */
+  priceUsd: number;
+  /** Total USD value of this holding. */
+  valueUsd: number;
+}
+
+/** Result of AxonClient.getVaultValue() — total vault value with per-token breakdown. */
+export interface VaultValueResult {
+  /** Vault contract address. */
+  vault: Address;
+  /** Chain ID. */
+  chainId: number;
+  /** Total vault value in USD across all token holdings. */
+  totalValueUsd: number;
+  /** Per-token breakdown. */
+  tokens: VaultValueToken[];
+}
+
 /** TOS acceptance status for a wallet. */
 export interface TosStatus {
   accepted: boolean;

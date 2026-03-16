@@ -200,6 +200,9 @@ export const RELAYER_API = {
   rebalanceTokenCheck: (vault: string, token: string, chainId: number) =>
     `/v1/vault/${vault}/rebalance-token/${token}?chainId=${chainId}`,
 
+  // Vault value endpoint
+  vaultValue: (vault: string, chainId: number) => `/v1/vault/${vault}/value?chainId=${chainId}`,
+
   // TOS endpoints
   tosStatus: (wallet: string) => `/v1/tos/status?wallet=${wallet}`,
   TOS_ACCEPT: '/v1/tos/accept',
