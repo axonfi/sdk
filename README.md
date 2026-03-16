@@ -323,6 +323,7 @@ Query your vault's on-chain state — balances, bot status, pause state, and des
 
 ```typescript
 await axon.getBalance('USDC'); // vault token balance
+await axon.getVaultValue(); // total USD value with per-token breakdown
 await axon.isActive(); // bot registered + active?
 await axon.isPaused(); // vault paused?
 await axon.getVaultInfo(); // owner, operator, version
@@ -353,6 +354,23 @@ if (!enabled) {
 **When to keep disabled (default):** If your bots only make payments, execute DeFi calls, or rebalance tokens through Axon's standard `pay()` / `execute()` / `swap()` endpoints.
 
 **Security note:** If a bot key is compromised while ERC-1271 is enabled, the attacker could sign Permit2 approvals or marketplace listings that drain vault funds. The owner can disable it instantly via the dashboard or `setErc1271Bots(false)`.
+
+### Vault Value
+
+Get the total USD value of your vault across all token holdings, with per-token breakdown and prices.
+
+```typescript
+const value = await axon.getVaultValue();
+
+console.log(`Total vault value: $${value.totalValueUsd}`);
+for (const token of value.tokens) {
+  console.log(`  ${token.symbol}: ${token.balance} ($${token.valueUsd})`);
+}
+```
+
+Returns a `VaultValueResult` with:
+- `totalValueUsd` — aggregate USD value across all holdings
+- `tokens[]` — per-token breakdown: `token`, `symbol`, `balance`, `decimals`, `priceUsd`, `valueUsd`
 
 ### Utilities
 
@@ -412,8 +430,9 @@ Supports EIP-3009 (USDC, gasless) and Permit2 (any ERC-20) settlement schemes.
 
 | Chain        | ID    | Status      |
 | ------------ | ----- | ----------- |
-| Base         | 8453  | Live |
-| Arbitrum One | 42161 | Live |
+| Base         | 8453  | Live        |
+| Arbitrum One | 42161 | Live        |
+| Ethereum     | 1     | Coming soon |
 
 ### Testnet
 
